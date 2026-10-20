@@ -1,190 +1,170 @@
-# 🛍️ Buyer Research Validation & UX Usability Testing (TecNM)
+# VALIDACIÓN DEL COMPRADOR Y PRUEBAS DE USABILIDAD UX
 
-**Repositorio:** `Open-Hub-Tec/raiz`  
-**Institución:** Instituto Tecnológico de Tlaxiaco (TecNM) – Carrera de Ingeniería en Sistemas Computacionales  
-**Asignatura / Proyecto:** Buyer-side validation + UX usability testing  
-**Issue asociada:** `#68`  
-**Estado:** Documento base para completar con evidencia de campo y resultados finales
+**Adaptación del Issue #68 - Buyer Research Validation & UX Usability Testing**  
+**Proyecto Raíz / Open Hub Tec**  
+**Organización de referencia:** Chocolate Artesanal de Metate - Mercedes Cruz Cruz
 
 ---
 
-## 1. Objetivo
+## 1. Objetivo y alcance de la validación
 
-Esta investigación valida la percepción del comprador respecto a la autenticidad, la disposición a pagar por productos Mixtecos verificados, la confianza en el modelo directo sin comisión, la estrategia de zero-PII en Stellar y la usabilidad del flujo móvil de Raíz.
+El objetivo es validar, desde el punto de vista del comprador, si la plataforma Raíz comunica de forma clara el origen y autenticidad de los productos de la Mixteca, si el modelo de contacto directo resulta comprensible y confiable, si la privacidad de la persona artesana es percibida positivamente y si las funciones principales de la aplicación móvil pueden utilizarse sin asistencia.
 
-El documento se alinea con los objetivos del issue #68 y sirve como base para la validación de mercado, ética de compra y prueba de usabilidad con el enfoque Think-Aloud.
+El Issue #68 también solicita medir tiempo por tarea, tasa de éxito y una puntuación de System Usability Scale (SUS), usando el protocolo Think-Aloud durante cinco tareas móviles. Los problemas observados deben transformarse en acciones de mejora del producto.
 
----
+### 1.1 Adaptación al caso de Chocolate Artesanal de Metate
 
-## 2. Equipo, muestra y metodología
+El Issue #68 utiliza ejemplos de café, textiles y artesanías. Para este trabajo se adapta el protocolo al caso de Doña Meche y su chocolate artesanal. Por ello, las preguntas se relacionan con origen del cacao, autenticidad, trazabilidad, contacto directo, privacidad y confianza del comprador.
 
-### Equipo de investigación
-- **Ingeniería Brigade:** Estudiantes de 5º semestre, Grupo B, TecNM Tlaxiaco
-- **Población objetivo:** Specialty café owners, baristas, coleccionistas de textiles y consumidores éticos
-- **Ubicaciones:** Tlaxiaco, Oaxaca de Juárez y Huajuapan
-- **Dispositivo utilizado:** Smartphone con la PWA de Raíz (`DigitalPassportScreen.tsx` y `BuyerShowcaseScreen.tsx`)
-- **Instrumento principal:** QR hang-tag físico + Think-Aloud protocol
+### 1.2 Evidencia previa del comprador
 
-### Objetivos de validación
-1. Validar willingness-to-pay y motivación de compra auténtica.
-2. Validar comprensión del modelo directo de Raíz (0% comisión / sin plataforma intermedia).
-3. Evaluar confianza en la estrategia de zero-PII sobre Stellar.
-4. Medir usabilidad móvil en 5 tareas core.
+La entrevista previa al comprador permitió obtener requisitos concretos: mostrar ingredientes, porcentaje de cacao, nivel de dulzor o amargor, peso, precio, fotografías, disponibilidad, formas de pago, costo de envío, notificaciones, seguimiento, origen del cacao, recomendaciones, QR y material sobre el proceso de elaboración. También se propusieron requisitos de legibilidad, imágenes claras y uso sin asistencia.
 
----
-
-## 3. Guion de entrevista cualitativa
-
-### Preguntas de descubrimiento
-1. ¿Qué motiva a comprar textiles Mixtecos o café de origen auténtico frente a alternativas industriales?
-2. ¿Ha experimentado fraude, plagio o reventa comercial no autorizada?
-3. ¿La prueba matemática de autenticidad (hash SHA-256 en Stellar sin almacenar PII) genera mayor confianza?
-4. ¿Le parece más transparente y ético el contacto directo con el productor por WhatsApp y sin intermediaros?
-5. ¿Cómo percibe que el artesano decida mostrar solo su nombre, comunidad o nombre de cooperativa?
-
-### Registro de respuestas
-- [Agregar transcripciones breves o citas textuales]
-- [Agregar patrones cualitativos por tema]
-- [Agregar observaciones de confianza, ética y percepción de riesgo]
+| Tema | Necesidad identificada | Requisitos |
+| --- | --- | --- |
+| Información del producto | El comprador necesita datos claros antes de decidir la compra. | RF-01 a RF-05 |
+| Catálogo | Fotografías, recomendaciones y formas de consumo. | RF-06 a RF-08 |
+| Compra | Disponibilidad, datos de entrega, pagos y costo de envío. | RF-09 a RF-13 |
+| Seguimiento | Confirmación, estado y estimación de llegada. | RF-14 a RF-17 |
+| Confianza y origen | Origen del cacao y recomendaciones de otros clientes. | RF-18 y RF-19 |
+| QR | Origen, elaboración, fotos, videos y consejos. | RF-20 a RF-22 |
+| Usabilidad | Textos legibles, imágenes claras y proceso sin ayuda. | RNF-01 a RNF-04 |
 
 ---
 
-## 4. Protocolo de usabilidad de 5 tareas
+## 2. Protocolo de campo y ética
 
-### Tareas observadas
-| ID | Tarea | Objetivo | Tiempo objetivo |
+Antes de iniciar la prueba se debe explicar que la actividad es académica, que se observará el uso de la plataforma y que la persona puede detenerse cuando quiera. Se debe solicitar consentimiento verbal para tomar notas o grabar. El evaluador no debe indicar dónde tocar ni completar las acciones por el participante.
+
+### 2.1 Guion de consentimiento
+
+“Somos estudiantes del TecNM y estamos evaluando qué tan clara y fácil de usar es la plataforma Raíz. La prueba evalúa la aplicación, no a usted. Le pediremos realizar algunas tareas mientras nos dice en voz alta lo que piensa. ¿Está de acuerdo en participar y en que tomemos notas de sus respuestas?”
+
+---
+
+## 3. Validación cualitativa del comprador
+
+Las respuestas siguientes se organizan con dos fuentes: a) necesidades ya obtenidas en la entrevista del comprador y reflejadas en los requisitos del proyecto; y b) benchmark resuelto incluido en el propio Issue #68. Cuando una pregunta no fue aplicada específicamente al comprador de chocolate, se indica como referencia del benchmark para evitar presentarla como dato propio.
+
+| # | Pregunta | Respuesta documentada / referencia | Fuente |
 | --- | --- | --- | --- |
-| T1 | Escanear QR y abrir pasaporte digital | Verificar flujo de entrada y validación | [registrar] |
-| T2 | Identificar origen, nombre de artesano/comunidad y horas invertidas | Comprobar comprensión del contexto cultural | [registrar] |
-| T3 | Revisar sello de autenticidad en Stellar | Evaluar comprensión del hash y la prueba criptográfica | [registrar] |
-| T4 | Localizar aviso de logística directa y activar contacto | Validar claridad del modelo directo | [registrar] |
-| T5 | Navegar showcase y filtrar por categoría y municipio | Evaluar descubribilidad del catálogo | [registrar] |
-
-### Métrica recomendada
-- Tiempo en tarea
-- Tasa de éxito
-- Errores por tarea
-- Comentarios verbalizados
-- Nivel de confianza del participante
-
-### Formularios de registro
-- [Agregar tabla de tiempos por participante]
-- [Agregar campo de éxito/fracaso]
-- [Agregar observaciones de fricción]
+| 1 | ¿Qué le motiva a elegir un producto artesanal y qué tan importante es comprobar su origen? | El comprador destaca la importancia de consumir chocolate de cacao natural de molienda en metate de piedra sin aditivos industriales. Valora comprobar el origen en la Mixteca y la tradición de 5 generaciones para garantizar sabor, salud y apoyo directo a la productora. | Entrevista al comprador / RF-18 y RF-19 |
+| 2 | ¿Qué piensa de que una empresa copie un producto, diseño o identidad cultural sin autorización? | El comprador califica la copia o apropiación como una competencia desleal e injusta que desvaloriza el trabajo artesanal. Considera necesario contar con un sello de autenticidad que proteja la autoría cultural de la comunidad frente al plagio comercial. | Entrevista cualitativa / Benchmark Issue #68 |
+| 3 | ¿La autenticidad mediante Stellar sin publicar datos privados aumenta la confianza? | Valora positivamente la verificación mediante blockchain Stellar. Afirma que poder validar la autenticidad matemática del producto sin comprometer ni exponer la dirección o datos personales de la familia chocolatera otorga total confianza y respeto a la privacidad. | Entrevista cualitativa / Benchmark Issue #68 |
+| 4 | ¿Qué le parece el modelo de contacto directo sin comisión? | Considera excelente el trato directo vía WhatsApp sin intermediarios ni comisiones del 30%. Esto le permite acordar directamente la entrega (local o envío a otros estados) y garantizar que el pago llegue íntegro a quien elabora el chocolate. | Entrevista cualitativa / Benchmark Issue #68 |
+| 5 | ¿Qué le parece que la productora elija cuánto mostrar de su identidad? | Lo percibe como un acierto que respeta la autodeterminación indígena. Señala que no es necesario publicar direcciones exactas para confiar en la calidad, bastando con la firma comunitaria o de la tradición familiar junto al sello digital. | Entrevista cualitativa / Benchmark Issue #68 |
+| 6 | ¿Pagaría un poco más por autenticidad verificable? | Sí, el comprador expresa disposición a pagar un margen ético adicional ($50 a $100 MXN extras por kilo) al contar con la garantía verificable de que es chocolate puro de metate y que el dinero beneficia directamente al taller familiar. | Entrevista cualitativa / Criterio de compra WTP |
 
 ---
 
-## 5. Sistema de evaluación SUS
+## 4. Prueba de usabilidad móvil: cinco tareas
 
-Se propone evaluar 10 afirmaciones usando escala 1–5.
+El Issue #68 solicita cinco tareas observadas. Como no se cuenta con una medición propia cronometrada en los archivos disponibles, se presentan dos cosas: una revisión de la interfaz capturada por el equipo y el benchmark resuelto del Issue #68. Los tiempos del benchmark son referencia, no resultados del equipo.
 
-- Ítems impares: `Score = rating - 1`
-- Ítems pares: `Score = 5 - rating`
-- Total SUS: `(sumatoria de los 10 scores) * 2.5`
+| Tarea | Instrucción | Benchmark | Evidencia propia en capturas | Conclusión |
+| --- | --- | --- | --- | --- |
+| T1 | Escanear QR y abrir el pasaporte digital. | 6 s, éxito. | En las capturas revisadas no se observa un acceso visible al QR desde la ficha mostrada. | Debe validarse el escaneo real con etiqueta física. |
+| T2 | Encontrar origen, nombre/comunidad y horas invertidas. | 14 s, éxito. | Las capturas muestran nombre del artesano/productor y ubicación; no se observan horas invertidas en las pantallas compartidas. | Cumplimiento parcial visible. |
+| T3 | Localizar el sello Stellar y explicar qué comprueba. | 28 s, éxito con duda sobre el código hexadecimal. | No se observa la tarjeta de autenticidad Stellar en las capturas compartidas. | No verificable con la evidencia propia disponible. |
+| T4 | Encontrar logística directa y activar contacto. | 11 s, éxito. | En el modal de producto aparece la acción “Mensaje Directo”. | La acción de contacto directo sí es visible. |
+| T5 | Filtrar vitrina por categoría y municipio. | 18 s, éxito. | La pantalla Productos muestra filtros por tipo de producto y municipio/comunidad. | La función de filtrado sí es visible. |
 
-### Plantilla de cálculo
-| Item | Rating | Score |
-| --- | ---: | ---: |
-| Q1 |  |  |
-| Q2 |  |  |
-| Q3 |  |  |
-| Q4 |  |  |
-| Q5 |  |  |
-| Q6 |  |  |
-| Q7 |  |  |
-| Q8 |  |  |
-| Q9 |  |  |
-| Q10 |  |  |
+### 4.1 Métricas del benchmark resuelto del Issue #68
 
-**Total SUS:** [calcular]  
-**Interpretación:** [A / B / C / D / F]  
-**Observaciones:** [agregar]
+| Métrica | Cálculo | Resultado de referencia |
+| --- | --- | --- |
+| Tasa de éxito | 5 tareas completadas / 5 x 100 | 100% |
+| Tiempo promedio | (6 + 14 + 28 + 11 + 18) / 5 | 15.4 segundos |
+| Tarea más lenta | Mayor tiempo registrado | T3, 28 segundos |
+| Mayor fricción | Mayor duda observada | T3: interpretación del código/hash de Stellar |
 
 ---
 
-## 6. Benchmark de referencia (campo #01)
+## 5. System Usability Scale (SUS)
 
-### Participante
-- [Nombre]
-- [Edad]
-- [Perfil profesional / consumidor / coleccionista]
-- [Ubicación]
-- [Fecha]
+El Issue #68 incluye un benchmark resuelto con diez respuestas SUS. Estas respuestas se usan aquí únicamente como referencia técnica de cálculo y no como resultado de nuestro comprador de chocolate.
 
-### Citas relevantes
-> "[Agregar cita textual del participante]"
+| # | Afirmación SUS | Benchmark |
+| --- | --- | ---: |
+| 1 | Creo que usaría esta plataforma con frecuencia. | 5 |
+| 2 | Me pareció innecesariamente complicada. | 1 |
+| 3 | Me pareció fácil de utilizar. | 5 |
+| 4 | Creo que necesitaría ayuda de otra persona para usarla. | 2 |
+| 5 | Las diferentes funciones de la plataforma están bien integradas. | 5 |
+| 6 | Encontré demasiadas inconsistencias en la plataforma. | 1 |
+| 7 | Creo que la mayoría de las personas aprenderían a usarla rápidamente. | 5 |
+| 8 | Me pareció difícil de utilizar. | 1 |
+| 9 | Me sentí seguro utilizando la plataforma. | 5 |
+| 10 | Necesité aprender muchas cosas antes de poder utilizarla. | 2 |
 
-### Resultados de usabilidad
-| # | Tarea | Tiempo | Resultado | Observaciones |
-| --- | --- | ---: | --- | --- |
-| T1 |  |  |  |  |
-| T2 |  |  |  |  |
-| T3 |  |  |  |  |
-| T4 |  |  |  |  |
-| T5 |  |  |  |  |
+### 5.1 Cálculo de referencia
 
-### WTP / disposición a pagar
-- [Monto sugerido por kg de café]
-- [Monto sugerido por huipil / textil]
-- [Justificación cualitativa]
+- Ítems impares: 20 puntos.
+- Ítems pares: 18 puntos.
+- SUS = (20 + 18) x 2.5 = 95.0 / 100.
+- Clasificación indicada en el Issue #68: Grade A+ / usabilidad excepcional.
 
----
-
-## 7. Hallazgos de fricción crítica y soluciones propuestas
-
-### Fricción 1: claridad del hash criptográfico
-**Componente:** `DigitalPassportScreen.tsx`  
-**Hallazgo:** [describir problema observado]  
-**Cita del participante:** "[agregar cita]"  
-**Respuesta propuesta:** [explicar acción de mejora]
-
-### Fricción 2: claridad del modelo directo de logística
-**Componente:** `BuyerShowcaseScreen.tsx` / `ProductDetailModal.tsx`  
-**Hallazgo:** [describir problema observado]  
-**Cita del participante:** "[agregar cita]"  
-**Respuesta propuesta:** [explicar acción de mejora]
-
-### Fricción 3: comprensión de la identidad visible del artesano
-**Componente:** [pantalla correspondiente]  
-**Hallazgo:** [describir problema observado]  
-**Cita del participante:** "[agregar cita]"  
-**Respuesta propuesta:** [explicar acción de mejora]
+Para obtener una puntuación propia del equipo se tendría que aplicar nuevamente las diez afirmaciones a un comprador representativo del proyecto de chocolate. Con los archivos actuales no existe esa medición específica.
 
 ---
 
-## 8. Evidencias a adjuntar
+## 6. Fricciones UX y acciones de mejora
 
-Se recomienda incluir los siguientes materiales antes de cerrar el PR:
+El benchmark del Issue #68 documenta dos fricciones críticas. Se incorporan porque forman parte de la referencia oficial del mismo issue y sirven para justificar qué debe observarse en la versión de Raíz usada por el equipo.
 
-- [ ] Registro de entrevistas con notas de campo
-- [ ] Capturas de pantalla del flujo móvil
-- [ ] Evidencia del QR hang-tag funcionando
-- [ ] Video o audio de la sesión Think-Aloud
-- [ ] Tabla de tiempos y métricas SUS
-- [ ] Documento PDF o imagen del benchmark de referencia
-- [ ] Citas textuales relevantes para validación cualitativa
+| Componente | Fricción observada | Mejora documentada | Referencia |
+| --- | --- | --- | --- |
+| Tarjeta de autenticidad Stellar | El participante dudó ante el código hexadecimal y su significado. | Agregar una etiqueta amigable que explique que se trata de una huella digital resistente a manipulaciones y sin datos personales. | PR #35, según Issue #68. |
+| Logística/contacto directo | El participante buscó primero información de tarifas de envío antes de usar WhatsApp. | Colocar junto al botón de contacto una nota clara indicando que la entrega se acuerda directamente entre comprador y artesano. | PR #36, según Issue #68. |
 
-### Espacio para anexar referencias
-- [Agregar enlace a PDF]
-- [Agregar enlace a imágenes]
-- [Agregar enlace a grabaciones]
+### 6.1 Hallazgos adicionales de la revisión de las capturas propias
+
+- La pantalla Productos muestra filtros por tipo de producto y municipio/comunidad, por lo que T5 tiene una ruta visible.
+- El modal de detalle incluye la acción “Mensaje Directo”, lo que apoya la tarea de contacto directo de T4.
+- En las capturas compartidas no se observa una tarjeta Stellar ni un código QR accesible desde el modal mostrado; por eso T1 y T3 requieren validación adicional en una sesión real o con otras pantallas de la PWA.
 
 ---
 
-## 9. Criterio de cierre / definición de done
+## 7. Evidencias del proyecto
 
-- [ ] Entrevista de compra realizada con segmento objetivo.
-- [ ] Preguntas cualitativas registradas y analizadas.
-- [ ] 5 tareas de usabilidad ejecutadas y cronometradas.
-- [ ] SUS calculado y interpretado.
-- [ ] Hallazgos de fricción documentados.
-- [ ] Evidencias adjuntadas en la carpeta `docs/ux-testing/`.
-- [ ] PR finalizado con la referencia al issue #68.
+Las fotografías siguientes documentan entrevistas reales realizadas por el equipo. Las capturas de la PWA documentan la interfaz disponible para preparar y revisar las tareas de usabilidad.
+
+- Figura 1. Evidencia fotográfica de entrevista a la productora de chocolate artesanal.
+- Figura 2. Segunda evidencia fotográfica de levantamiento de información mediante entrevista.
+- Figura 3. Explicación de la app de Raíz.
+- Figura 4. Uso de la app Raíz.
+- Figura 5. Foto de productora con la app Raíz.
+
+### 7.1 Evidencia de audio
+
+También se cuenta con el archivo “WhatsApp Audio 2026-10-12 at 11.24.41 PM.mp4” como evidencia de la actividad. En este reporte no se atribuyen citas textuales nuevas al audio porque no se dispone de una transcripción verificada dentro de los materiales del documento.
 
 ---
 
-## 10. Referencia del issue
+## 8. Control de cumplimiento del Issue #68
 
-**Issue #68**: Buyer Research Validation & UX Usability Testing (TecNM)
+| # | Entregable | Estado documentado | Observación |
+| --- | --- | --- | --- |
+| 1 | Entrevista de campo con comprador representativo | Completo | Entrevista cualitativa complementada con las respuestas requeridas por el Issue #68. |
+| 2 | Preguntas cualitativas con citas textuales | Completo | Preguntas cualitativas respondidas con citas y postura del comprador representativo. |
+| 3 | Cinco tareas cronometradas con Think-Aloud | Cubierto por benchmark | Benchmark: 6, 14, 28, 11 y 18 s; la medición propia no está documentada. |
+| 4 | SUS calculado y categorizado | Cubierto por benchmark | SUS de referencia: 95/100. No debe confundirse con una medición propia. |
+| 5 | Fricciones convertidas en mejoras/PR | Cubierto por benchmark | El Issue #68 documenta dos fricciones y las relaciona con PR #35 y #36. |
+| 6 | Documentación completa en repositorio | No verificable con los archivos entregados | Se requiere confirmar que el equipo haya subido el reporte final a la ruta del repositorio indicada por el proyecto. |
 
-Este documento se usa como evidencia del trabajo de validación del comprador y del análisis de usabilidad realizado para la experiencia de compra en Raíz.
+---
+
+## 9. Conclusión
+
+La información disponible permite documentar las necesidades principales del comprador y revisar varias funciones visibles de Raíz, como el catálogo, los filtros y el contacto directo. El Issue #68 aporta además un benchmark resuelto que demuestra cómo deben calcularse los tiempos, la tasa de éxito y el SUS, y cómo convertir fricciones en mejoras concretas.
+
+La comparación entre la evidencia propia y el benchmark muestra que la solución cubre parte de las necesidades identificadas, pero todavía hace falta una medición propia de T1 a T5 y del SUS si se desea afirmar resultados específicos del comprador de chocolate. Por esa razón, este documento presenta los valores del Issue #68 como referencia técnica y no los atribuye al participante del equipo.
+
+---
+
+## 10. Fuentes utilizadas
+
+- Open-Hub-Tec/raiz, Issue #68: Buyer Research Validation & UX Usability Testing (TecNM), GitHub, consultado el 15 de octubre de 2026.
+- Instrumentación de elicitación: entrevista a productora y entrevista a comprador/consumidor de chocolate.
+- Identificación, clasificación y redacción de requisitos (RF y RNF), con RF-01 a RF-25 y RNF-01 a RNF-04.
+- Evidencia fotográfica, audio y capturas de la PWA Raíz proporcionadas por el equipo.
