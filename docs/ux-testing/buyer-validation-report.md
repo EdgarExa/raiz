@@ -1,50 +1,50 @@
-# Reporte de Validación y Entrevistas a Compradores Potenciales — Raíz Protocol
+# Buyer Validation and Potential Interviews Report — Raíz Protocol
 
-## 1. Metodología y Alcance
-* **Instrumento:** Entrevista semiestructurada aplicada a unidades de análisis representativas (6 perfiles de compradores en Tlaxiaco, Oaxaca de Juárez, Huajuapan, San Juan Ñumí y Puebla).
-* **Objetivo:** Reconocer hábitos de compra, categorías preferidas (textiles, palma, alfarería, miel, café, alimentos y decoración), fricciones en plataformas actuales y funcionalidades prioritarias para el desarrollo de la aplicación móvil de Raíz.
+## 1. Methodology and Scope
+* **Instrument:** Semi-structured interview applied to representative analysis units (6 buyer profiles in Tlaxiaco, Oaxaca de Juárez, Huajuapan, San Juan Ñumí, and Puebla).
+* **Objective:** Recognize shopping habits, preferred categories (textiles, palm weave, pottery, honey, coffee, food, and decoration), frictions in current platforms, and priority features for the development of the Raíz mobile application.
 
 ---
 
-## 2. Síntesis Comparativa de Perfiles de Compradores
-Se contrastaron las necesidades de 6 perfiles de compradores representativos de la región Mixteca y zonas de influencia:
+## 2. Comparative Synthesis of Buyer Profiles
+The needs of 6 representative buyer profiles from the Mixteca region and surrounding areas were contrasted:
 
-| Código | Edad | Residencia | Interés Principal | Prioridad Declarada |
+| Code | Age | Residence | Main Interest | Declared Priority |
 | :--- | :---: | :--- | :--- | :--- |
-| **Comprador 1** | 29 | Tlaxiaco | Textiles, miel | Catálogo y carrito |
-| **Comprador 2** | 41 | Oaxaca de Juárez | Café, alimentos | Entrega y pagos |
-| **Comprador 3** | 22 | Huajuapan | Accesorios, palma | Favoritos y filtros |
-| **Comprador 4** | 55 | San Juan Ñumí | Miel, cerámica | Facilidad de uso |
-| **Comprador 5** | 35 | Puebla | Textiles, decoración | Autenticidad y envíos |
-| **Comprador 6** | 47 | Tlaxiaco | Alimentos, miel | Confianza y atención |
+| **Buyer 1** | 29 | Tlaxiaco | Textiles, honey | Catalog and cart |
+| **Buyer 2** | 41 | Oaxaca de Juárez | Coffee, food | Delivery and payments |
+| **Buyer 3** | 22 | Huajuapan | Accessories, palm weave | Favorites and filters |
+| **Buyer 4** | 55 | San Juan Ñumí | Honey, ceramics | Ease of use |
+| **Buyer 5** | 35 | Puebla | Textiles, decoration | Authenticity and shipping |
+| **Buyer 6** | 47 | Tlaxiaco | Food, honey | Trust and support |
 
 ---
 
-## 3. Tabulación de Necesidades Detectadas (Frecuencias)
-A partir del análisis cruzado de las respuestas, se identificaron los requerimientos con mayor demanda entre los perfiles:
+## 3. Tabulation of Detected Needs (Frequencies)
+Based on the cross-analysis of the responses, the requirements with the highest demand among the profiles were identified:
 
-| Necesidad Detectada | Menciones (sobre 6 perfiles) | Interpretación / Hallazgo |
+| Detected Need | Mentions (out of 6 profiles) | Interpretation / Finding |
 | :--- | :---: | :--- |
-| **Catálogo claro y fotografías** | 6 / 6 | Requisito básico de navegación y contenido visual sin filtros exagerados. |
-| **Precios y costos de entrega visibles** | 5 / 6 | Evita el abandono de pedidos por costos ocultos o sorpresa al final. |
-| **Confianza en productor y autenticidad** | 5 / 6 | Demanda perfiles verificables y procedencia cultural clara (comunidad de origen). |
-| **Opciones de entrega** | 4 / 6 | Necesidad de pactar puntos de entrega o envíos según la zona y fragilidad. |
-| **Búsqueda por categorías o filtros** | 4 / 6 | Facilita encontrar productos específicos rápidamente sin buscar en redes sociales. |
-| **Compra o solicitud de pedido simple** | 4 / 6 | Reducir pasos, confusión y permitir carritos o solicitudes directas. |
-| **Atención y seguimiento de pedidos** | 3 / 6 | Mejorar la experiencia poscompra con confirmaciones y canales de contacto. |
+| **Clear catalog and photographs** | 6 / 6 | Basic requirement for navigation and visual content without exaggerated filters. |
+| **Visible prices and delivery costs** | 5 / 6 | Prevents order abandonment due to hidden costs or surprises at checkout. |
+| **Trust in producer and authenticity** | 5 / 6 | Demand for verifiable profiles and clear cultural provenance (community of origin). |
+| **Delivery options** | 4 / 6 | Need to arrange delivery points or shipping based on the area and fragility. |
+| **Search by categories or filters** | 4 / 6 | Makes it easier to find specific products quickly without searching across social media. |
+| **Simple purchase or order request** | 4 / 6 | Reduce steps and confusion, and allow carts or direct requests. |
+| **Customer support and order tracking** | 3 / 6 | Improve the post-purchase experience with confirmations and contact channels. |
 
 ---
 
-## 4. Traducción en Requisitos Funcionales y No Funcionales para la App
-Basado en la validación directa con los compradores, se establecieron las especificaciones técnicas para el desarrollo en el repositorio:
+## 4. Translation into Functional and Non-Functional App Requirements
+Based on direct validation with buyers, technical specifications for development in the repository were established:
 
-* **RF-01:** Mostrar catálogo por categorías: textiles, palma, cerámica, miel, café, alimentos, accesorios y decoración *(Prioridad: Alta)*.
-* **RF-02:** Consultar ficha con fotografías, precio, medidas o ingredientes, procedencia y existencias *(Prioridad: Alta)*.
-* **RF-03:** Buscar y filtrar por categoría, precio, comunidad y disponibilidad *(Prioridad: Alta)*.
-* **RF-04:** Permitir carrito o solicitud de pedido, con resumen previo a confirmar *(Prioridad: Alta)*.
-* **RF-05:** Mostrar opciones de entrega, costos y fecha aproximada antes de confirmar *(Prioridad: Alta)*.
-* **RF-06:** Permitir ver estado e historial de pedidos *(Prioridad: Media)*.
-* **RF-07:** Proporcionar perfil del productor sin exponer datos sensibles *(Prioridad: Alta)*.
-* **RF-08:** Permitir favoritos y reseñas verificables *(Prioridad: Media)*.
-* **RNF-01:** Interfaz adaptable a teléfono y comprensible para usuarios con distinta experiencia digital *(Prioridad: Alta)*.
-* **RNF-02:** Proteger datos y ofrecer métodos de pago mediante servicios seguros *(Prioridad: Alta)*.
+* **RF-01:** Display catalog by categories: textiles, palm weave, ceramics, honey, coffee, food, accessories, and decoration *(Priority: High)*.
+* **RF-02:** View product details including photographs, price, measurements or ingredients, provenance, and stock *(Priority: High)*.
+* **RF-03:** Search and filter by category, price, community, and availability *(Priority: High)*.
+* **RF-04:** Allow a shopping cart or order request with a summary prior to confirmation *(Priority: High)*.
+* **RF-05:** Display delivery options, costs, and approximate date before confirming *(Priority: High)*.
+* **RF-06:** Allow viewing order status and history *(Priority: Medium)*.
+* **RF-07:** Provide the producer's profile without exposing sensitive data *(Priority: High)*.
+* **RF-08:** Allow favorites and verifiable reviews *(Priority: Medium)*.
+* **RNF-01:** Mobile-adaptive interface understandable for users with varying digital experience *(Priority: High)*.
+* **RNF-02:** Protect data and offer payment methods through secure services *(Priority: High)*.
