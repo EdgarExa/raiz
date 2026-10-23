@@ -1,0 +1,14 @@
+# Archivos del sistema y logs
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+package-lock.json
+bun.lock
+.aistudio/
+.vault_privado/
+.investigacion_privada/

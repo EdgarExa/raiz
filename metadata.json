@@ -1,0 +1,11 @@
+{
+  "name": "Raíz",
+  "description": "Plataforma comunitaria de comercio justo, registro de cosechas, trazabilidad y pagos de la Mixteca Oaxaqueña.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

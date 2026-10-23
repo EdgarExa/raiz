@@ -1,0 +1,40 @@
+name: TecNM Contributor & Drips Eligibility Review
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  issues: read
+  contents: read
+
+jobs:
+  contributor-welcome:
+    name: Contributor Guidance & Issue Link Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Issue Reference
+        id: check_issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            const issueRegex = /(closes|fixes|resolves)\s+#(\d+)/i;
+            const match = body.match(issueRegex);
+            
+            let message = '';
+            if (match) {
+              const issueNumber = match[2];
+              message = `### 🌾 Welcome TecNM Contributor!\n\nThank you for opening this pull request!\n\n- **Linked Issue:** #${issueNumber}\n- **Drips Eligibility:** This PR resolves an issue tracked under the [Raíz Delivery Roadmap](https://github.com/orgs/Open-Hub-Tec/projects/1).\n- **Quality Check:** The automated CI test suite will run linting, tests, and build verification.\n\nPlease ensure your code satisfies the acceptance criteria before requesting maintainer review.`;
+            } else {
+              message = `### 🌾 Welcome TecNM Contributor!\n\nThank you for contributing to Raíz!\n\n> ⚠️ **Notice:** No linked issue was detected in your PR description.\n>\n> To link this PR to the Roadmap and ensure **Drips eligibility**, please add a line such as:\n> \`Resolves #18\` or \`Closes #22\` in the PR body.\n\nSee the active roadmap at [Raíz Project Board](https://github.com/orgs/Open-Hub-Tec/projects/1).`;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: message
+            });

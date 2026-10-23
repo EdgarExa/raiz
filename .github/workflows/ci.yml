@@ -1,0 +1,53 @@
+name: Yucu Protocol CI Quality & Integrity Gate
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-and-test:
+    name: TypeScript, Tests & Production Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck and Lint
+        run: npm run lint
+
+      - name: Run Core & Dynamic Architecture Tests
+        run: npm run test
+
+      - name: Build Production Bundle (Vite)
+        run: npm run build
+
+  validate-soroban-contracts:
+    name: Soroban Smart Contracts (Rust) Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Verify Contracts Syntax & Workspace
+        run: |
+          cd contracts
+          cargo check
