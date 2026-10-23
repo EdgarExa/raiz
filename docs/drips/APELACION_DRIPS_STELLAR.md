@@ -2,7 +2,7 @@
 **To:** Drips Review Committee & Stellar Community Fund (SCF) Governance  
 **From:** Open Hub TecNM — Instituto Tecnológico de Tlaxiaco (Oaxaca, Mexico)  
 **Repository:** [https://github.com/Open-Hub-Tec/yucu-protocol](https://github.com/Open-Hub-Tec/yucu-protocol)  
-**Latest Production Commit:** `dec1e1c` (`main` branch)  
+**Latest Production Commit:** `583d356` (`main` branch)  
 **Contact:** `tecnologicotlaxiaco@gmail.com`  
 **License:** Open Source MIT (Digital Public Good)
 
@@ -51,7 +51,7 @@ Yucu is maintained by **undergraduate indigenous students and faculty** at TecNM
 ## 🔗 Verification Permalinks
 
 1. **GitHub Repository:** [https://github.com/Open-Hub-Tec/yucu-protocol](https://github.com/Open-Hub-Tec/yucu-protocol)
-2. **Latest Commit:** [Commit `dec1e1c`](https://github.com/Open-Hub-Tec/yucu-protocol/commit/dec1e1c)
+2. **Latest Commit:** [Commit `583d356`](https://github.com/Open-Hub-Tec/yucu-protocol/commit/583d356)
 3. **Soroban RWA Architecture Spec:** [YUCU_RWA_ATTESTATION_SPEC.md](https://github.com/Open-Hub-Tec/yucu-protocol/blob/main/docs/standards/YUCU_RWA_ATTESTATION_SPEC.md)
 4. **Live Interactive Protocol Console:** Available in the running production applet.
 
