@@ -41,13 +41,13 @@
 
 ### ✅ Milestone 1.1 / Issue #1: Field Pain & Middlemen Exploitation Validation
 * **Status:** Resolved & Merged via PR #31
-* **Evidence:** [`docs/research/HITO_1.1_INVESTIGACION_CAMPO.pdf`](../research/HITO_1.1_INVESTIGACION_CAMPO.pdf) & [`docs/research/HITO_1.1_VALIDACION_CAMPO.md`](../research/HITO_1.1_VALIDACION_CAMPO.md)
+* **Evidence:** `HITO_1.1_INVESTIGACION_CAMPO.pdf` *(archivo privado del equipo, ver [PRIVACIDAD.md](../research/PRIVACIDAD.md))* & [`docs/research/HITO_1.1_VALIDACION_CAMPO.md`](../research/HITO_1.1_VALIDACION_CAMPO.md)
 * **Outcomes:** 5 student brigades audited 79+ indigenous producers across 4 mountain communities in Oaxaca (Mixtepec, Xochixtlán, Ñumí, Tijaltepec). Documented +1000% markups by coyotes and wages of $1.00-$2.00 MXN/hr.
 
 ### ✅ Milestone 1.2 / Issue #2: Elder-Accessibility & Cognitive Friction Audit
 * **Status:** Resolved & Merged via PR #30, PR #39 & PR #42
 * **Evidence:** [`docs/ux-testing/HITO_1.2_AUDITORIA_FRICCION_UX.md`](../ux-testing/HITO_1.2_AUDITORIA_FRICCION_UX.md)
-* **Outcomes:** Multi-community field usability testing with Doña Reyna (56), Doña Juana (68), and Doña Francisca (64). Proven that 112px touch targets, single-tap voice recording in *Tu'un Savi*, and physical Hang-Tag QR codes achieve 100% task completion with 0% data loss.
+* **Outcomes:** Multi-community field usability testing with a Triqui weaver (56), a palm weaver (68) and an embroiderer from San Pablo Tijaltepec. Proven that 112px touch targets, single-tap voice recording in *Tu'un Savi*, and physical Hang-Tag QR codes achieve 100% task completion with 0% data loss.
 
 ---
 

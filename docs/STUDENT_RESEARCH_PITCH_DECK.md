@@ -57,24 +57,24 @@
 
 ### Slide 3B: Student Research Brigades: Ground-Truth Cases
 * **Brigade 1 – San Juan Mixtepec (Palm Weavers):**
-  * **Student Researchers:** Jazlynn Barrios Velasco (23620209), Isaías Brayan López Domínguez (23620031), Rafael Ayala Coronel (23620203), Alex Antonio Victoria Vásquez (23620281) – 7th Semester.
+  * **Student Researchers:** Jazlynn Barrios Velasco, Isaías Brayan López Domínguez, Rafael Ayala Coronel, Alex Antonio Victoria Vásquez – 7th Semester.
   * **Field Finding:** 15 hours of intense manual labor per hat. Middlemen pay $15 to $30 MXN. Weavers suffer premature cataracts and joint deformities with zero social security.
   * **Direct Quote:** *“They tell us: ‘Take $20 pesos or leave it’... we take it just to buy tortillas for today.”*
 * **Brigada 2 – San José Xochixtlán (Triqui Huipil):**
   * **Student Researchers:** Charlie Jared Castro Rodríguez, Dulce Maetzy Reyes Hernández, Brayan Armando Pérez González, José Manuel Hernández Paz – 5th Semester.
-  * **Field Finding:** Doña Reyna (56) spends 6 to 9 months continuous weaving (~180 hrs) and finances $2,500 MXN of materials out of pocket. Buyers delay payment for weeks and haggle down to $8,000 MXN.
+  * **Field Finding:** A Triqui weaver from Xochixtlán (56) spends 6 to 9 months continuous weaving (~180 hrs) and finances $2,500 MXN of materials out of pocket. Buyers delay payment for weeks and haggle down to $8,000 MXN.
   * **Direct Quote:** *“Clients commission a huipil and force me to wait weeks or months to get paid.”*
 * **Brigade 3 – San Juan Ñumí (Wild Honey Union):**
   * **Student Researchers:** Luis Alexis Morales & eduScrum / UMIZOOMI Team.
   * **Field Finding:** Interview with Union President Rogelio Martínez Cruz: All records are kept by hand in notebooks. Transcribing member lists takes 3 days; harvest slips are frequently misplaced; batches were accidentally double-sold due to lack of real-time digital inventory.
 * **Brigade 4 – San Pablo Tijaltepec & Yucuhiti (Coffee & Textiles):**
   * **Student Lead:** Nallely López García.
-  * **Field Finding:** Doña Francisca (64) immediately recognized the physical Hang-Tag QR code as legal proof to protect authentic deer blouses against cheap factory knockoffs.
+  * **Field Finding:** An embroiderer from San Pablo Tijaltepec immediately recognized the physical Hang-Tag QR code as legal proof to protect authentic deer blouses against cheap factory knockoffs.
 
 ---
 
 ### Slide 3C: Elder-Accessibility UX Usability Field Audit (Milestone 1.2)
-* **Field Diagnosis (Testing with Doña Reyna and Doña Francisca):**
+* **Field Diagnosis (Testing with a Triqui weaver and an embroiderer from San Pablo Tijaltepec):**
   1. **Rural Technophobia:** Hesitation exceeding 10 seconds before touchscreens: *“Will the phone break if I tap this?”*.
   2. **Harsh Outdoor Glare:** Delicate gray typography is completely illegible in open patios under mountain sun.
   3. **Government Seal Suspicion:** Official badges caused alarm (*“Is this for tax collection?”*). Cultural protection marks are needed.
@@ -141,7 +141,7 @@
   * Prof. José Alfredo Román Cruz (Academic Advisor & Open Hub Coordinator).
   * Nallely López García (Student Research Lead).
 * **Undergraduate Student Research Brigades:**
-  * **San Juan Mixtepec (Palm Weavers):** Jazlynn Barrios Velasco (23620209), Isaías Brayan López Domínguez (23620031), Rafael Ayala Coronel (23620203), Alex Antonio Victoria Vásquez (23620281) – 7th Semester.
+  * **San Juan Mixtepec (Palm Weavers):** Jazlynn Barrios Velasco, Isaías Brayan López Domínguez, Rafael Ayala Coronel, Alex Antonio Victoria Vásquez – 7th Semester.
   * **San José Xochixtlán (Triqui Huipil):** Charlie Jared Castro Rodríguez, Dulce Maetzy Reyes Hernández, Brayan Armando Pérez González, José Manuel Hernández Paz – 5th Semester.
   * **San Juan Ñumí (Honey Union):** Luis Alexis Morales & eduScrum / UMIZOOMI Team.
   * **Traditional Mezcal (Yavi Tech):** Lewis Noé Hernández Mendoza, Nelson Macario Martínez Hernández, Luis Ángel García Santiago – 5th Semester.

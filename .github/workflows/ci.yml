@@ -33,6 +33,30 @@ jobs:
       - name: Build Production Bundle (Vite)
         run: npm run build
 
+  privacy-guard:
+    name: Privacy Guard (no field media in public repo)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Ver docs/research/PRIVACIDAD.md: audios, videos, fotos y PDF de campo van en la carpeta privada.
+      - name: Reject audio, video, images or PDF in research folders
+        run: |
+          added=$(git diff --name-only --diff-filter=AR "origin/${{ github.base_ref }}...HEAD" \
+            | grep -iE '^(docs/research|docs/ux-testing|public/videos)/.*\.(pdf|ogg|m4a|mp3|mp4|wav|mov|webm|jpe?g|png|heic)$' || true)
+          if [ -n "$added" ]; then
+            echo "::error::Este PR agrega evidencias de campo al repositorio público. Guárdalas en .investigacion_privada/ (ver docs/research/PRIVACIDAD.md):"
+            echo "$added"
+            exit 1
+          fi
+          echo "OK: no se agregan archivos de campo."
+
   validate-soroban-contracts:
     name: Soroban Smart Contracts (Rust) Check
     runs-on: ubuntu-latest

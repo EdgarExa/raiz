@@ -9,7 +9,7 @@
 
 ### 1. Perfil del Participante
 - **Comunidad:** San Juan Mixtepec, Oaxaca
-- **Artesana Evaluada:** Doña Juana (68 años, artesana tejedora de palma)
+- **Artesana Evaluada:** Tejedora de palma, San Juan Mixtepec (68 años)
 - **Actividad:** Tejido a mano de palma (*Brahea dulcis*) para sombreros finos, tenates y canastas utilitarias.
 - **Lengua Materna:** Tu'un Savi (Mixteco) - Habla español básico.
 - **Dispositivo Utilizado:** Smartphone Android (pantalla 6.5 pulgadas), probado bajo condiciones reales de luz exterior (patio del taller artesanal).

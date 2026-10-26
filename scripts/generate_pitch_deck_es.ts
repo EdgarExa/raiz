@@ -550,7 +550,7 @@ const C_CARD_BORDER = 'E5E7EB';// Borde Suave
       activity: 'Café de Altura (1,800 msnm) y Bordados Tradicionales',
       pain: 'Coyotes en carretera capturan 82% del café; falsificación de bordados con ropa industrial china.',
       market: 'Falta total de trazabilidad en parcela sin señal. Demanda urgente de blindaje de autenticidad.',
-      quote: 'Doña Francisca (64 años): “Si le colgamos el QR al huipil, ya no lo confundirán con ropa china barata.”',
+      quote: 'Bordadora de San Pablo Tijaltepec: “Si le colgamos el QR al huipil, ya no lo confundirán con ropa china barata.”',
       tagColor: 'E0E7FF',
       tagText: '3730A3'
     }
@@ -709,7 +709,7 @@ const C_CARD_BORDER = 'E5E7EB';// Borde Suave
     color: C_DARK_BG,
   });
 
-  slide.addText('Pruebas de Fricción Cognitiva en Campo con Doña Reyna (56) y Doña Francisca (64) en Patios Rurales (Hito 1.2)', {
+  slide.addText('Pruebas de Fricción Cognitiva en Campo con una tejedora triqui (56) y una bordadora de Tijaltepec en Patios Rurales (Hito 1.2)', {
     x: 0.8,
     y: 1.15,
     w: 11.5,
@@ -749,7 +749,7 @@ const C_CARD_BORDER = 'E5E7EB';// Borde Suave
       title: '3. Resultados Validados en Campo',
       subtitle: '100% tareas completadas sin ayuda',
       items: [
-        { label: 'Adopción del QR en 6-9 Segundos:', desc: 'Doña Francisca entendió el Hang-Tag al instante: “Para que nadie confunda la blusa de venados con ropa china”.' },
+        { label: 'Adopción del QR en 6-9 Segundos:', desc: 'Una bordadora de Tijaltepec entendió el Hang-Tag al instante: “Para que nadie confunda la blusa de venados con ropa china”.' },
         { label: 'Registro Completo en <3 Minutos:', desc: 'Campesinos completan el registro oral de café o textil en menos de 180 segundos.' },
         { label: 'Cero Fugas Criptográficas:', desc: 'Generación canónica SHA-256 local y firma Ed25519 automática sin exponer llaves privadas al usuario.' }
       ],
@@ -843,7 +843,7 @@ const C_CARD_BORDER = 'E5E7EB';// Borde Suave
   });
 
   slide.addNotes(
-    "Esta lámina demuestra que la ingeniería de Yucu no es teórica. Los estudiantes llevaron celulares a las comunidades, midieron tiempos con cronómetro e identificaron el miedo al error de Doña Reyna y Doña Francisca. Gracias a ello se creó el Modo Abuelo de 112px, con voz en Mixteco y etiquetas QR físicas que reducen la fricción cognitiva a cero."
+    "Esta lámina demuestra que la ingeniería de Yucu no es teórica. Los estudiantes llevaron celulares a las comunidades, midieron tiempos con cronómetro e identificaron el miedo al error de una tejedora triqui y una bordadora de Tijaltepec. Gracias a ello se creó el Modo Abuelo de 112px, con voz en Mixteco y etiquetas QR físicas que reducen la fricción cognitiva a cero."
   );
 }
 
@@ -1166,7 +1166,7 @@ const C_CARD_BORDER = 'E5E7EB';// Borde Suave
 
   slide.addText(
     [
-      { text: '• Maestras Tejedoras (Doña Reyna): ', options: { bold: true } },
+      { text: '• Maestras Tejedoras (triquis, Xochixtlán): ', options: { bold: true } },
       { text: 'Inspeccionan la tensión del telar, la autenticidad de tintes naturales (grana/añil) y los motivos sagrados.\n\n' },
       { text: '• Maestros Palenqueros (David Mendoza / Celso): ', options: { bold: true } },
       { text: 'Realizan el perlado tradicional con venencia para certificar pureza 100% de maguey.\n\n' },
@@ -1265,7 +1265,7 @@ const C_CARD_BORDER = 'E5E7EB';// Borde Suave
     {
       num: '03',
       title: 'VOZ Y TESTIMONIO',
-      desc: 'El comprador escucha a Doña Reyna hablar en su lengua materna Tu’un Savi, conociendo el significado ancestral de cada bordado.'
+      desc: 'El comprador escucha a la tejedora hablar en su lengua materna Tu’un Savi, conociendo el significado ancestral de cada bordado.'
     },
     {
       num: '04',
@@ -1678,9 +1678,9 @@ const C_CARD_BORDER = 'E5E7EB';// Borde Suave
       color: '991B1B',
       bg: 'FEE2E2',
       members: [
-        { role: 'Equipo Palma (San Juan Mixtepec):', name: 'Jazlynn Barrios Velasco (23620209)' },
-        { role: 'Investigador de Campo:', name: 'Isaías Brayan López Domínguez (23620031)' },
-        { role: 'Investigadores Asociados:', name: 'Rafael Ayala Coronel (23620203), Alex Victoria (23620281)' },
+        { role: 'Equipo Palma (San Juan Mixtepec):', name: 'Jazlynn Barrios Velasco' },
+        { role: 'Investigador de Campo:', name: 'Isaías Brayan López Domínguez' },
+        { role: 'Investigadores Asociados:', name: 'Rafael Ayala Coronel, Alex Victoria' },
         { role: 'Equipo Miel (San Juan Ñumí):', name: 'Luis Alexis Morales & Equipo UMIZOOMI (eduScrum)' }
       ]
     },

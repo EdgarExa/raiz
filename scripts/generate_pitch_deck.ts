@@ -569,7 +569,7 @@ const C_CARD_BORDER = 'E5E7EB';// Card Border
       activity: 'High-Altitude Specialty Coffee (1,800 MASL) & Textiles',
       pain: 'Roadside middlemen capture 82% of value; factory counterfeit shirts flood local markets.',
       market: 'Zero digital connectivity in mountain valleys. Urgent demand for tamper-proof origin seals.',
-      quote: 'Doña Francisca (64): “With this QR tag, people will no longer confuse our blouses with cheap knockoffs.”',
+      quote: 'Embroiderer, San Pablo Tijaltepec: “With this QR tag, people will no longer confuse our blouses with cheap knockoffs.”',
       tagColor: 'E0E7FF',
       tagText: '3730A3'
     }
@@ -728,7 +728,7 @@ const C_CARD_BORDER = 'E5E7EB';// Card Border
     color: C_DARK_BG,
   });
 
-  slide.addText('Cognitive Friction Testing with Doña Reyna (56) and Doña Francisca (64) in Rural Outdoor Patios (PR #30 & Issue #2)', {
+  slide.addText('Cognitive Friction Testing with a Triqui weaver (56) and an embroiderer from Tijaltepec in Rural Outdoor Patios (PR #30 & Issue #2)', {
     x: 0.8,
     y: 1.15,
     w: 11.5,
@@ -768,7 +768,7 @@ const C_CARD_BORDER = 'E5E7EB';// Card Border
       title: '3. Field-Validated Outcomes',
       subtitle: '100% task completion without assistance',
       items: [
-        { label: 'QR Adoption in 6-9 Seconds:', desc: 'Doña Francisca grasped the Hang-Tag instantly: “So nobody confuses our deer blouses with cheap factory knockoffs”.' },
+        { label: 'QR Adoption in 6-9 Seconds:', desc: 'An embroiderer from Tijaltepec grasped the Hang-Tag instantly: “So nobody confuses our deer blouses with cheap factory knockoffs”.' },
         { label: 'Full Harvest Registration < 3 Mins:', desc: 'Smallholders complete oral lot declarations in under 180 seconds via speech-to-text.' },
         { label: 'Zero Seed-Phrase Friction:', desc: 'Deterministic key derivation and canonical SHA-256 digest creation without exposing private keys to elderly users.' }
       ],
@@ -862,7 +862,7 @@ const C_CARD_BORDER = 'E5E7EB';// Card Border
   });
 
   slide.addNotes(
-    "This slide demonstrates that Yucu is deeply grounded in human-centered design. Our students brought mobile devices to mountain workshops, timed user tasks with stopwatches, and diagnosed the fear of breaking the phone in Doña Reyna and Doña Francisca. That directly drove our 112px tactile design, spoken Mixtec interface, and physical Hang-Tag QR codes that reduce cognitive friction to zero."
+    "This slide demonstrates that Yucu is deeply grounded in human-centered design. Our students brought mobile devices to mountain workshops, timed user tasks with stopwatches, and diagnosed the fear of breaking the phone in a Triqui weaver and an embroiderer from Tijaltepec. That directly drove our 112px tactile design, spoken Mixtec interface, and physical Hang-Tag QR codes that reduce cognitive friction to zero."
   );
 }
 
@@ -1189,7 +1189,7 @@ const C_CARD_BORDER = 'E5E7EB';// Card Border
 
   slide.addText(
     [
-      { text: '• Master Weavers (Doña Reyna): ', options: { bold: true } },
+      { text: '• Master Weavers (Triqui, Xochixtlán): ', options: { bold: true } },
       { text: 'Inspects tactile backstrap loom tension, natural dye purity (cochineal/indigo), and sacred iconography.\n\n' },
       { text: '• Master Palenqueros (Don Celso / David Mendoza): ', options: { bold: true } },
       { text: 'Performs bubble bead testing (perlita) and sensory distillation purity checks.\n\n' },
@@ -1289,7 +1289,7 @@ const C_CARD_BORDER = 'E5E7EB';// Card Border
     {
       num: '03',
       title: 'ORAL TESTIMONY',
-      desc: 'The consumer listens to Doña Reyna speak in her native Tu’un Savi language, validating the cultural meaning behind every motif.'
+      desc: 'The consumer listens to the weaver speak in her native Tu’un Savi language, validating the cultural meaning behind every motif.'
     },
     {
       num: '04',
@@ -1344,7 +1344,7 @@ const C_CARD_BORDER = 'E5E7EB';// Card Border
   });
 
   slide.addNotes(
-    "For the consumer in Lisbon or Tokyo, the experience is instant. They scan the garment tag and listen to Doña Reyna speak in her mother tongue, with the immutable Stellar hash proving this huipil took 9 months of genuine craftsmanship."
+    "For the consumer in Lisbon or Tokyo, the experience is instant. They scan the garment tag and listen to the weaver speak in her mother tongue, with the immutable Stellar hash proving this huipil took 9 months of genuine craftsmanship."
   );
 }
 
@@ -1702,9 +1702,9 @@ const C_CARD_BORDER = 'E5E7EB';// Card Border
       color: '991B1B',
       bg: 'FEE2E2',
       members: [
-        { role: 'Palm Brigade (San Juan Mixtepec):', name: 'Jazlynn Barrios Velasco (ID 23620209)' },
-        { role: 'Field Researcher:', name: 'Isaías Brayan López Domínguez (ID 23620031)' },
-        { role: 'Co-Researchers:', name: 'Rafael Ayala Coronel (23620203), Alex Victoria (23620281)' },
+        { role: 'Palm Brigade (San Juan Mixtepec):', name: 'Jazlynn Barrios Velasco' },
+        { role: 'Field Researcher:', name: 'Isaías Brayan López Domínguez' },
+        { role: 'Co-Researchers:', name: 'Rafael Ayala Coronel, Alex Victoria' },
         { role: 'Honey Brigade (San Juan Ñumí):', name: 'Luis Alexis Morales & eduScrum / UMIZOOMI Team' }
       ]
     },

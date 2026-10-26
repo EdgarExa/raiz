@@ -2,7 +2,7 @@
 
 #### 1. Participant Profile
 - **Community:** San Pablo Tijaltepec, Oaxaca
-- **Producer / Artisan:** Doña Francisca (64 years old, traditional weaver & embroiderer)
+- **Producer / Artisan:** Traditional weaver & embroiderer (name and age withheld at her request)
 - **Device used:** Android phone (6.5" screen) in natural daylight / open workshop
 - **Previous tech experience:** Basic keypad phone for voice calls; minimal touch screen experience; uses voice notes in WhatsApp with help of relatives.
 

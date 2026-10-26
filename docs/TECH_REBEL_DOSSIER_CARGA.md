@@ -45,7 +45,6 @@
 * **GitHub Repository:** `https://github.com/Open-Hub-Tec/yucu`
 * **Live Web App / PWA:** `https://ais-pre-oz33zstal3h64mvd2dn5ng-283290758794.us-east1.run.app`
 * **Landing Page Oficial:** `https://ais-pre-oz33zstal3h64mvd2dn5ng-283290758794.us-east1.run.app/?view=landing`
-* **Video Testimonial de Campo (MP4):** `https://github.com/user-attachments/assets/70d81a55-c3d1-48fd-a277-d099d70585d3`
 * **Especificación Oficial del MVP:** `https://github.com/Open-Hub-Tec/yucu/blob/main/docs/MVP_SPECIFICATION.md`
 
 ---

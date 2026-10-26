@@ -2,7 +2,7 @@
 
 #### 1. General Info
 - **Community:** Tlaxiaco, Oaxaca
-- **Artisan/Farmer:** Guadalupe Avendaño Reyes (family baker / artisanal producer)
+- **Artisan/Farmer:** Family baker / artisanal producer (name withheld)
 - **Native Language:** Spanish
 
 #### 2. The Economic Pain & Injustice (Real Numbers)

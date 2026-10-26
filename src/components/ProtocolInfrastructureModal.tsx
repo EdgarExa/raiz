@@ -749,7 +749,7 @@ export const ProtocolInfrastructureModal: React.FC<ProtocolInfrastructureModalPr
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">16 Artesanas</span>
                   </div>
                   <p className="text-[11px] text-gray-600 mb-1">Tejido de palma fina, tenates ceremoniales y sombreros de 2 nudos.</p>
-                  <span className="text-[10px] font-semibold text-gray-500">Participante: Doña Juana (68 años)</span>
+                  <span className="text-[10px] font-semibold text-gray-500">Participante: tejedora de palma, Mixtepec (68 años)</span>
                 </div>
 
                 <div className="bg-white border border-gray-200 p-3.5 rounded-2xl shadow-2xs">
@@ -776,7 +776,7 @@ export const ProtocolInfrastructureModal: React.FC<ProtocolInfrastructureModalPr
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">6 Tejedores</span>
                   </div>
                   <p className="text-[11px] text-gray-600 mb-1">Huipil Triqui y telar de cintura con tinte de grana cochinilla natural.</p>
-                  <span className="text-[10px] font-semibold text-gray-500">Participante: Doña Reyna (56 años)</span>
+                  <span className="text-[10px] font-semibold text-gray-500">Participante: tejedora triqui, Xochixtlán (56 años)</span>
                 </div>
 
                 <div className="bg-white border border-gray-200 p-3.5 rounded-2xl shadow-2xs">
@@ -785,7 +785,7 @@ export const ProtocolInfrastructureModal: React.FC<ProtocolInfrastructureModalPr
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">5 Artesanas</span>
                   </div>
                   <p className="text-[11px] text-gray-600 mb-1">Bordados en tela pepenada y prendas tradicionales mixtecas.</p>
-                  <span className="text-[10px] font-semibold text-gray-500">Participante: Doña Francisca (64 años)</span>
+                  <span className="text-[10px] font-semibold text-gray-500">Participante: bordadora, San Pablo Tijaltepec</span>
                 </div>
 
                 <div className="bg-white border border-gray-200 p-3.5 rounded-2xl shadow-2xs">
@@ -794,7 +794,7 @@ export const ProtocolInfrastructureModal: React.FC<ProtocolInfrastructureModalPr
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">3 Centros Acopio</span>
                   </div>
                   <p className="text-[11px] text-gray-600 mb-1">Chocolate artesanal de metate, báscula central y bodega municipal.</p>
-                  <span className="text-[10px] font-semibold text-gray-500">Participante: Doña Mercedes Cruz</span>
+                  <span className="text-[10px] font-semibold text-gray-500">Participante: productora de chocolate artesanal, Oaxaca</span>
                 </div>
               </div>
 

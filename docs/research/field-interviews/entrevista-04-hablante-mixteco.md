@@ -2,7 +2,7 @@
 
 ## 1. ¿Cuál es su nombre?
 
-**Respuesta:** Mi nombre es María Coronel Ayala.
+**Respuesta:** [Nombre omitido por privacidad.]
 
 ## 2. ¿Cuántos años tiene?
 

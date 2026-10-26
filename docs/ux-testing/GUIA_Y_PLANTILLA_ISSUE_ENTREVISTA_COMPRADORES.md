@@ -22,7 +22,7 @@ Ahora el objetivo es **cerrar el círculo de valor evaluando al comprador**:
 ## 📋 2. Preparación Antes de Salir a Campo
 
 ### Materiales Requeridos:
-1. **Smartphone con la aplicación Yucu abierta** o acceso web a la ficha de prueba de un producto (ej. Huipil Triqui de Doña Reyna, Café Arábica Pluma de Don Mateo, Miel Silvestre de Chalcatongo).
+1. **Smartphone con la aplicación Yucu abierta** o acceso web a la ficha de prueba de un producto (ej. Huipil Triqui de Xochixtlán, Café Arábica Pluma de Don Mateo, Miel Silvestre de Chalcatongo).
 2. **Etiqueta QR física de prueba (*Hang-Tag*):** Puedes imprimir una tarjeta o etiqueta con el código QR generado en el modal de etiquetas de Yucu.
 3. **Cronómetro o app de reloj** para registrar el tiempo por tarea (*Time on Task*).
 4. **Libreta de notas o teléfono** para registrar citas textuales (*Voice of the Customer*).

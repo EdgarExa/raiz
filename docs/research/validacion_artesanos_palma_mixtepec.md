@@ -4,15 +4,15 @@
 **Institución:** Tecnológico Nacional de México | Instituto Tecnológico de Tlaxiaco  
 **Materia:** Gestión de Proyectos de Software 2026 – Grupo: 7US  
 **Fecha:** Tlaxiaco, Oax., 30 de Septiembre de 2026  
-**Documento Oficial (PDF):** [`docs/research/EVIDENCIA_DOLOR_CAMPO_PALMA_MIXTEPEC.pdf`](./EVIDENCIA_DOLOR_CAMPO_PALMA_MIXTEPEC.pdf)
+**Documento Oficial (PDF):** `EVIDENCIA_DOLOR_CAMPO_PALMA_MIXTEPEC.pdf` *(archivo privado del equipo, ver [PRIVACIDAD.md](./PRIVACIDAD.md))*
 
 ---
 
 ## 👥 Equipo de Investigación Estudiantil
-* **23620209** – Jazlynn Barrios Velasco
-* **23620031** – Isaías Brayan López Dominguez
-* **23620203** – Rafael Ayala Coronel
-* **23620281** – Alex Antonio Victoria Vasquez
+* Jazlynn Barrios Velasco
+* Isaías Brayan López Dominguez
+* Rafael Ayala Coronel
+* Alex Antonio Victoria Vasquez
 
 ---
 

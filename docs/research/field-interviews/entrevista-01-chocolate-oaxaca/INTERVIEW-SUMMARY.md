@@ -1,32 +1,29 @@
 # Research Milestone 1.1 - Field Interview Entry
 
-**Status:** ✅ Complete - Interview conducted with Mercedes Cruz (Chocolate Artisan)
+**Status:** ✅ Complete - Interview conducted with an artisanal chocolate producer, Oaxaca
 
 ## Summary
 
 This PR completes the first field interview for **Research Milestone 1.1: Field Pain-Point & Economic Exploitation Validation with Indigenous Artisans & Farmers**.
 
-**Subject:** Mercedes Cruz - Artisanal Chocolate Producer (30+ years experience, 5th generation)
+**Subject:** Artisanal chocolate producer, Oaxaca (30+ years experience, 5th generation)
 
 **Location:** Oaxaca, Mexico
 
-**Key Finding:** Mercedes operates outside predatory middleman systems with direct distribution and reasonable payment timelines (15 days to 1 month).
+**Key Finding:** The producer operates outside predatory middleman systems with direct distribution and reasonable payment timelines (15 days to 1 month).
 
 ---
 
 ## Files Included
 
-1. **Interview Sheet (Markdown):** `research/milestone-1-1/field-interviews/entrevista-01-mercedes-cruz/README.md`
+1. **Interview Sheet (Markdown):** `docs/research/field-interviews/entrevista-01-chocolate-oaxaca/README.md`
    - General information about the artisan
    - Economic data and pain points
    - Payment & distribution model
    - Audio testimony references
 
 2. **Supporting Documents:** 
-   - PDF Interview Sheet: `ficha-entrevista-mercedes-cruz.pdf` (to be uploaded)
-   - Audio Testimonies: 2 MP4 files (to be uploaded)
-     - `ENT-01-mercedes-cruz-presentacion.mp4`
-     - `ENT-01-mercedes-cruz-additional.mp4`
+   - PDF interview sheet and 2 MP4 files: kept in the team's private archive (`.investigacion_privada/`), see [`PRIVACIDAD.md`](../../PRIVACIDAD.md)
 
 ---
 

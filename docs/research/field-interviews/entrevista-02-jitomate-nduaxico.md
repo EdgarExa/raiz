@@ -5,7 +5,7 @@
 | Campo | Valor |
 |-------|-------|
 | **Comunidad** | San Antonio Nduaxico, Mixteca Alta, Oaxaca (parcela con invernadero y riego) |
-| **Productor** | Josué Gerardo Sanjuan Sanjuan |
+| **Productor** | Productor de jitomate, San Antonio Nduaxico (nombre omitido) |
 | **Producto** | Productor de jitomate |
 | **Lenguas** | Español y Mixteco (Tu'un Savi) |
 
