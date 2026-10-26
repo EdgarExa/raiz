@@ -1,6 +1,6 @@
 # ADR-004: La artesana cobra en pesos, sin billetera
 
-* **Estado:** Fase 1 aceptada · Fase 2 en investigación
+* **Estado:** Fase 1 aceptada · Fase 2 aceptada solo en testnet (mainnet requiere resolver la sección 5)
 * **Fecha:** 26 de octubre de 2026
 * **Decide:** Mantenedores de Yucu Protocol (Open Hub TecNM, Tlaxiaco), después de una validación de arquitectura con revisión de código, contratos, integraciones, amenazas, privacidad y experiencia de uso
 * **Relación:** Ajusta [ADR-003](./ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md) (D5: llave en el teléfono de cada campesino) y retoma la tarjeta QR comunitaria de [ADR-002](./ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md).
@@ -53,11 +53,19 @@ Conclusión: **la fase 1 está validada; la fase 2, tal como estaba escrita, no 
 * Un libro por socia (fuera de la cadena) que revisa la asamblea: qué lote se registró a su nombre y cuánto se le pagó.
 * En la cadena no se publican pagos por socia.
 
-### Fase 2 — en investigación
+### Fase 2 — se construye en testnet
 
-Compradores del extranjero y compras protegidas en México. **No se construye hasta resolver lo siguiente:**
+Compradores del extranjero y compras protegidas. **Los estudiantes la construyen en testnet**, sin dinero real. Pasar a mainnet exige resolver las preguntas de la sección 5 (MicoPay, campo y opinión legal).
 
-* **Camino preferido — MicoPay con multifirma:** pedir a MicoPay que su inicio de sesión respete umbrales de cuentas multifirma, que el QR dure lo suficiente para bajar a la cabecera y que agregue una palabra clave para cobrar. Si lo acepta: escrow de Trustless Work → cuenta del grupo → retiro en efectivo en una tienda elegida por la artesana.
+**D6. Pago del comprador.** El comprador paga **USDC desde su propia billetera** (por ejemplo, Freighter). Una guía neutral explica cómo conseguir USDC, sin recomendar una casa de cambio. Yucu no integra la compra de USDC con Etherfuse, porque eso exige que Yucu se registre como organización (KYB), y no ve datos de identidad del comprador. Los compradores de México que prefieran pesos usan la fase 1.
+
+**D7. Escrow de Trustless Work (V1, testnet).** Hitos: **30 %** cuando el grupo marca "enviado" y el comprador aprueba, y **70 %** cuando el comprador confirma que recibió. El receptor es la cuenta multifirma del grupo. Cada equipo de estudiantes usa su propia API key de testnet en su `.env` local; el CI usa una versión simulada de la API. Los porcentajes y la comisión del protocolo (0.3 %) van en `src/config/protocolFees.ts`.
+
+**D8. Disputas.** Quien resuelve es un **parámetro de cada escrow**, nunca Yucu. En testnet se usa una cuenta multifirma de prueba que representa a la asamblea. La respuesta definitiva sale de #103. Si el comprador no aprueba, el grupo puede abrir una disputa **15 días** después de marcar "enviado" (plazo que aplica la app y se configura en un solo lugar).
+
+**D9. Salida a pesos detrás de un puerto.** Un puerto `PayoutPort` con versión simulada, para que la pantalla y el escrow no dependan del riel. Implementaciones:
+
+* **Camino preferido — MicoPay con multifirma:** contribuir a MicoPay (PR en su repositorio, coordinado con su equipo) y pedirle que su inicio de sesión respete umbrales de cuentas multifirma, que el QR dure lo suficiente para bajar a la cabecera y que agregue una palabra clave para cobrar. Si lo acepta: escrow de Trustless Work → cuenta del grupo → retiro en efectivo en una tienda elegida por la artesana.
 * **Plan B — cuenta invisible por artesana:** escrow *multi-release* que paga directo a una cuenta de cada artesana (por ejemplo, billeteras embebidas de Etherfuse, con llave que guarda ella). Solo si en campo se confirma que suficientes artesanas tienen celular propio, y RFC para cobrar por SPEI.
 * **Descartado:** una cuenta puente a nombre de una responsable. Pondría el dinero de varias socias a nombre de una persona (riesgo de abuso, fiscal y de prevención de lavado).
 * **Disputas:** las resuelve un tercero o una multifirma de la asamblea, nunca Yucu (#103).
@@ -76,8 +84,13 @@ Compradores del extranjero y compras protegidas en México. **No se construye ha
 * **#92 y #93:** el registro lo firman el grupo y el certificador; la referencia es por lote.
 * **#97:** la pantalla de firma muestra "Esperando a 1 compañera más".
 
-**Después (fase 2, si se resuelve la investigación)**
-* **#96** (escrow) y un nuevo puerto `PayoutPort` para el riel elegido.
+**Fase 2 (testnet)**
+* `PayoutPort` con versión simulada.
+* **#96** (escrow) con los hitos de D7 y las disputas de D8.
+* Contribución a MicoPay: inicio de sesión con cuentas multifirma.
+* Flujo "estoy en la tienda": la artesana avisa, las responsables firman y se genera el QR (el QR de MicoPay dura 15 minutos a propósito, por seguridad).
+* Billetera del comprador (por ejemplo Freighter) como implementación de `WalletPort`.
+* Guía neutral para conseguir USDC.
 * El contrato didáctico `fair_escrow` aclara que su modelo de "autoridad MicoPay" no corresponde a cómo funciona MicoPay.
 
 ## 5. Preguntas abiertas
