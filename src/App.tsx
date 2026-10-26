@@ -26,6 +26,53 @@ import { BuyerResearchIssueModal } from './components/BuyerResearchIssueModal';
 import { RaizLandingPage } from './components/RaizLandingPage';
 import { RaizAuthEngine, UserProfile } from './core/auth/RaizAuthEngine';
 import { RaizCore } from './core';
+import { chain, type ChainReceipt } from './core/chain';
+import { CryptoEngine } from './core/crypto/CryptoEngine';
+
+// PIN provisional mientras no exista la pantalla para crear y escribir el PIN (issue de WalletPort).
+// Solo lo acepta la billetera de demostración; la real debe pedírselo a la persona.
+const DEMO_WALLET_PIN = '0000';
+const SEAL_EVENT_TITLE = 'Emisión de Sello Digital Comunitario';
+
+/** Registra el lote con el patrón del ADR-003: preparar -> firmar en el teléfono -> enviar. */
+async function registerLotOnChain(lot: DigitalPassportLot): Promise<ChainReceipt> {
+  if (!(await chain.wallet.hasAccount())) {
+    await chain.wallet.createAccount(DEMO_WALLET_PIN);
+  }
+  const producerAddress = await chain.wallet.getAddress();
+  if (!producerAddress) throw new Error('No hay cuenta en este teléfono.');
+  const photoHashHex = await CryptoEngine.computeSha256(
+    JSON.stringify({ imageUrl: lot.imageUrl, evidence: lot.nomCompliance?.evidencePhotos ?? null })
+  );
+  const tx = await chain.lots.prepareRegisterLot({
+    code: lot.code,
+    producerAddress,
+    location: lot.location,
+    category: lot.productType,
+    variety: lot.variety ?? '',
+    volumeUnits: lot.volumeKg,
+    photoHashHex,
+  });
+  return chain.lots.submit(await chain.wallet.sign(tx, DEMO_WALLET_PIN));
+}
+
+/** Copia al lote el comprobante de la red (o de la demostración) para mostrarlo en el pasaporte. */
+function sealLotWithReceipt(lot: DigitalPassportLot, receipt: ChainReceipt): DigitalPassportLot {
+  return {
+    ...lot,
+    hash: `${receipt.txHash.slice(0, 10)}...${receipt.txHash.slice(-13)}`,
+    timeline: lot.timeline.map((event) =>
+      event.title === SEAL_EVENT_TITLE ? { ...event, dateAndLocation: `Hoy · Folio Digital #${receipt.ledger.toLocaleString()}` } : event
+    ),
+    nomCompliance: lot.nomCompliance && {
+      ...lot.nomCompliance,
+      stellarTxLedger: receipt.ledger,
+      stellarTxHash: receipt.txHash,
+      stellarTxSource: receipt.source,
+      immutableSealStatus: 'Sellado Inmutable',
+    },
+  };
+}
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavigationTab>('menu');
@@ -229,10 +276,8 @@ export default function App() {
   };
 
   // New lot creation after Step 3
-  const handleLotCreated = (customLot?: Partial<DigitalPassportLot>) => {
+  const handleLotCreated = async (customLot?: Partial<DigitalPassportLot>) => {
     const timestamp = new Date().toISOString();
-    const mockLedger = Math.floor(52490000 + Math.random() * 10000);
-    const mockTxHash = `0x${Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
 
     const prodType = customLot?.productType || selectedProductType || 'Café de Especialidad';
     const isTenate = prodType.toLowerCase().includes('tenate') || prodType.toLowerCase().includes('tanate');
@@ -451,13 +496,13 @@ export default function App() {
           color: '#032517'
         },
         {
-          title: 'Emisión de Sello Digital Comunitario',
-          dateAndLocation: `Hoy · Folio Digital #${mockLedger.toLocaleString()}`,
+          title: SEAL_EVENT_TITLE,
+          dateAndLocation: 'Hoy · Folio pendiente',
           color: '#a73918'
         }
       ],
       pricePerKg: isTenate ? 380.0 : isChapulines ? 280.0 : isMole ? 240.0 : isChocolate ? 180.0 : isPulque ? 115.0 : 115.0,
-      hash: mockTxHash.slice(0, 10) + '...' + mockTxHash.slice(-13),
+      hash: 'Pendiente',
       variety: isChapulines
         ? 'Chapulín de Milpa (Sphenarium purpurascens) Sazonado Tradicional'
         : isMole
@@ -503,17 +548,23 @@ export default function App() {
           : '100% Nativo de la Mixteca libre OGM',
         agroecologicalFreePesticides: true,
         evidencePhotos,
-        stellarTxLedger: mockLedger,
-        stellarTxHash: mockTxHash,
         stellarTimestamp: timestamp,
-        immutableSealStatus: 'Sellado Inmutable'
+        immutableSealStatus: 'Pendiente'
       }
     };
 
-    const newLot: DigitalPassportLot = {
+    const draftLot: DigitalPassportLot = {
       ...baseLot,
       ...(customLot || {})
     };
+
+    // Si el registro falla (sin señal, sin cuenta), el lote se guarda con el sello "Pendiente".
+    let newLot = draftLot;
+    try {
+      newLot = sealLotWithReceipt(draftLot, await registerLotOnChain(draftLot));
+    } catch (error) {
+      console.warn('No se pudo registrar el lote en la cadena; queda pendiente.', error);
+    }
 
     setLots((prev) => [newLot, ...prev]);
     setSelectedLot(newLot);

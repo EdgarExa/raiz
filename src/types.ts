@@ -1,3 +1,5 @@
+import type { ChainSource } from './core/chain/ports';
+
 export type NavigationTab = 'landing' | 'chat' | 'menu' | 'productos';
 
 export type AppLanguage = 'es' | 'mix';
@@ -119,6 +121,8 @@ export interface DigitalPassportLot {
     };
     stellarTxLedger?: number;
     stellarTxHash?: string;
+    /** Origen del sello: si es 'simulated', la UI muestra <DemoBadge />. */
+    stellarTxSource?: ChainSource;
     stellarTimestamp?: string;
     immutableSealStatus?: 'Sellado Inmutable' | 'Pendiente';
   };
@@ -194,6 +198,8 @@ export interface OrderReceipt {
   status: 'Pago Confirmado' | 'En preparación en taller';
   stellarTxLedger?: number;
   stellarTxHash?: string;
+  /** Origen de la transacción: si es 'simulated', la UI muestra <DemoBadge />. */
+  stellarTxSource?: ChainSource;
   trackingStep?: 1 | 2 | 3;
 }
 

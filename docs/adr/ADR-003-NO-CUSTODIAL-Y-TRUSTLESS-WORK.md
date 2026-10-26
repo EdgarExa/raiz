@@ -41,6 +41,17 @@ El servidor puede **preparar** y **pagar comisiones** (fee-bump, CAP-15) y **pat
 
 > Pendiente de validar en campo: si las llaves de acceso (*passkeys*) con billeteras inteligentes de Soroban son más usables que el PIN, y si son compatibles con el flujo de transacciones de Trustless Work. Hasta entonces, D5 es la base.
 
+Con la tarjeta de recuperación y un PIN nuevo, la persona recupera su cuenta en otro teléfono (`WalletPort.restoreAccount`). La tarjeta nunca se envía al servidor.
+
+**D6. El nodo certificador co-firma el registro de lotes.** `register_lot` en `lot_passport` exige dos firmas: la del productor y la del nodo certificador (el `admin` del contrato). El flujo es:
+
+1. `server.ts` prepara la transacción.
+2. El teléfono firma **solo la autorización del productor** (la *auth entry* de Soroban).
+3. El teléfono devuelve el XDR al servidor (`LotRegistryPort.submit`).
+4. El servidor agrega la firma del nodo certificador y envía la transacción.
+
+La llave del nodo certificador es **de la plataforma, no de una persona**, así que no contradice D1. Vive solo en el `.env` del servidor (`LOT_PASSPORT_ADMIN_SECRET`), nunca en el código ni en el cliente. El servidor nunca firma por el productor: sin su autorización, el contrato rechaza el registro.
+
 ## 3. Puertos de la arquitectura (`src/core/chain/`)
 
 La interfaz de usuario **solo** habla con estos puertos; nunca con el SDK de Stellar ni con Trustless Work directamente.
@@ -48,8 +59,16 @@ La interfaz de usuario **solo** habla con estos puertos; nunca con el SDK de Ste
 | Puerto | Responsabilidad | Implementación real | Implementación de demostración |
 |---|---|---|---|
 | `WalletPort` | Crear la cuenta en el dispositivo, desbloquear con PIN, **firmar** XDR. | Llave cifrada en IndexedDB | Firma simulada |
-| `LotRegistryPort` | Registrar y consultar lotes en `lot_passport`. | `server.ts` prepara, el teléfono firma | `SimulatedChain` |
-| `EscrowPort` | Crear, fondear, aprobar hitos y liberar escrows. | Trustless Work API | `SimulatedChain` |
+| `WalletPort` (recuperación) | Restaurar la cuenta con la tarjeta de recuperación y un PIN nuevo. | En el dispositivo | Acepta solo la tarjeta de demostración |
+| `LotRegistryPort` | Registrar y consultar lotes en `lot_passport`. | `server.ts` prepara, el teléfono firma la autorización del productor, el servidor co-firma como nodo certificador (D6) | `SimulatedChain` |
+| `EscrowPort` | Crear (devuelve el `escrowId`), fondear, aprobar hitos, liberar, abrir y resolver disputas. | Trustless Work API | `SimulatedChain` |
+
+Reglas del escrow que toda implementación debe respetar:
+
+* Los hitos suman 100 %.
+* Los roles de aprobar, liberar y resolver disputas son personas o la cooperativa, **nunca la plataforma**.
+* El ID del escrow solo se conoce después de enviar la creación: `submitCreate` lo devuelve (en Trustless Work es el `contractId`).
+* Al resolver una disputa, el porcentaje para el productor va de 0 a 100; el resto regresa al comprador.
 
 Cada resultado indica su origen (`source: 'testnet' | 'simulated'`). Si es `simulated`, la UI muestra `<DemoBadge />`. **Está prohibido inventar un hash o un número de ledger fuera de `SimulatedChain`.**
 

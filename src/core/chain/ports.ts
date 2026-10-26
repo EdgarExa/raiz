@@ -42,8 +42,17 @@ export interface WalletPort {
   createAccount(pin: string): Promise<{ address: string; recoveryCard: string }>;
   /** Dirección pública de la cuenta del dispositivo, o null si no hay. */
   getAddress(): Promise<string | null>;
-  /** Firma una transacción preparada. Pide el PIN; la llave nunca sale del dispositivo. */
+  /**
+   * Firma una transacción preparada. Pide el PIN; la llave nunca sale del dispositivo.
+   * Si la operación es de un contrato Soroban, firma la autorización (auth entry) de esta cuenta;
+   * si además la cuenta es la que envía, firma el sobre completo.
+   */
   sign(tx: UnsignedTransaction, pin: string): Promise<string>;
+  /**
+   * Recupera la cuenta en un teléfono nuevo con la tarjeta de recuperación en papel y un PIN nuevo.
+   * Falla si la tarjeta no es válida. La tarjeta nunca se envía al servidor.
+   */
+  restoreAccount(recoveryCard: string, newPin: string): Promise<{ address: string }>;
 }
 
 // ─────────────────────────────── Registro de lotes (lot_passport) ───────────────────────────────
@@ -70,6 +79,13 @@ export interface LotRecord {
   registeredAt: number;
 }
 
+/**
+ * `register_lot` exige DOS firmas: la del productor y la del nodo certificador (admin del contrato).
+ * Flujo: el servidor prepara la transacción -> el teléfono firma la autorización del productor ->
+ * `submit` la manda al servidor, que agrega la firma del nodo certificador y la envía a la red.
+ * La llave del nodo certificador es de la plataforma (no de una persona) y vive solo en el `.env`
+ * del servidor (ADR-003, D6). El servidor nunca firma por el productor.
+ */
 export interface LotRegistryPort {
   prepareRegisterLot(req: RegisterLotRequest): Promise<UnsignedTransaction>;
   submit(signedXdr: string): Promise<ChainReceipt>;
@@ -80,7 +96,7 @@ export interface LotRegistryPort {
 
 export interface EscrowMilestone {
   description: string;
-  /** Porcentaje del monto total que libera este hito. */
+  /** Porcentaje del monto total que libera este hito. Los hitos deben sumar 100. */
   percent: number;
 }
 
@@ -90,6 +106,10 @@ export interface CreateEscrowRequest {
   producerAddress: string;
   /** Cooperativa o persona que aprueba los hitos (no la plataforma). */
   approverAddress: string;
+  /** Quien firma la liberación del pago al productor (no la plataforma). */
+  releaseSignerAddress: string;
+  /** Quien resuelve una disputa, p. ej. la asamblea o la cooperativa (no la plataforma). */
+  disputeResolverAddress: string;
   amount: number;
   /** Activo de Stellar, p. ej. 'USDC'. */
   asset: string;
@@ -98,11 +118,27 @@ export interface CreateEscrowRequest {
 
 export type EscrowStatus = 'created' | 'funded' | 'milestone_approved' | 'released' | 'disputed' | 'refunded';
 
+/** Comprobante de la creación de un escrow: incluye su ID, que solo se conoce después de enviarla. */
+export interface EscrowCreatedReceipt extends ChainReceipt {
+  /** ID del contrato de escrow (en Trustless Work, el `contractId`). Se usa en las demás operaciones. */
+  escrowId: string;
+}
+
 export interface EscrowPort {
   prepareCreate(req: CreateEscrowRequest): Promise<UnsignedTransaction>;
+  /** Envía la creación firmada y devuelve el ID del escrow. */
+  submitCreate(signedXdr: string): Promise<EscrowCreatedReceipt>;
   prepareFund(escrowId: string, buyerAddress: string): Promise<UnsignedTransaction>;
   prepareApproveMilestone(escrowId: string, milestoneIndex: number, approverAddress: string): Promise<UnsignedTransaction>;
   prepareRelease(escrowId: string, releaseSignerAddress: string): Promise<UnsignedTransaction>;
+  /** Abre una disputa (comprador o productor). Congela el pago hasta que se resuelva. */
+  prepareDispute(escrowId: string, signerAddress: string): Promise<UnsignedTransaction>;
+  /**
+   * Resuelve una disputa: `producerPercent` (0 a 100) del saldo va al productor y el resto regresa
+   * al comprador. Solo lo firma el `disputeResolverAddress` del escrow.
+   */
+  prepareResolveDispute(escrowId: string, resolverAddress: string, producerPercent: number): Promise<UnsignedTransaction>;
+  /** Envía cualquier operación firmada que no sea la creación. */
   submit(signedXdr: string): Promise<ChainReceipt>;
   getStatus(escrowId: string): Promise<{ status: EscrowStatus; source: ChainSource }>;
 }
