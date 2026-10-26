@@ -7,7 +7,7 @@ Welcome to the technical documentation hub for **Yucu Protocol**. To maintain a 
 
 ## 🏛️ 1. Architecture & MVP Specifications
 
-* [**`ARCHITECTURE.md`**](./ARCHITECTURE.md): Comprehensive system architecture, 5-layer diagram, Trustless Work escrow adapter, and end-to-end user sequence diagram.
+* [**`ARCHITECTURE.md`**](./ARCHITECTURE.md): capas, puertos, quién firma qué y los flujos de la fase 1 y la fase 2 (ADR-003 y ADR-004).
 * [**`MVP_SPECIFICATION.md`**](./MVP_SPECIFICATION.md): Strict MVP scope definition for Tlaxiaco, Oaxaca (Traceability, Visibility, and Verifiable Provenance).
 * [**`PROTOCOL_SPECIFICATION.md`**](./PROTOCOL_SPECIFICATION.md): Formal cryptographic protocol specification on Soroban (schema registry, canonical hashing, Ed25519 keys).
 
