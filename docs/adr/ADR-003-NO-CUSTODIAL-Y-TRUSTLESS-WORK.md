@@ -43,13 +43,13 @@ El servidor puede **preparar** y **pagar comisiones** (fee-bump, CAP-15) y **pat
 
 Con la tarjeta de recuperación y un PIN nuevo, la persona recupera su cuenta en otro teléfono (`WalletPort.restoreAccount`). La tarjeta nunca se envía al servidor.
 
-**D6. El nodo certificador co-firma el registro de lotes.** `register_lot` en `lot_passport` exige dos firmas: la del nodo certificador (el `admin` del contrato) y la del productor. El flujo es:
+**D6. El nodo certificador co-firma el registro de lotes.** `register_lot` en `lot_passport` exige dos firmas: la del nodo certificador (el rol `certifier` del contrato) y la del productor. El flujo es:
 
 1. `server.ts` prepara la transacción y firma **solo la autorización del nodo certificador** (su *auth entry* de Soroban).
 2. La cuenta fuente de la transacción es la del productor: el teléfono firma el sobre con su PIN.
 3. El teléfono envía el XDR firmado (`LotRegistryPort.submit`). El servidor puede envolverlo en un fee-bump (D5) sin modificar la transacción interna.
 
-La llave del nodo certificador es **de la plataforma, no de una persona**, así que no contradice D1. Vive solo en el `.env` del servidor (`STELLAR_CERTIFIER_SECRET`), nunca en el código ni en el cliente. El servidor nunca firma por el productor: sin su firma, la transacción no es válida.
+La llave del nodo certificador es **de la plataforma, no de una persona**, así que no contradice D1. Vive solo en el `.env` del servidor (`STELLAR_CERTIFIER_SECRET`), nunca en el código ni en el cliente. Es una cuenta **distinta del `admin`** que despliega el contrato: el servidor nunca tiene la llave del admin, y si la del certificador se filtra, el admin la reemplaza con `set_certifier` sin volver a desplegar. El servidor nunca firma por el productor: sin su firma, la transacción no es válida.
 
 ## 3. Puertos de la arquitectura (`src/core/chain/`)
 

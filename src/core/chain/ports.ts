@@ -80,7 +80,7 @@ export interface LotRecord {
 }
 
 /**
- * `register_lot` exige DOS firmas: la del nodo certificador (admin del contrato) y la del productor.
+ * `register_lot` exige DOS firmas: la del nodo certificador (rol `certifier` del contrato) y la del productor.
  * Flujo (ADR-003, D6; issues #92 y #94): el servidor prepara la transacción y firma SOLO la
  * autorización del nodo certificador -> la cuenta fuente es la del productor, que firma el sobre en
  * su teléfono -> `submit` lo envía (el servidor puede envolverlo en un fee-bump sin modificarlo).
