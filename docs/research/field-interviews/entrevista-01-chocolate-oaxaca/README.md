@@ -2,7 +2,7 @@
 
 ## 1. General Info
 - **Community:** Oaxaca
-- **Artisan:** Mercedes Cruz
+- **Artisan:** Artisanal chocolate producer (name withheld)
 - **Activity:** Elaboración de chocolate artesanal
 - **Experience:** Más de 30 años; quinta generación familiar dedicada al chocolate
 - **Native Language:** Spanish
@@ -30,33 +30,31 @@
 - **Sales Channel:** Direct via parcel shipping (Estafeta/Correos) - **No coyote involvement**
 - **Payment Method:** Bank transfer
 - **Payment Timeline:** 15 days or maximum 1 month
-- **Status:** Mercedes does NOT work through exploitative middlemen
+- **Status:** The producer does NOT work through exploitative middlemen
 
 ---
 
 ## 4. Cultural Plagiarism & Counterfeiting
-- **Copies found:** None known to Mercedes Cruz to date
+- **Copies found:** None known to the producer to date
 - **Status:** Product appears protected from counterfeiting
 
 ---
 
 ## 5. Audio & Video Testimony
-- **Video File (MP4):** [`ENT-01-mercedes-cruz-presentacion.mp4`](https://github.com/user-attachments/assets/70d81a55-c3d1-48fd-a277-d099d70585d3)
-  - *Direct Video Link:* [Watch Interview Video (GitHub User Attachment)](https://github.com/user-attachments/assets/70d81a55-c3d1-48fd-a277-d099d70585d3)
-  - *Content: Mercedes introduces herself, explains her family trajectory and the origin of cacao and varieties she elaborates*
+- **Video File (MP4):** kept in the team's private archive (`.investigacion_privada/`), see [`PRIVACIDAD.md`](../../PRIVACIDAD.md)
+  - *Content: The producer introduces herself, explains her family trajectory and the origin of cacao and varieties she elaborates*
 
 ---
 
 ## 6. Key Findings & Insights
-✅ **Positive:** Mercedes has established a direct sales model without predatory intermediaries  
+✅ **Positive:** The producer has established a direct sales model without predatory intermediaries  
 ✅ **Strong:** 30+ years of experience and multigenerational expertise  
 ⚠️ **Data Gap:** Complete economic breakdown needed to validate against market exploitation  
 
 ---
 
 ## 7. Supporting Documents
-- **Interview Sheet (PDF):** [Download Interview Sheet (PDF)](https://github.com/user-attachments/files/32833838/ficha.de.entrevista.pdf)
-- **Video Attachment:** [Download / View MP4](https://github.com/user-attachments/assets/70d81a55-c3d1-48fd-a277-d099d70585d3)
+- **Interview Sheet (PDF) and video:** kept in the team's private archive (`.investigacion_privada/`), see [`PRIVACIDAD.md`](../../PRIVACIDAD.md)
 - **Audio Testimonies:** See section 5
 
 ---

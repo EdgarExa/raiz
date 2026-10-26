@@ -217,7 +217,7 @@ export const RaizLandingPage: React.FC<RaizLandingPageProps> = ({
                     className="bg-white hover:bg-stone-50 text-[#a73918] px-4 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2 border border-[#e5dfd5] active:scale-95 transition-all"
                   >
                     <span className="material-symbols-outlined text-[20px]">videocam</span>
-                    <span>Video de Campo (Mercedes Cruz)</span>
+                    <span>Testimonio de Campo</span>
                   </button>
                 )}
               </div>

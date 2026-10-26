@@ -1,0 +1,23 @@
+# Revisores obligatorios por área. Con la protección de `main`, un PR que toque
+# estas rutas necesita la aprobación de alguno de sus responsables.
+# Para sumar responsables (p. ej. un profesor o un estudiante líder de brigada),
+# agrega su usuario de GitHub al final de la línea correspondiente.
+
+# Por defecto: todo el repositorio
+*                               @josealfredo79
+
+# Dinero y contratos: un error aquí mueve fondos reales
+/contracts/                     @josealfredo79
+/src/core/blockchain/           @josealfredo79
+/src/core/settlement/           @josealfredo79
+/src/config/protocolFees.ts     @josealfredo79
+
+# Servidor (llave de Gemini, límites de uso)
+/server.ts                      @josealfredo79
+
+# CI y reglas del repositorio
+/.github/                       @josealfredo79
+
+# Datos de personas entrevistadas (ver docs/research/PRIVACIDAD.md)
+/docs/research/                 @josealfredo79
+/docs/ux-testing/               @josealfredo79

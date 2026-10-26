@@ -53,7 +53,7 @@ const CHAPTERS: Chapter[] = [
     highlights: [
       'Nodo de investigación y desarrollo de software comunitario',
       'Micro-becas y residencias a estudiantes por código y soporte en GitHub',
-      'Auditorías de usabilidad con adultos mayores (Doña Reyna, Doña Juana, Don Eutiquio)'
+      'Auditorías de usabilidad con adultos mayores (tejedoras de Xochixtlán y Mixtepec, productor de café)'
     ],
     visualTag: '🏫 TecNM Campus Tlaxiaco',
     bgGradient: 'from-cyan-950 via-slate-900 to-neutral-900'
@@ -97,16 +97,16 @@ const CHAPTERS: Chapter[] = [
   {
     id: 'fieldtestimony',
     title: '5. Testimonio en Video',
-    badge: 'Video Real MP4',
+    badge: 'Testimonio de Campo',
     durationSec: 26,
     icon: 'videocam',
     color: '#7c3aed',
-    headline: 'Evidencia Real en Video: Artesana Mercedes Cruz',
+    headline: 'Evidencia de Campo: Productora de Chocolate Artesanal',
     narration:
-      'Observa el testimonio real grabado en campo por los estudiantes. La artesana Mercedes Cruz, productora de chocolate tradicional de quinta generación en Oaxaca, explica cómo el registro directo y la autenticación protegen el valor del cacao contra intermediarios.',
+      'Observa el testimonio real grabado en campo por los estudiantes. Una productora de chocolate tradicional de quinta generación en Oaxaca, explica cómo el registro directo y la autenticación protegen el valor del cacao contra intermediarios.',
     highlights: [
       'Video real en MP4 grabado por brigadas estudiantiles del TecNM',
-      'Mercedes Cruz: chocolate artesanal sin intermediarios ni coyotes',
+      'Productora de chocolate artesanal sin intermediarios ni coyotes',
       'Respaldo audiovisual y documental integrado en repositorio GitHub'
     ],
     visualTag: '🎥 Grabación de Campo Directa',
@@ -144,20 +144,10 @@ export const ExplainerVideoModal: React.FC<ExplainerVideoModalProps> = ({
   const [playbackProgress, setPlaybackProgress] = useState<number>(0);
   const [isVoiceMuted, setIsVoiceMuted] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
-  const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
 
-  const videoElementRef = useRef<HTMLVideoElement>(null);
   const activeChapter = CHAPTERS[currentChapterIndex];
   const timerRef = useRef<any>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-
-  // Stop video when modal closes
-  useEffect(() => {
-    if (!isOpen && videoElementRef.current) {
-      videoElementRef.current.pause();
-      setIsVideoPlaying(false);
-    }
-  }, [isOpen]);
 
   // Handle Speech narration whenever chapter changes or playback state changes
   useEffect(() => {
@@ -318,16 +308,15 @@ export const ExplainerVideoModal: React.FC<ExplainerVideoModalProps> = ({
           /* REAL VIDEO PLAYER STAGE */
           <div className="flex-1 flex flex-col bg-black overflow-y-auto">
             <div className="relative w-full aspect-video bg-neutral-950 flex items-center justify-center">
-              <video
-                ref={videoElementRef}
-                src="/videos/entrevista_mercedes_cruz.mp4"
-                controls
-                playsInline
-                preload="metadata"
-                className="w-full h-full object-contain"
-                onPlay={() => setIsVideoPlaying(true)}
-                onPause={() => setIsVideoPlaying(false)}
-              />
+              {/* El video se retiró del repositorio público por privacidad (docs/research/PRIVACIDAD.md). */}
+              <div className="flex flex-col items-center gap-2 px-6 text-center text-neutral-300">
+                <span className="material-symbols-outlined text-[40px] text-purple-300">lock</span>
+                <p className="text-sm font-bold text-white">Video resguardado por privacidad</p>
+                <p className="text-xs max-w-md">
+                  La grabación se conserva en el archivo privado del equipo de investigación. Solo se publica con el
+                  consentimiento por escrito de la participante.
+                </p>
+              </div>
             </div>
 
             {/* Video Metadata Card */}
@@ -343,21 +332,13 @@ export const ExplainerVideoModal: React.FC<ExplainerVideoModalProps> = ({
                     </span>
                   </div>
                   <h3 className="text-base sm:text-lg font-black text-white mt-1">
-                    Entrevista: Doña Mercedes Cruz (Chocolate Artesanal de Oaxaca)
+                    Entrevista: productora de chocolate artesanal, Oaxaca
                   </h3>
                   <p className="text-xs text-neutral-300">
                     5ª generación familiar dedicada al chocolate de cacao fino de aroma. Documentado por la estudiante <strong>Yuliana Morales</strong> (Ing. en Sistemas Computacionales, TecNM Campus Tlaxiaco - PR #34).
                   </p>
                 </div>
 
-                <a
-                  href="/videos/entrevista_mercedes_cruz.mp4"
-                  download="entrevista_mercedes_cruz_chocolate_oaxaca.mp4"
-                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 shrink-0 transition-colors border border-white/15"
-                >
-                  <span className="material-symbols-outlined text-[16px]">download</span>
-                  <span>Descargar MP4</span>
-                </a>
               </div>
 
               {/* Research Insights from the Video */}

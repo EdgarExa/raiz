@@ -184,19 +184,19 @@ export const ResearchPresentationModal: React.FC<ResearchPresentationModalProps>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-emerald-700 font-bold">•</span>
-                  <span><strong>San Antonio Nduaxico:</strong> Invernaderos de jitomate saladette (Josué Gerardo Sanjuan).</span>
+                  <span><strong>San Antonio Nduaxico:</strong> Invernaderos de jitomate saladette (productor local).</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-emerald-700 font-bold">•</span>
-                  <span><strong>San Juan Mixtepec:</strong> Tejedoras de palma ancestral (Doña Juana, 68 años).</span>
+                  <span><strong>San Juan Mixtepec:</strong> Tejedoras de palma ancestral (tejedora de 68 años).</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-emerald-700 font-bold">•</span>
-                  <span><strong>San Pablo Tijaltepec:</strong> Bordado de pepenado en manta (Doña Francisca, 64 años).</span>
+                  <span><strong>San Pablo Tijaltepec:</strong> Bordado de pepenado en manta (bordadora de la comunidad).</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-emerald-700 font-bold">•</span>
-                  <span><strong>San José Xochixtlán:</strong> Huipil triqui en telar de cintura (Doña Reyna, 56 años).</span>
+                  <span><strong>San José Xochixtlán:</strong> Huipil triqui en telar de cintura (tejedora de 56 años).</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-emerald-700 font-bold">•</span>
@@ -307,11 +307,11 @@ export const ResearchPresentationModal: React.FC<ResearchPresentationModalProps>
       )
     },
 
-    // SLIDE 4: EL CONTRAEJEMPLO DE DOÑA MERCEDES CRUZ
+    // SLIDE 4: EL CONTRAEJEMPLO DE LA PRODUCTORA DE CHOCOLATE
     {
-      id: 'mercedes_cruz',
+      id: 'productora_chocolate',
       tag: 'RIGOR CIENTÍFICO & VALIDACIÓN',
-      title: 'El Contraejemplo Científico: Doña Mercedes Cruz',
+      title: 'El Contraejemplo Científico: productora de chocolate',
       subtitle: 'La prueba de que la venta directa y la certificación de origen eliminan el estrangulamiento',
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -325,7 +325,7 @@ export const ResearchPresentationModal: React.FC<ResearchPresentationModalProps>
                   Autosuficiente
                 </span>
               </div>
-              <h4 className="text-lg font-bold text-stone-100 mb-2">Doña Mercedes Cruz (Chocolate Artesanal)</h4>
+              <h4 className="text-lg font-bold text-stone-100 mb-2">Productora de chocolate artesanal, Oaxaca</h4>
               <p className="text-xs sm:text-sm text-stone-300 leading-relaxed mb-4">
                 Artesana de 5ª generación de chocolate de molienda en metate en Tlaxiaco. Durante la entrevista de campo, <strong>documentó que no sufre el abuso del coyote</strong>.
               </p>
@@ -356,7 +356,7 @@ export const ResearchPresentationModal: React.FC<ResearchPresentationModalProps>
                   <strong>1. El problema no es el producto:</strong> La calidad artesanal y agrícola mixteca tiene altísima demanda en mercados gastronómicos y de lujo.
                 </p>
                 <p>
-                  <strong>2. El puente tecnológico es la cura:</strong> Al dotar al artesano de <em>trazabilidad verificable, pasaporte digital y conexión directa</em>, adquiere de inmediato el poder de fijación de precio que a doña Mercedes le tomó 30 años forjar.
+                  <strong>2. El puente tecnológico es la cura:</strong> Al dotar al artesano de <em>trazabilidad verificable, pasaporte digital y conexión directa</em>, adquiere de inmediato el poder de fijación de precio que a esta productora le tomó 30 años forjar.
                 </p>
               </div>
             </div>

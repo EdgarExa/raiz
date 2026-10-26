@@ -3,7 +3,7 @@
 **Institución:** Instituto Tecnológico de Tlaxiaco (TecNM) – Carrera de Ingeniería en Sistemas Computacionales  
 **Asignatura:** Fundamentos de Ingeniería de Software (SCC-1007) – Asesor: Ing. José Alfredo Román Cruz  
 **Hito Drips / Roadmap:** Issue #1 – Research Milestone 1.1 (Validado & Resuelto vía PR #31)  
-**Documento Oficial:** [`docs/research/HITO_1.1_INVESTIGACION_CAMPO.pdf`](./HITO_1.1_INVESTIGACION_CAMPO.pdf)
+**Documento Oficial:** `HITO_1.1_INVESTIGACION_CAMPO.pdf` *(archivo privado del equipo, ver [PRIVACIDAD.md](./PRIVACIDAD.md))*
 
 ---
 
@@ -22,7 +22,7 @@ Validar directamente en territorio el sufrimiento real, la explotación económi
 ---
 
 ## 📊 Caso 1: Huipil Tradicional Triqui – San José Xochixtlán, Tlaxiaco
-* **Persona Entrevistada:** Doña Reyna (56 años, artesana tejedora en telar de cintura, lengua materna Triqui, región Triqui Alta).
+* **Persona Entrevistada:** Tejedora triqui (56 años, artesana tejedora en telar de cintura, lengua materna Triqui, región Triqui Alta).
 * **Pieza Analizada:** Huipil tradicional triqui bordado a mano con iconografía ancestral (flores, fauna de montaña y símbolos comunitarios).
 
 ### Números Reales de la Explotación:
@@ -63,7 +63,7 @@ Validar directamente en territorio el sufrimiento real, la explotación económi
 ---
 
 ## 📊 Caso 3: Jitomate de Invernadero – San Antonio Nduaxico
-* **Productor:** Josué Gerardo Sanjuan Sanjuan (Mixteco / Tu'un Savi).
+* **Productor:** Productor de jitomate de San Antonio Nduaxico (Mixteco / Tu'un Savi).
 * **Vulnerabilidad Crítica:** Perecedibilidad de 5 días de anaquel. Al no contar con precio de referencia ni canal directo, el intermediario impone precios castigados a sabiendas de que si no vende de inmediato, la cosecha se pierde.
 * **Borrado de Origen (Plagio Agrícola):** El lote se mezcla en la central de abastos eliminando la procedencia "Mixteca / Riego Limpio / Invernadero Comunitario".
 
@@ -78,7 +78,7 @@ Validar directamente en territorio el sufrimiento real, la explotación económi
 ---
 
 ## 📊 Caso 5: Sector Artesanal de la Palma – San Juan Mixtepec
-* **Documento Extendido y Evidencias:** [`docs/research/validacion_artesanos_palma_mixtepec.md`](./validacion_artesanos_palma_mixtepec.md) | [`docs/research/EVIDENCIA_DOLOR_CAMPO_PALMA_MIXTEPEC.pdf`](./EVIDENCIA_DOLOR_CAMPO_PALMA_MIXTEPEC.pdf)
+* **Documento Extendido y Evidencias:** [`docs/research/validacion_artesanos_palma_mixtepec.md`](./validacion_artesanos_palma_mixtepec.md) | `EVIDENCIA_DOLOR_CAMPO_PALMA_MIXTEPEC.pdf` *(archivo privado del equipo, ver [PRIVACIDAD.md](./PRIVACIDAD.md))*
 * **Población Afectada:** Mujeres artesanas adultas mayores (50 a 85 años), hablantes de Tu'un Savi (Mixteco) y español en San Juan Mixtepec, Tlaxiaco y Santiago Juxtlahuaca.
 * **Actividad:** Preparación, planchado de cinta y tejido a mano de palma (*Brahea dulcis*) para sombreros, tenates, petates y canastas.
 

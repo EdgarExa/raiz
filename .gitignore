@@ -12,3 +12,13 @@ bun.lock
 .aistudio/
 .vault_privado/
 .investigacion_privada/
+
+# Privacidad (docs/research/PRIVACIDAD.md): las evidencias de campo van en .investigacion_privada/
+docs/research/**/*.pdf
+docs/research/**/*.ogg
+docs/research/**/*.m4a
+docs/research/**/*.mp3
+docs/research/**/*.mp4
+docs/research/**/*.wav
+docs/ux-testing/**/*.pdf
+public/videos/

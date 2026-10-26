@@ -3,13 +3,13 @@
 **Institución:** Instituto Tecnológico de Tlaxiaco (TecNM) – Carrera de Ingeniería en Sistemas Computacionales  
 **Asignatura:** Fundamentos de Ingeniería de Software (SCC-1007) – Asesor: Ing. José Alfredo Román Cruz  
 **Hito Drips / Roadmap:** Issue #2 – UX Milestone 1.2 (Validado & Resuelto vía PR #30)  
-**Documento Oficial:** [`docs/ux-testing/HITO_1.2_PRUEBAS_USABILIDAD.pdf`](./HITO_1.2_PRUEBAS_USABILIDAD.pdf)
+**Documento Oficial:** `HITO_1.2_PRUEBAS_USABILIDAD.pdf` *(archivo privado del equipo, ver [PRIVACIDAD.md](../research/PRIVACIDAD.md))*
 
 ---
 
 ## 👥 Equipo de Evaluación de Usabilidad
 * **Investigadores:** Castro Rodríguez Charlie Jared, Reyez Hernández Dulce Maetzy, Brayan Armando Pérez González, José Manuel Hernández Paz (5º Semestre Grupo B).
-* **Participante Evaluada:** Doña Reyna (56 años, artesana tejedora en telar de cintura de San José Xochixtlán, hablante nativa de Triqui, experiencia tecnológica básica con smartphone).
+* **Participante Evaluada:** Tejedora triqui (56 años, artesana tejedora en telar de cintura de San José Xochixtlán, hablante nativa de Triqui, experiencia tecnológica básica con smartphone).
 * **Dispositivo de Prueba:** Teléfono móvil estándar Android simulando condiciones de campo rural.
 
 ---
@@ -55,9 +55,9 @@ Las pruebas de usabilidad y fricción se extendieron a **4 comunidades indígena
 
 | Test # | Comunidad | Sector / Producto | Sujeto Evaluado | Tiempo QR | Fricción Principal | Ficha Completa |
 | :---: | :--- | :--- | :--- | :---: | :--- | :--- |
-| **01** | **San Pablo Tijaltepec** | Bordado Tradicional | Doña Francisca (64 años) | **6 seg** | Miedo a desconfigurar el teléfono; QR adoptado para proteger blusas de venados contra ropa china. | [`TIJALTEPEC_FRICTION_AUDIT.md`](./TIJALTEPEC_FRICTION_AUDIT.md) |
-| **02** | **San José Xochixtlán** | Huipil Triqui en Telar | Doña Reyna (56 años) | **9 seg** | Vacilación inicial; confirmación de autoría y foto antes de datos técnicos. | *Este documento base* |
-| **03** | **San Juan Mixtepec** | Artesanías de Palma | Doña Juana (68 años) | **5 seg** | Preguntó si se borraba algo del teléfono; asoció el QR a defenderse del coyote. | [`TEST_02_MIXTEPEC_PALMA_UX.md`](./TEST_02_MIXTEPEC_PALMA_UX.md) |
+| **01** | **San Pablo Tijaltepec** | Bordado Tradicional | Bordadora | **6 seg** | Miedo a desconfigurar el teléfono; QR adoptado para proteger blusas de venados contra ropa china. | [`TIJALTEPEC_FRICTION_AUDIT.md`](./TIJALTEPEC_FRICTION_AUDIT.md) |
+| **02** | **San José Xochixtlán** | Huipil Triqui en Telar | Tejedora triqui (56 años) | **9 seg** | Vacilación inicial; confirmación de autoría y foto antes de datos técnicos. | *Este documento base* |
+| **03** | **San Juan Mixtepec** | Artesanías de Palma | Tejedora de palma (68 años) | **5 seg** | Preguntó si se borraba algo del teléfono; asoció el QR a defenderse del coyote. | [`TEST_02_MIXTEPEC_PALMA_UX.md`](./TEST_02_MIXTEPEC_PALMA_UX.md) |
 | **04** | **San Juan Ñumí** | Miel Virgen de Campanilla | 4 Apicultores (39-61 años) | **10-15 seg** | Confundieron el sello universitario con Hacienda; pidieron etiquetas para cubetas/tambos. | [`TEST_03_NUMI_MIEL_UX.md`](./TEST_03_NUMI_MIEL_UX.md) |
 
 ---

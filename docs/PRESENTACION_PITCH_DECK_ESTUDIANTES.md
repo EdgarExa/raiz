@@ -57,24 +57,24 @@
 
 ### Diapositiva 3B: Brigadas Estudiantiles: Casos de Dolor Real
 * **Brigada 1 – San Juan Mixtepec (Palma de Cinta):**
-  * **Alumnos Investigadores:** Jazlynn Barrios Velasco (23620209), Isaías Brayan López Domínguez (23620031), Rafael Ayala Coronel (23620203), Alex Antonio Victoria Vásquez (23620281) – 7º Semestre Grupo 7US.
+  * **Alumnos Investigadores:** Jazlynn Barrios Velasco, Isaías Brayan López Domínguez, Rafael Ayala Coronel, Alex Antonio Victoria Vásquez – 7º Semestre Grupo 7US.
   * **Hallazgo Crítico:** 15 horas de labor por sombrero fino. El coyote paga $15 a $30 MXN. Si no se acepta, no hay dinero para la comida del día. Desgaste visual severo (cataratas tempranas) y deformaciones articulares en dedos.
   * **Cita Testimonial:** *“Te dicen: 'Te la tomo a 20 pesos, si no, ahí se queda'... uno se la tiene que dar porque al menos es para el kilo de tortilla.”*
 * **Brigada 2 – San José Xochixtlán (Huipil Triqui):**
   * **Alumnos Investigadores:** Charlie Jared Castro Rodríguez, Dulce Maetzy Reyes Hernández, Brayan Armando Pérez González, José Manuel Hernández Paz – 5º Semestre Grupo B.
-  * **Hallazgo Crítico:** Doña Reyna (56 años) invierte 6 a 9 meses continuos (~180 hrs) y $2,500 MXN de hilos de su bolsillo. Clientes retrasan pagos meses o regatean a $8,000 MXN.
+  * **Hallazgo Crítico:** Una tejedora triqui de Xochixtlán (56 años) invierte 6 a 9 meses continuos (~180 hrs) y $2,500 MXN de hilos de su bolsillo. Clientes retrasan pagos meses o regatean a $8,000 MXN.
   * **Cita Testimonial:** *“Yo termino mi trabajo y tengo que esperar semanas o meses para recibir mi dinero... quieren descontarme por cualquier detalle.”*
 * **Brigada 3 – San Juan Ñumí (Miel Virgen Flor de la Mixteca):**
   * **Alumnos Investigadores:** Luis Alexis Morales & Equipo UMIZOOMI (eduScrum / Residencia TecNM).
   * **Hallazgo Crítico:** Entrevista con C. Rogelio Martínez Cruz (Presidente): Toda la producción de colmenas se anota en libretas viejas. Se requieren 3 días para transcribir listas para asambleas; hojas sueltas de cosecha se extravían; se han vendido lotes de miel dos veces a clientes por falta de inventario digital en tiempo real.
 * **Brigada 4 – San Pablo Tijaltepec y Santa María Yucuhiti (Café y Bordado):**
   * **Líder Estudiantil:** Nallely López García.
-  * **Hallazgo Crítico:** Doña Francisca (64 años) identificó de inmediato el valor de la etiqueta QR física para coserla a su blusa bordada de venados y blindarla legalmente contra copias industriales chinas.
+  * **Hallazgo Crítico:** Una bordadora de San Pablo Tijaltepec identificó de inmediato el valor de la etiqueta QR física para coserla a su blusa bordada de venados y blindarla legalmente contra copias industriales chinas.
 
 ---
 
 ### Diapositiva 3C: Auditoría de Usabilidad UX en Adultos Mayores
-* **Diagnóstico de Campo (Pruebas con Doña Reyna y Doña Francisca):**
+* **Diagnóstico de Campo (Pruebas con una tejedora triqui y una bordadora de San Pablo Tijaltepec):**
   1. **Tecnofobia Rural:** Vacilación inicial superior a 10 segundos ante pantallas táctiles: *“¿Se va a desconfigurar el teléfono si le pico?”*.
   2. **Reflejo Solar Extremo:** Textos delgados y grises son invisibles en patios abiertos bajo el sol de la Mixteca.
   3. **Desconfianza Institucional:** Sellos con tipografía fiscal asustan a los productores.
@@ -141,7 +141,7 @@
   * Ing. José Alfredo Román Cruz (Asesor Principal y Coordinador Open Hub TecNM).
   * Nallely López García (Líder Estudiantil del Proyecto y Residencia Profesional).
 * **Brigadas de Campo e Investigación:**
-  * **Palma (San Juan Mixtepec):** Jazlynn Barrios Velasco (23620209), Isaías Brayan López Domínguez (23620031), Rafael Ayala Coronel (23620203), Alex Antonio Victoria Vásquez (23620281) – 7º Semestre.
+  * **Palma (San Juan Mixtepec):** Jazlynn Barrios Velasco, Isaías Brayan López Domínguez, Rafael Ayala Coronel, Alex Antonio Victoria Vásquez – 7º Semestre.
   * **Textil Triqui (San José Xochixtlán):** Charlie Jared Castro Rodríguez, Dulce Maetzy Reyes Hernández, Brayan Armando Pérez González, José Manuel Hernández Paz – 5º Semestre.
   * **Miel Virgen (San Juan Ñumí):** Luis Alexis Morales & Equipo UMIZOOMI (eduScrum).
   * **Mezcal Artesanal (Yavi Tech):** Lewis Noé Hernández Mendoza, Nelson Macario Martínez Hernández, Luis Ángel García Santiago – 5º Semestre.

@@ -121,6 +121,12 @@ npm run lint && npm run test
 ```
 Ensure all tests pass cleanly with zero errors.
 
+If you touched `contracts/`, also run `cd contracts && cargo test --locked`.
+
+**Privacy (mandatory for research and UX work):** never commit names of interviewees, student control numbers, audio, video, photos of people or signed PDFs. Publish by role and community (e.g. *"rebozo artisan, Amoltepec"*) and keep evidence in `.investigacion_privada/`. Read [`docs/research/PRIVACIDAD.md`](./docs/research/PRIVACIDAD.md). The CI rejects PRs that add media files to `docs/research/`, `docs/ux-testing/` or `public/videos/`.
+
+`main` is protected: every change goes through a PR with green CI and one approving review from a code owner (see [`.github/CODEOWNERS`](./.github/CODEOWNERS)).
+
 ---
 
 ## 📚 7. Technical Documentation References

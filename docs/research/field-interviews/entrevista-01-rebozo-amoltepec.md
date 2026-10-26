@@ -2,7 +2,7 @@
 
 ## 1. General Info
 - **Community:** San Cristóbal Amoltepec, Oaxaca
-- **Artisan:** Doña Rosa (62 years old, backstrap weaver)
+- **Artisan:** Rebozo artisan, Amoltepec (62 years old, backstrap weaver)
 - **Native Language:** Tu'un Savi (Mixteco) - speaks basic Spanish
 - **Interview Date:** 2026-10-01
 - **Researcher:** Open Hub TecNM / Yucu Protocol
