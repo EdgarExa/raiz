@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppLanguage, DigitalPassportLot, ScreenView } from '../types';
 import { PROTOCOL_FEES } from '../config/protocolFees';
+import { DemoBadge } from './DemoBadge';
 
 interface DigitalPassportScreenProps {
   lot: DigitalPassportLot;
@@ -876,9 +877,12 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
                       <p className="text-[14px] font-bold text-[#032517]">
                         Estado: {lot.verifiedStatus}
                       </p>
-                      <span className="px-2 py-0.5 rounded-full bg-[#abcfb8] text-[#002113] text-[11px] font-bold">
-                        {lot.nomCompliance?.immutableSealStatus || 'Con Evidencia'}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-full bg-[#abcfb8] text-[#002113] text-[11px] font-bold">
+                          {lot.nomCompliance?.immutableSealStatus || 'Con Evidencia'}
+                        </span>
+                        <DemoBadge detail="La certificación y el sello en Stellar son de demostración hasta conectar un validador humano y la red." />
+                      </div>
                     </div>
                     <p className="text-[12px] text-[#424843] mt-0.5">
                       Evaluador: <strong className="text-[#1c1c18]">{lot.evaluatorOrg}</strong>

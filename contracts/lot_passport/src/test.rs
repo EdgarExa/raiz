@@ -13,7 +13,13 @@ fn setup<'a>() -> (Env, LotPassportContractClient<'a>, Address, Address) {
     (env, client, admin, producer)
 }
 
-fn registrar(env: &Env, c: &LotPassportContractClient, admin: &Address, producer: &Address, code: &str) {
+fn registrar(
+    env: &Env,
+    c: &LotPassportContractClient,
+    admin: &Address,
+    producer: &Address,
+    code: &str,
+) {
     c.register_lot(
         admin,
         &String::from_str(env, code),
@@ -36,7 +42,12 @@ fn el_lote_nace_sin_certificar_y_luego_se_certifica() {
     assert_eq!(lot.lab_cert_hash, None);
     assert_eq!(lot.producer, producer);
 
-    c.certify_lot(&admin, &String::from_str(&env, "MIEL-001"), &BytesN::from_array(&env, &[8u8; 32]), &87);
+    c.certify_lot(
+        &admin,
+        &String::from_str(&env, "MIEL-001"),
+        &BytesN::from_array(&env, &[8u8; 32]),
+        &87,
+    );
     let lot = c.get_lot(&String::from_str(&env, "MIEL-001"));
     assert!(lot.certified);
     assert_eq!(lot.certification_score, 87);
@@ -59,7 +70,12 @@ fn solo_el_certificador_registra_y_certifica() {
     assert_eq!(res, Err(Ok(Error::Unauthorized)));
 
     registrar(&env, &c, &admin, &producer, "MIEL-002");
-    let res = c.try_certify_lot(&intruso, &String::from_str(&env, "MIEL-002"), &BytesN::from_array(&env, &[8u8; 32]), &99);
+    let res = c.try_certify_lot(
+        &intruso,
+        &String::from_str(&env, "MIEL-002"),
+        &BytesN::from_array(&env, &[8u8; 32]),
+        &99,
+    );
     assert_eq!(res, Err(Ok(Error::Unauthorized)));
 }
 
@@ -79,7 +95,17 @@ fn no_se_duplica_ni_se_recertifica() {
     );
     assert_eq!(res, Err(Ok(Error::LotAlreadyExists)));
 
-    c.certify_lot(&admin, &String::from_str(&env, "MIEL-003"), &BytesN::from_array(&env, &[8u8; 32]), &80);
-    let res = c.try_certify_lot(&admin, &String::from_str(&env, "MIEL-003"), &BytesN::from_array(&env, &[9u8; 32]), &95);
+    c.certify_lot(
+        &admin,
+        &String::from_str(&env, "MIEL-003"),
+        &BytesN::from_array(&env, &[8u8; 32]),
+        &80,
+    );
+    let res = c.try_certify_lot(
+        &admin,
+        &String::from_str(&env, "MIEL-003"),
+        &BytesN::from_array(&env, &[9u8; 32]),
+        &95,
+    );
     assert_eq!(res, Err(Ok(Error::AlreadyCertified)));
 }

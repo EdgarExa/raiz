@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DemoBadge } from './DemoBadge';
 import {
   COUNTRY_CONFIGS,
   HybridPaymentIntent,
@@ -88,6 +89,7 @@ export const HybridArchitectureModal: React.FC<HybridArchitectureModalProps> = (
                 <h3 className="text-[17px] font-black tracking-tight text-white">
                   Arquitectura Híbrida Trilateral
                 </h3>
+                <DemoBadge detail="Tipos de cambio fijos y folios SPEI generados localmente; no hay conversión real a pesos." />
                 <span className="text-[9.5px] bg-amber-400 text-neutral-950 font-black px-2 py-0.5 rounded-full uppercase">
                   MX · BO · BR
                 </span>

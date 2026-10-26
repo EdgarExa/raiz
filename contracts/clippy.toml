@@ -1,0 +1,3 @@
+# Las funciones públicas de un contrato Soroban reciben cada argumento de la transacción;
+# 8-9 parámetros es normal (p. ej. create_and_fund_order, create_attestation).
+too-many-arguments-threshold = 10

@@ -10,8 +10,8 @@
 //! fuera de la cadena no se puede obligar desde aquí; para eso se necesita un contrato escrito
 //! con el comprador.
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, symbol_short, token, Address, BytesN,
-    Env, String,
+    contract, contracterror, contractimpl, contracttype, symbol_short, token, Address, BytesN, Env,
+    String,
 };
 
 #[contracterror]
@@ -54,8 +54,12 @@ const TTL_EXTEND_TO: u32 = 500_000;
 
 fn save_item(env: &Env, key: &DataKey, item: &CulturalHeritageItem) {
     env.storage().persistent().set(key, item);
-    env.storage().persistent().extend_ttl(key, TTL_THRESHOLD, TTL_EXTEND_TO);
-    env.storage().instance().extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
+    env.storage()
+        .persistent()
+        .extend_ttl(key, TTL_THRESHOLD, TTL_EXTEND_TO);
+    env.storage()
+        .instance()
+        .extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
 }
 
 #[contract]
@@ -78,7 +82,9 @@ impl PerpetualRoyaltiesContract {
         env.storage()
             .instance()
             .set(&DataKey::CommunalTequioTreasury, &communal_treasury);
-        env.storage().instance().extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
+        env.storage()
+            .instance()
+            .extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
         Ok(())
     }
 
@@ -110,10 +116,8 @@ impl PerpetualRoyaltiesContract {
         };
         save_item(&env, &item_key, &item);
 
-        env.events().publish(
-            (symbol_short!("artisan"), symbol_short!("reg")),
-            item_id,
-        );
+        env.events()
+            .publish((symbol_short!("artisan"), symbol_short!("reg")), item_id);
         Ok(())
     }
 
@@ -170,10 +174,7 @@ impl PerpetualRoyaltiesContract {
     }
 
     /// Consulta los datos de una pieza.
-    pub fn get_item(
-        env: Env,
-        item_id: BytesN<32>,
-    ) -> Result<CulturalHeritageItem, RoyaltyError> {
+    pub fn get_item(env: Env, item_id: BytesN<32>) -> Result<CulturalHeritageItem, RoyaltyError> {
         env.storage()
             .persistent()
             .get(&DataKey::Item(item_id))

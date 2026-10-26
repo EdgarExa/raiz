@@ -2,7 +2,7 @@ name: Yucu Protocol CI Quality & Integrity Gate
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -19,10 +19,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
+          cache: npm
 
+      # npm ci instala exactamente lo que dice package-lock.json (igual para todos)
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Typecheck and Lint
         run: npm run lint
@@ -66,12 +68,31 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      # Versión fija: un Rust nuevo puede traer lints de clippy que rompan el CI sin cambios en el código.
       - name: Setup Rust Toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.94.0
         with:
-          targets: wasm32-unknown-unknown
+          targets: wasm32v1-none
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts
+
+      - name: Check formatting (cargo fmt)
+        working-directory: contracts
+        run: cargo fmt --all -- --check
+
+      - name: Lint (cargo clippy)
+        working-directory: contracts
+        run: cargo clippy --locked --all-targets -- -D warnings
 
       - name: Run Contract Tests (Soroban)
-        run: |
-          cd contracts
-          cargo test --locked
+        working-directory: contracts
+        run: cargo test --locked
+
+      # Compila lo que realmente se despliega en Stellar
+      - name: Build WASM (wasm32v1-none)
+        working-directory: contracts
+        run: cargo build --locked --release --target wasm32v1-none
