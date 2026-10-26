@@ -38,10 +38,11 @@ Conceived in the mountainous Mixteca Highlands of Oaxaca (**Heroica Ciudad de Tl
 | PWA (React + Vite, service worker) | ✅ Real | Installable app; assets cached for offline use. |
 | Offline storage (`src/utils/offlineStorage.ts`) | ✅ Real | Saves lots in IndexedDB (localStorage fallback). |
 | Chat, image analysis, audio transcription (`server.ts`) | ✅ Real, needs `GEMINI_API_KEY` | Calls Gemini. Without a key it returns responses marked `isSimulated: true`. |
-| Soroban contracts (`contracts/`) | 🟡 Real, **not deployed** | 4 contracts with 20 passing tests (`cd contracts && cargo test`). No testnet/mainnet IDs yet. |
+| Soroban contracts (`contracts/`) | ✅ Real, **deployed on testnet** | 4 contracts with 20 passing tests. IDs in [`contracts/deployments/testnet.json`](./contracts/deployments/testnet.json): lot_passport [`CAPXWY…`](https://stellar.expert/explorer/testnet/contract/CAPXWYKU5GESGPZ57LNRCLOVHSBGDOZQVAWC6CWIQ655RSZ2ZGZI2BO7), attestation_registry [`CAIYZN…`](https://stellar.expert/explorer/testnet/contract/CAIYZNZIFHFU357CVFC5UF2YNHBI7KPVORPOGHOBN2HBI4EDQQGIUNHT), perpetual_royalties [`CCNPTD…`](https://stellar.expert/explorer/testnet/contract/CCNPTDDVW3RW53YQACZ2UFFHVLUJXNCMZ3TSK7TB552SUU6DDL26FRKU). `fair_escrow` [`CCVDEQ…`](https://stellar.expert/explorer/testnet/contract/CCVDEQ64Q4PJX73HLLPL3OYXLW4ARA652I34ZYIDQDXYQDQVJNLFSAQB) is **teaching material only**; real escrow is Trustless Work ([ADR-003](./docs/adr/ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md)). Not on mainnet. |
+| Chain ports (`src/core/chain/`) | 🟡 Architecture ready | Non-custodial ports (`WalletPort`, `LotRegistryPort`, `EscrowPort`): prepare → user signs on device → submit. Only the demo implementation exists; the real ones are student issues. |
 | `src/core/blockchain/SorobanAdapter.ts` | 🔴 Simulated | Builds fake tx hashes and ledger numbers; does not call the network. |
 | `src/core/blockchain/StellarLiveClient.ts` | 🟡 Partial | Real Stellar SDK objects, but contract invocations return `simulated: true`; not used by the UI. |
-| `src/core/blockchain/TrustlessWorkEscrowAdapter.ts` | 🔴 Simulated | Escrows live in an in-memory `Map`; no deposit happens. |
+| `src/core/blockchain/TrustlessWorkEscrowAdapter.ts` | 🔴 Simulated | Escrows live in an in-memory `Map`; no deposit happens. To be replaced by a real `EscrowPort` on the Trustless Work API. |
 | `src/core/settlement/HybridSettlementOrchestrator.ts` | 🔴 Simulated | Fixed exchange rates; SPEI folios generated locally. No real MXN on/off-ramp. |
 | `src/core/ai/RaizAIOracles.ts` | 🔴 Simulated | Rule-based: fixed quality scores (e.g. 88.75) and EUDR always "no deforestation"; no satellite data. |
 | `src/core/agents/YucuAgentSwarm.ts` | 🔴 Simulated | Returns fixed `CERTIFIED` results. |
