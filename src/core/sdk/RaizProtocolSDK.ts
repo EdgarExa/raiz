@@ -147,7 +147,7 @@ export class RaizProtocolSDK {
         {
           uid: '0x06_INDIP',
           name: 'IndigenousCollectiveIPAttestation',
-          description: 'Ancestral cultural heritage defense under 2022 Federal Law, WeaveGrammarDigest, anti-biopiracy shield, and perpetual 8%+2% royalty',
+          description: 'Ancestral cultural heritage defense under 2022 Federal Law, WeaveGrammarDigest, anti-biopiracy shield, and perpetual 10%+2% royalty',
           revocable: false,
           issuer: 'IndigenousIPGuardianAgent + Communal Assembly',
         },

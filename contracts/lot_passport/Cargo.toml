@@ -1,13 +1,16 @@
 [package]
 name = "lot-passport"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
+authors = ["Open Hub TecNM - Instituto Tecnológico de Tlaxiaco"]
+license = "MIT"
+description = "Pasaporte digital de lote: origen verificable sin datos personales en la cadena"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-soroban-sdk = "21.0.0"
+soroban-sdk = { workspace = true }
 
 [dev-dependencies]
-soroban-sdk = { version = "21.0.0", features = ["testutils"] }
+soroban-sdk = { workspace = true, features = ["testutils"] }

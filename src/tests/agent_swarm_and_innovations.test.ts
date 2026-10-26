@@ -38,7 +38,7 @@ async function runTests() {
   });
   assert(ipResult.status === 'CERTIFIED', 'Escudo de propiedad colectiva comunitaria emitido');
   assert(ipResult.schemaId === '0x06_INDIGENOUS_IP', 'Esquema correcto 0x06_INDIGENOUS_IP');
-  assert(ipResult.evidenceSummary.includes('8% creador + 2% Tequio'), 'Regalía perpetua comunal programada');
+  assert(ipResult.evidenceSummary.includes('10% creador + 2% Tequio'), 'Regalía perpetua comunal programada');
 
   console.log('\n📍 3. AGENTE DE RESOLUCIÓN FINANCIERA MULTILATERAL');
   const settlementResult = await YucuAgentSwarm.runSettlementSolverAgent({

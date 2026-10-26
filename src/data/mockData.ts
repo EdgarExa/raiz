@@ -248,10 +248,10 @@ export const INITIAL_VERIFIED_LOTS: DigitalPassportLot[] = [
       immutableSealStatus: 'Sellado Inmutable'
     },
     royaltyClause: {
-      percentage: 8,
+      percentage: 10,
       beneficiary: 'Don Efraín Bautista Santiago',
-      smartContractPolicy: 'Soroban Perpetual Royalty Standard (8% reventas secundarias / 2% fondo comunal)',
-      accumulatedRoyaltiesMxn: 3420.0,
+      smartContractPolicy: 'Soroban Perpetual Royalty Standard (10% reventas secundarias / 2% fondo comunal)',
+      accumulatedRoyaltiesMxn: 4275.0,
       secondarySalesCount: 3
     }
   },
@@ -438,25 +438,25 @@ export const MOCK_PAYMENTS: PaymentRecord[] = [
   {
     id: 'pay-royalty-1',
     date: '05 Nov 2024',
-    concept: 'Regalía Perpetua (8%) · Reventa Café Tostado de Especialidad en CDMX',
+    concept: 'Regalía Perpetua (10%) · Reventa Café Tostado de Especialidad en CDMX',
     lotCode: 'MX-2024-740',
-    amount: 1840.0,
+    amount: 2300.0,
     status: 'Disponible',
     buyer: 'Café de Origen Roma Norte (Reventa Lote Fraccionado)',
     paymentType: 'Regalía Perpetua',
-    royaltyRate: '8% s/ $23,000 MXN',
+    royaltyRate: '10% s/ $23,000 MXN',
     resaleOrigin: 'Boutique Tostadora Roma Norte, CDMX'
   },
   {
     id: 'pay-royalty-2',
     date: '18 Nov 2024',
-    concept: 'Regalía Perpetua (8%) · Reventa Lote Café Tostado en Monterrey',
+    concept: 'Regalía Perpetua (10%) · Reventa Lote Café Tostado en Monterrey',
     lotCode: 'MX-2024-740',
-    amount: 1580.0,
+    amount: 1975.0,
     status: 'Disponible',
     buyer: 'Barra de Especialidad Sierra Madre',
     paymentType: 'Regalía Perpetua',
-    royaltyRate: '8% s/ $19,750 MXN',
+    royaltyRate: '10% s/ $19,750 MXN',
     resaleOrigin: 'Barra Sierra Madre, San Pedro Garza García'
   },
   {

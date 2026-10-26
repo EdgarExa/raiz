@@ -36,14 +36,11 @@ export class YucuAgentSwarm {
     community: string;
   }): Promise<AgentAttestationProof> {
     const isMixteco = params.dialect === 'tuun_savi';
-    const digest = CryptoEngine.generateCommunityDigest({
-      lotCode: `YUC-${Date.now().toString().slice(-6)}`,
-      producerAddress: 'GPRODUCER_RURAL_COMMUNITY_SAVI',
-      productType: 'coffee',
-      quantityKg: 120,
+    const digest = await CryptoEngine.generateCommunityDigest({
+      producerName: 'productor-seudonimo',
+      community: params.community,
       timestamp: Date.now(),
-      location: params.community,
-      notes: params.audioTranscript,
+      processStagesSummary: params.audioTranscript,
     });
 
     return {
@@ -132,7 +129,7 @@ export class YucuAgentSwarm {
 
   /**
    * 5. Agente Guardián de Patrimonio Cultural Indígena & Regalías Perpetuas
-   * Innovación: Blindaje contra plagio de marcas transnacionales y retención del 8% artesano + 2% Tequio
+   * Innovación: Blindaje contra plagio de marcas transnacionales y retención del 10% artesano + 2% Tequio
    */
   public static async runIndigenousIPGuardianAgent(params: {
     artisanCommunity: string;
@@ -148,7 +145,7 @@ export class YucuAgentSwarm {
       attestationDigest: `0x_cultural_shield_${params.artisanCommunity.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`,
       status: isCompliant ? 'CERTIFIED' : 'REJECTED',
       metricScore: isCompliant ? 100.0 : 0.0,
-      evidenceSummary: `Diseño tradicional registrado a nombre de la asamblea comunal de ${params.artisanCommunity}. Licencia comunitaria no exclusiva y regalía perpetua (8% creador + 2% Tequio) programada en Soroban.`,
+      evidenceSummary: `Diseño tradicional registrado a nombre de la asamblea comunal de ${params.artisanCommunity}. Licencia comunitaria no exclusiva y regalía perpetua (10% creador + 2% Tequio) programada en Soroban.`,
       timestamp: new Date().toISOString(),
       standardsCompliance: [
         'Ley Federal de Protección del Patrimonio Cultural de los Pueblos Indígenas (2022)',

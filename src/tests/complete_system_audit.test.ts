@@ -1,3 +1,4 @@
+import { FairTradeEngine } from '../core/policy/FairTradeEngine';
 /**
  * SUITE INTEGRAL DE PRUEBAS DE PUNTA A PUNTA (E2E)
  * Sistema Yucu: UI, Usabilidad Rural, Flujos de Negocio, Criptografía y Stellar
@@ -141,11 +142,12 @@ async function runCompleteSystemAudit() {
 
   // Simulación de reventa en una boutique o cafetería de especialidad en EE.UU. o Europa
   const montoVentaMxn = 12000; // $12,000 MXN por un huipil ceremonial
-  const regaliaCampesina = montoVentaMxn * 0.08; // 8%
-  const fondoTequio = montoVentaMxn * 0.02;      // 2%
-  const liquidezVendedor = montoVentaMxn * 0.90; // 90%
+  const reparto = FairTradeEngine.calculateSecondaryRoyalty(montoVentaMxn); // porcentajes oficiales
+  const regaliaCampesina = reparto.artisanRoyaltyMxn; // 10%
+  const fondoTequio = reparto.cooperativeFundMxn;     // 2%
+  const liquidezVendedor = reparto.sellerNetMxn;      // 88%
 
-  check(regaliaCampesina === 960, `Regalía campesina del 8% liquidada con exactitud ($960 MXN de $12,000 MXN)`);
+  check(regaliaCampesina === 1200, `Regalía de la artesana del 10% liquidada con exactitud ($1,200 MXN de $12,000 MXN)`);
   check(fondoTequio === 240, `Aporte al Tequio Comunal del 2% acreditado ($240 MXN para obras del pueblo)`);
   check(regaliaCampesina + fondoTequio + liquidezVendedor === montoVentaMxn, 'Conservación estricta del 100% del dinero sin comisiones ocultas');
 

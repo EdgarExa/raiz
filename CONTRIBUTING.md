@@ -125,7 +125,7 @@ Ensure all tests pass cleanly with zero errors.
 
 ## 📚 7. Technical Documentation References
 
-- [Official Validated MVP Specification (Tlaxiaco)](./docs/MVP_SPECIFICATION.md)
+- [MVP Specification — draft (Tlaxiaco)](./docs/MVP_SPECIFICATION.md)
 - [System Architecture & Sequence Diagram](./docs/ARCHITECTURE.md)
 - [Protocol Specification (Stellar & Soroban)](./docs/PROTOCOL_SPECIFICATION.md)
 - [ADR-001: Trustless Work Escrow Adoption](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md)

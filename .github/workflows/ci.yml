@@ -47,7 +47,7 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Verify Contracts Syntax & Workspace
+      - name: Run Contract Tests (Soroban)
         run: |
           cd contracts
-          cargo check
+          cargo test --locked

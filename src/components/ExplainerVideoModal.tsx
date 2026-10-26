@@ -122,10 +122,10 @@ const CHAPTERS: Chapter[] = [
     color: '#be123c',
     headline: '10% de Regalías Perpetuas y Fondo de Tequio Comunal',
     narration:
-      'A través de contratos inteligentes en Soroban, cada pieza artesanal y lote conserva un 8% de regalías perpetuas para la creadora en reventas secundarias, y un 2% automático para el fondo de obras comunitarias Tequio Comunal de Tlaxiaco.',
+      'A través de contratos inteligentes en Soroban, cada pieza artesanal y lote conserva un 10% de regalías perpetuas para la creadora en reventas secundarias, y un 2% automático para el fondo de obras comunitarias Tequio Comunal de Tlaxiaco.',
     highlights: [
       'Smart contracts en Rust/WASM para protección de artesanas textiles',
-      '8% automático para la creadora en reventas en galerías y boutiques',
+      '10% automático para la creadora en reventas en galerías y boutiques',
       '2% acreditado a la tesorería comunal de la asamblea para infraestructura'
     ],
     visualTag: '💎 Blindaje On-Chain',

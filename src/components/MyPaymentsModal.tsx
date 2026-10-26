@@ -1,3 +1,4 @@
+import { PROTOCOL_FEES } from '../config/protocolFees';
 import React, { useState, useEffect } from 'react';
 import { MOCK_PAYMENTS } from '../data/mockData';
 import { SupportedCountry, COUNTRY_CONFIGS } from '../core/settlement/HybridSettlementOrchestrator';
@@ -688,7 +689,7 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
             <div>
               <p className="font-bold">Regalías Perpetuas por Reventa en Smart Contract:</p>
               <p className="text-purple-900">
-                Cada vez que una tostaduría o boutique revende tu café empacado o una galería vende tu textil, el contrato inteligente en Stellar te deposita automáticamente el <strong>8% del valor de reventa</strong>.
+                Cada vez que una tostaduría o boutique revende tu café empacado o una galería vende tu textil, el contrato inteligente en Stellar te deposita automáticamente el <strong>{PROTOCOL_FEES.artisanResaleRoyaltyPct}% del valor de reventa</strong>.
               </p>
             </div>
           </div>
@@ -710,7 +711,7 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
                     </span>
                     {payment.paymentType === 'Regalía Perpetua' && (
                       <span className="bg-purple-600 text-white text-[9px] font-extrabold px-1.5 py-0.2 rounded-full uppercase tracking-wider">
-                        💎 Regalía 8%
+                        💎 Regalía {PROTOCOL_FEES.artisanResaleRoyaltyPct}%
                       </span>
                     )}
                   </div>

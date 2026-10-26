@@ -29,11 +29,35 @@ Conceived in the mountainous Mixteca Highlands of Oaxaca (**Heroica Ciudad de Tl
 
 ---
 
+## 🧪 Implementation Status · Qué es real y qué es simulado (audit, Oct 2026)
+
+> This repository is a **working prototype**. The table below says which parts run for real today and which are demonstrations. Keep it updated in every PR that changes a module's status.
+
+| Module | Status | What it really does today |
+|---|---|---|
+| PWA (React + Vite, service worker) | ✅ Real | Installable app; assets cached for offline use. |
+| Offline storage (`src/utils/offlineStorage.ts`) | ✅ Real | Saves lots in IndexedDB (localStorage fallback). |
+| Chat, image analysis, audio transcription (`server.ts`) | ✅ Real, needs `GEMINI_API_KEY` | Calls Gemini. Without a key it returns responses marked `isSimulated: true`. |
+| Soroban contracts (`contracts/`) | 🟡 Real, **not deployed** | 4 contracts with 20 passing tests (`cd contracts && cargo test`). No testnet/mainnet IDs yet. |
+| `src/core/blockchain/SorobanAdapter.ts` | 🔴 Simulated | Builds fake tx hashes and ledger numbers; does not call the network. |
+| `src/core/blockchain/StellarLiveClient.ts` | 🟡 Partial | Real Stellar SDK objects, but contract invocations return `simulated: true`; not used by the UI. |
+| `src/core/blockchain/TrustlessWorkEscrowAdapter.ts` | 🔴 Simulated | Escrows live in an in-memory `Map`; no deposit happens. |
+| `src/core/settlement/HybridSettlementOrchestrator.ts` | 🔴 Simulated | Fixed exchange rates; SPEI folios generated locally. No real MXN on/off-ramp. |
+| `src/core/ai/RaizAIOracles.ts` | 🔴 Simulated | Rule-based: fixed quality scores (e.g. 88.75) and EUDR always "no deforestation"; no satellite data. |
+| `src/core/agents/YucuAgentSwarm.ts` | 🔴 Simulated | Returns fixed `CERTIFIED` results. |
+| `src/core/sync/SyncEngine.ts` | 🔴 Simulated | "Sending" is a `setTimeout`; not wired to any screen yet. |
+| `src/core/auth/RaizAuthEngine.ts` | 🔴 Simulated | Fixed OTP (`7421`) and placeholder `GBRAIZ…` addresses (not valid Stellar accounts). |
+| `RaizProtocolSDK.getMetrics()` | 🔴 Simulated | Hard-coded figures; not real settlements or communities. |
+
+**Not a certification:** quality, EUDR and "AI certified" labels in the app are demonstrations until a human validator and a real data source are connected.
+
+---
+
 ## ⚡ Executive Summary in 60 Seconds
 
-* **The Problem:** Smallholder indigenous coffee farmers, beekeepers, and textile artisans in Oaxaca lose up to 70% of their product value to predatory middlemen (*coyotes*), face systematic counterfeiting from industrial knockoffs, and are 100% excluded from digital banking (no internet in parcels, no credit cards, language barriers in *Tu'un Savi*).
+* **The Problem:** Smallholder indigenous coffee farmers, beekeepers, and textile artisans in Oaxaca lose up to 70% of their product value to predatory middlemen (*coyotes*), face systematic counterfeiting from industrial knockoffs, and face deep barriers to digital banking (no internet in parcels, no credit cards, language barriers in *Tu'un Savi*).
 * **The Solution:** An **Offline-First Voice PWA** that allows an elder artisan to register a harvest by voice without typing. The system computes a cryptographic SHA-256 digest, prints a physical ISO/IEC 18004 hang-tag QR, anchors verifiable attestations on Stellar/Soroban, and locks purchase funds in milestone-based escrow.
-* **The Impact:** When delivered, funds are converted from on-chain USDC directly into local Mexican Pesos (**MXN**) via Banxico SPEI into Banco del Bienestar debit cards or cash via local transport cooperatives (MicoPay)—with **0% exploitative fees to the producer**.
+* **The Impact:** When delivered, funds are converted from on-chain USDC directly into local Mexican Pesos (**MXN**) via Banxico SPEI into Banco del Bienestar debit cards or cash via local transport cooperatives (MicoPay)—with transparent, fixed fees: **2% to the community Tequio fund** when an escrow is released, and on resales that go through the contract **10% royalty to the original artisan + 2% Tequio** (single source of truth: [`src/config/protocolFees.ts`](./src/config/protocolFees.ts)).
 
 ---
 
@@ -54,7 +78,7 @@ How a coffee grower or textile artisan interacts with Yucu Protocol—step by st
 | **2** | **Cryptographic Digital Twin:** The system extracts metadata, computes the canonical SHA-256 Community Digest, and generates a printable vector SVG hang-tag QR for the physical coffee sack. | [`src/core/crypto/CryptoEngine.ts`](./src/core/crypto/CryptoEngine.ts)<br>[`src/components/PhysicalQRCard.tsx`](./src/components/PhysicalQRCard.tsx) |
 | **3** | **B2B Escrow Lock (Soroban):** A specialty coffee buyer in Zurich or CDMX inspects the digital lot passport and locks $10,000 MXNe in an audited milestone escrow contract. | [`contracts/fair_escrow/`](./contracts/fair_escrow/)<br>[`src/core/blockchain/TrustlessWorkEscrowAdapter.ts`](./src/core/blockchain/TrustlessWorkEscrowAdapter.ts) |
 | **4** | **Milestone 1 Release (30%):** The Tlaxiaco Cooperative Oracle signs the origin & quality attestation conforming to the SEP-RWA standard. A 30% advance ($3,000 MXN) is released to the producer. | [`docs/standards/SEP_RWA_ATTESTATION_DRAFT.md`](./docs/standards/SEP_RWA_ATTESTATION_DRAFT.md)<br>[`src/core/ai/RaizAIOracles.ts`](./src/core/ai/RaizAIOracles.ts) |
-| **5** | **Physical Delivery & Final Payout (70%):** Sacks are delivered to the Tlaxiaco warehouse. Scanning the physical QR triggers the release of the remaining 70% ($7,000 MXN) directly to Don Juan's card or in cash via MicoPay. | [`src/core/blockchain/MultiAnchorSettlementRouter.ts`](./src/core/blockchain/MultiAnchorSettlementRouter.ts)<br>[`docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md`](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md) |
+| **5** | **Physical Delivery & Final Payout (70%):** Sacks are delivered to the Tlaxiaco warehouse. Scanning the physical QR triggers the release of the remaining 70% ($7,000 MXN) directly to Don Juan's card or in cash via MicoPay. | [`src/core/settlement/HybridSettlementOrchestrator.ts`](./src/core/settlement/HybridSettlementOrchestrator.ts) *(simulated)*<br>[`docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md`](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md) |
 
 ---
 
@@ -67,7 +91,7 @@ How a coffee grower or textile artisan interacts with Yucu Protocol—step by st
 | **Layer 3: Autonomous AI Oracles & Agent Swarm** | 6 specialized agents: Tu'un Savi Voice, SCAA Cupping, Sentinel-2 EUDR, DPP Circularity, Indigenous IP Shield, and Settlement Solver. | [`src/core/agents/YucuAgentSwarm.ts`](./src/core/agents/YucuAgentSwarm.ts)<br>[`src/core/ai/RaizAIOracles.ts`](./src/core/ai/RaizAIOracles.ts)<br>[`src/components/ProtocolInfrastructureModal.tsx`](./src/components/ProtocolInfrastructureModal.tsx) |
 | **Layer 4: Soroban Smart Contracts & Official SDK** | Compact WASM contracts, TTL two-tier rent management, official `@stellar/stellar-sdk` client, and Trustless Work escrow. | [`src/core/blockchain/StellarLiveClient.ts`](./src/core/blockchain/StellarLiveClient.ts)<br>[`contracts/attestation_registry/`](./contracts/attestation_registry/)<br>[`contracts/fair_escrow/`](./contracts/fair_escrow/) |
 | **Layer 5: Third-Party Developer Tools & Embeds** | React Hooks library (`@yucu-protocol/react`), drop-in `<YucuPassportBadge />`, live REST APIs `/api/v1/protocol/*`, and Stellar Raven MCP. | [`src/core/hooks/useYucuProtocol.ts`](./src/core/hooks/useYucuProtocol.ts)<br>[`src/components/YucuPassportBadge.tsx`](./src/components/YucuPassportBadge.tsx)<br>[`.cursor/mcp.json`](./.cursor/mcp.json) |
-| **Layer 6: Multi-Anchor Fiat Settlement Rails** | Atomic swap from on-chain USDC/MXNe to Banxico SPEI interbank transfers and rural cash-in-hand parcel network. | [`src/core/blockchain/MultiAnchorSettlementRouter.ts`](./src/core/blockchain/MultiAnchorSettlementRouter.ts)<br>[`docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md`](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md) |
+| **Layer 6: Multi-Anchor Fiat Settlement Rails** | Atomic swap from on-chain USDC/MXNe to Banxico SPEI interbank transfers and rural cash-in-hand parcel network. | [`src/core/settlement/HybridSettlementOrchestrator.ts`](./src/core/settlement/HybridSettlementOrchestrator.ts) *(simulated)*<br>[`docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md`](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md) |
 
 ---
 

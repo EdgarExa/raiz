@@ -1,3 +1,4 @@
+import { PROTOCOL_FEES } from '../../config/protocolFees';
 /**
  * Yucu Core - Motor de Políticas de Comercio Justo y Protección Comunitaria
  * Valida que los precios no estén por debajo de costos rurales y
@@ -68,15 +69,15 @@ export class FairTradeEngine {
   }
 
   /**
-   * Calcula la regalía secundaria perpetua para el artesano o productor (5% - 10%)
+   * Calcula la regalía de reventa para la artesana o productor (por defecto, el porcentaje oficial del protocolo)
    */
-  public static calculateSecondaryRoyalty(salePriceMxn: number, royaltyPercentage = 8): {
+  public static calculateSecondaryRoyalty(salePriceMxn: number, royaltyPercentage: number = PROTOCOL_FEES.artisanResaleRoyaltyPct): {
     artisanRoyaltyMxn: number;
     cooperativeFundMxn: number;
     sellerNetMxn: number;
   } {
     const artisanRoyaltyMxn = Math.round((salePriceMxn * royaltyPercentage) / 100);
-    const cooperativeFundMxn = Math.round((salePriceMxn * 2) / 100); // 2% fondo comunitario
+    const cooperativeFundMxn = Math.round((salePriceMxn * PROTOCOL_FEES.resaleTequioPct) / 100); // fondo comunitario Tequio
     const sellerNetMxn = salePriceMxn - artisanRoyaltyMxn - cooperativeFundMxn;
 
     return {
