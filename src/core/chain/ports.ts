@@ -80,11 +80,12 @@ export interface LotRecord {
 }
 
 /**
- * `register_lot` exige DOS firmas: la del productor y la del nodo certificador (admin del contrato).
- * Flujo: el servidor prepara la transacción -> el teléfono firma la autorización del productor ->
- * `submit` la manda al servidor, que agrega la firma del nodo certificador y la envía a la red.
+ * `register_lot` exige DOS firmas: la del nodo certificador (admin del contrato) y la del productor.
+ * Flujo (ADR-003, D6; issues #92 y #94): el servidor prepara la transacción y firma SOLO la
+ * autorización del nodo certificador -> la cuenta fuente es la del productor, que firma el sobre en
+ * su teléfono -> `submit` lo envía (el servidor puede envolverlo en un fee-bump sin modificarlo).
  * La llave del nodo certificador es de la plataforma (no de una persona) y vive solo en el `.env`
- * del servidor (ADR-003, D6). El servidor nunca firma por el productor.
+ * del servidor (`STELLAR_CERTIFIER_SECRET`). El servidor nunca firma por el productor.
  */
 export interface LotRegistryPort {
   prepareRegisterLot(req: RegisterLotRequest): Promise<UnsignedTransaction>;
