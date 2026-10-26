@@ -82,6 +82,12 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
             <span className="text-[10px] bg-[#c7ebd4] text-[#002b18] px-1.5 py-0.2 rounded-md font-bold uppercase">
               Protocol
             </span>
+            <span
+              className="text-[10px] bg-[#ffdbd1] text-[#6e2410] px-1.5 py-0.2 rounded-md font-bold uppercase"
+              title="Prototipo: los pagos, el escrow y las certificaciones de calidad y EUDR son simulados. Ver la tabla de estado en el README."
+            >
+              Demostración
+            </span>
           </h1>
           <div className="flex items-center gap-1 -mt-0.5">
             {!isOnline ? (

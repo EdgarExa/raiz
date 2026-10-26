@@ -15,7 +15,32 @@ app.use((_req: Request, res: Response, next: any) => {
   next();
 });
 
+// Límites de tamaño: el chat solo recibe texto; imagen y audio llegan en base64 y necesitan más espacio.
+app.use("/api/chat", express.json({ limit: "100kb" }));
 app.use(express.json({ limit: "15mb" }));
+
+// Límite de peticiones para los endpoints que consumen la API de Gemini (protege la llave y el costo).
+// Ventana fija en memoria por IP: suficiente para un piloto; en producción usar un almacén compartido.
+const AI_WINDOW_MS = 10 * 60 * 1000;
+const AI_MAX_REQUESTS = 30;
+const aiHits = new Map<string, { count: number; windowStart: number }>();
+function aiRateLimit(req: Request, res: Response, next: any) {
+  const ip = req.ip || req.socket.remoteAddress || "desconocida";
+  const now = Date.now();
+  const entry = aiHits.get(ip);
+  if (!entry || now - entry.windowStart > AI_WINDOW_MS) {
+    aiHits.set(ip, { count: 1, windowStart: now });
+    return next();
+  }
+  entry.count += 1;
+  if (entry.count > AI_MAX_REQUESTS) {
+    const retrySeconds = Math.ceil((entry.windowStart + AI_WINDOW_MS - now) / 1000);
+    res.setHeader("Retry-After", String(retrySeconds));
+    return res.status(429).json({ error: `Demasiadas solicitudes. Intenta de nuevo en ${retrySeconds} segundos.` });
+  }
+  return next();
+}
+app.use(["/api/chat", "/api/analyze-image", "/api/transcribe-audio"], aiRateLimit);
 
 // Lazy-initialized Gemini client
 let geminiClient: GoogleGenAI | null = null;
@@ -934,29 +959,30 @@ REGLA FUNDAMENTAL DE VERIFICACIÓN VISUAL:
      * Valida pureza varietal de altura (Typica Pluma / Bourbon).
 
 ${prompt ? `Contexto o mensaje adicional del usuario: "${prompt}"\n` : ""}
-Responde estrictamente en formato JSON con la siguiente estructura:
+Responde estrictamente en formato JSON con la siguiente estructura. Los valores entre <> describen el tipo; NO los copies.
+Si la imagen no permite estimar un valor con honestidad, usa null. No inventes cifras ni certificaciones: tu respuesta es una estimación de IA, no un dictamen oficial.
 {
-  "isCoffee": true,
-  "detectedCategory": "cafe",
-  "detectedItem": "Café Pergamino Lavado de Altura",
-  "estado": "Conforme NMX-F-083 (Calidad Especialidad)",
-  "calidadScore": 94,
-  "humedadEstimada": "11.4%",
-  "defectosDetectados": "0% broca, < 1.2% defectos totales",
+  "isCoffee": <true | false>,
+  "detectedCategory": "<cafe | miel | pulque | chocolate | textil | otro>",
+  "detectedItem": "<nombre del producto que se ve en la imagen>",
+  "estado": "<dictamen breve basado solo en lo visible>",
+  "calidadScore": <número de 0 a 100, o null si no se puede estimar>,
+  "humedadEstimada": "<porcentaje aparente o null>",
+  "defectosDetectados": "<descripción de los defectos visibles o null>",
   "nomEvaluation": {
-    "standard": "NMX-F-083 / NOM-255-SCFI",
-    "humidity": "11.4%",
-    "humidityCompliant": true,
-    "defectPercentage": 1.2,
-    "defectClassification": "Grado Especialidad / Exportación",
-    "altitudeMeters": 1650,
-    "strictAltitude": true,
-    "botanicalPurity": "100% Typica Pluma Nativo",
-    "agroecologicalFreePesticides": true,
-    "complianceStatus": "Conforme a Norma Oficial"
+    "standard": "<norma aplicable o null>",
+    "humidity": "<porcentaje o null>",
+    "humidityCompliant": <true | false | null>,
+    "defectPercentage": <número o null>,
+    "defectClassification": "<clasificación o null>",
+    "altitudeMeters": <número solo si el usuario lo indicó, o null>,
+    "strictAltitude": <true | false | null>,
+    "botanicalPurity": "<texto o null>",
+    "agroecologicalFreePesticides": <true | false | null>,
+    "complianceStatus": "<texto; nunca afirmes conformidad oficial>"
   },
-  "recomendacion": "Recomendación técnica y comercial para el productor",
-  "analysis": "Explicación agronómica y normativa en 3 o 4 viñetas dirigida con respeto y calidez comunitaria al productor ('paisano/Don/Doña')."
+  "recomendacion": "<recomendación técnica y comercial para el productor>",
+  "analysis": "<explicación en 3 o 4 viñetas dirigida con respeto y calidez comunitaria al productor ('paisano/Don/Doña')>"
 }`;
 
     const response = await ai.models.generateContent({
@@ -1004,6 +1030,7 @@ Responde estrictamente en formato JSON con la siguiente estructura:
     const isHoney = parsed.detectedCategory === "miel" || parsed.detectedItem?.toLowerCase().includes("miel") || parsed.estado?.toLowerCase().includes("miel");
 
     return res.json({
+      disclaimer: "Estimación generada por IA a partir de una foto. No es una certificación ni un dictamen de laboratorio.",
       isCoffee: !isHoney && isCoffee,
       detectedCategory: isHoney ? "miel" : (parsed.detectedCategory || (isCoffee ? "cafe" : "otro")),
       detectedItem: parsed.detectedItem || (isHoney ? "Miel Virgen de la Mixteca" : (isCoffee ? "Café de Especialidad" : "Producto de Campo")),
@@ -1154,7 +1181,7 @@ app.get("/api/v1/protocol/spec", (_req: Request, res: Response) => {
       { id: "0x03_EUDR_DEFORESTATION", name: "Anti-Deforestación Satelital Copernicus", issuer: "Sentinel-2 Multiespectral Geofence (EUDR 2026)" },
       { id: "0x04_SETTLEMENT_CLEARANCE", name: "Custodia de Hitos & Liquidación Trustless Work", issuer: "Smart Contract Soroban + Banxico SPEI" },
       { id: "0x05_DPP_CIRCULARITY", name: "Pasaporte Digital de Producto Europeo (ESPR) & Insetting de Carbono", issuer: "Calculadora de Biomasa Agroforestal Mixteca" },
-      { id: "0x06_INDIGENOUS_IP", name: "Escudo de Patrimonio Cultural Colectivo & Regalías (8%+2%)", issuer: "Registro de Diseños Tradicionales (Ley 2022)" },
+      { id: "0x06_INDIGENOUS_IP", name: "Escudo de Patrimonio Cultural Colectivo & Regalías (10%+2%)", issuer: "Registro de Diseños Tradicionales (Ley 2022)" },
       { id: "0x07_IOT_COLD_CHAIN", name: "Telemetría Dinámica de Tránsito (Humedad/Temp/Brix)", issuer: "Sensores IoT en Almacenamiento Temporal Soroban (TTL 60d)" },
       { id: "0x08_SANCTION_USMCA", name: "Regla de Origen T-MEC & Despacho Aduanal Fitosanitario", issuer: "SENASICA / USDA Organic Conformity Gateway" }
     ],
@@ -1309,6 +1336,10 @@ async function startServer() {
 
   // Global error handler middleware
   app.use((err: any, _req: Request, res: Response, _next: any) => {
+    // Errores del cliente (p. ej. 413 por cuerpo demasiado grande) conservan su código.
+    if (typeof err?.status === "number" && err.status >= 400 && err.status < 500) {
+      return res.status(err.status).json({ error: err.type === "entity.too.large" ? "La solicitud es demasiado grande." : "Solicitud inválida." });
+    }
     console.error("Express uncaught error:", err);
     res.status(500).json({ error: "Error interno del servidor", message: err?.message });
   });

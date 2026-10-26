@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AppLanguage, DigitalPassportLot, ScreenView } from '../types';
+import { PROTOCOL_FEES } from '../config/protocolFees';
 
 interface DigitalPassportScreenProps {
   lot: DigitalPassportLot;
@@ -703,12 +704,12 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
                     <div className="bg-purple-50 p-2.5 rounded-xl border border-purple-200 text-purple-950 text-[11px] space-y-1">
                       <div className="flex items-center gap-1.5 font-black text-purple-900">
                         <span>💎</span>
-                        <span>Garantía de Ganancia por Reventa (8%)</span>
+                        <span>Garantía de Ganancia por Reventa ({PROTOCOL_FEES.artisanResaleRoyaltyPct}%)</span>
                       </div>
                       <p className="text-purple-900/90 leading-relaxed text-[11px]">
                         Si una tienda, restaurante o distribuidor revende este lote con mayor margen en la ciudad,
-                        un <strong>8% de cada reventa secundaria</strong> te corresponde a ti como productor
-                        y 2% al Fondo Comunal de la Mixteca.
+                        un <strong>{PROTOCOL_FEES.artisanResaleRoyaltyPct}% de cada reventa secundaria</strong> te corresponde a ti como productor
+                        y {PROTOCOL_FEES.resaleTequioPct}% al Fondo Comunal de la Mixteca.
                       </p>
                     </div>
 

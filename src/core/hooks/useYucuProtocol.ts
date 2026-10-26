@@ -58,13 +58,13 @@ export function useYucuAttestation({
       } else {
         // Fallback local determinista con SDK
         const localCheck = raizProtocol.attestations.verifyAttestation(lotCode);
-        setVerified(localCheck.isValid);
+        setVerified(localCheck.valid);
         setDataHash(localCheck.attestationUid);
       }
     } catch (err: any) {
       // Fallback local en caso de desconexión
       const localCheck = raizProtocol.attestations.verifyAttestation(lotCode);
-      setVerified(localCheck.isValid);
+      setVerified(localCheck.valid);
       setDataHash(localCheck.attestationUid);
     } finally {
       setLoading(false);
@@ -133,11 +133,11 @@ export function useYucuDigitalPassport(lotCode: string): UseYucuDigitalPassportR
 
 export function useYucuOracles() {
   const parseVoice = useCallback((audioTranscript: string, dialect: 'tuun_savi' | 'spanish') => {
-    return RaizAIOracles.parseIndigenousVoiceLot(audioTranscript, dialect);
+    return RaizAIOracles.parseAcousticVoiceInput(audioTranscript, dialect);
   }, []);
 
   const assessQuality = useCallback((params: { productType: 'coffee' | 'textile'; visualDescription?: string }) => {
-    return RaizAIOracles.assessQuality(params);
+    return RaizAIOracles.evaluateLotQuality({ productType: params.productType });
   }, []);
 
   const verifyEUDR = useCallback((community: string) => {

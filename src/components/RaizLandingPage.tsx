@@ -1,3 +1,4 @@
+import { PROTOCOL_FEES } from '../config/protocolFees';
 import React, { useState } from 'react';
 import { DigitalPassportLot, ScreenView } from '../types';
 
@@ -33,7 +34,7 @@ export const RaizLandingPage: React.FC<RaizLandingPageProps> = ({
         const retailResalePricePerKg = 420; // Roasted retail price in CDMX
         const coyoteTotal = volume * coyotePricePerKg;
         const yucuTotal = volume * yucuFairPricePerKg;
-        const tequioFund = yucuTotal * 0.10; // 10% Tequio community pool
+        const tequioFund = yucuTotal * (PROTOCOL_FEES.escrowTequioPct / 100); // fondo Tequio
         const addedValueToProducer = yucuTotal - coyoteTotal;
         const gapPercent = Math.round(((retailResalePricePerKg - coyotePricePerKg) / retailResalePricePerKg) * 100);
         return { unit: 'kg de café pergamino', coyoteTotal, yucuTotal, tequioFund, addedValueToProducer, gapPercent, fairPrice: yucuFairPricePerKg, coyotePrice: coyotePricePerKg };
@@ -44,7 +45,7 @@ export const RaizLandingPage: React.FC<RaizLandingPageProps> = ({
         const retailResalePricePerPiece = 3200; // Boutique CDMX/Oaxaca
         const coyoteTotal = volume * coyotePricePerPiece;
         const yucuTotal = volume * yucuFairPricePerPiece;
-        const tequioFund = yucuTotal * 0.10;
+        const tequioFund = yucuTotal * (PROTOCOL_FEES.escrowTequioPct / 100);
         const addedValueToProducer = yucuTotal - coyoteTotal;
         const gapPercent = Math.round(((retailResalePricePerPiece - coyotePricePerPiece) / retailResalePricePerPiece) * 100);
         return { unit: 'rebozos / huipiles bordados', coyoteTotal, yucuTotal, tequioFund, addedValueToProducer, gapPercent, fairPrice: yucuFairPricePerPiece, coyotePrice: coyotePricePerPiece };
@@ -55,7 +56,7 @@ export const RaizLandingPage: React.FC<RaizLandingPageProps> = ({
         const retailResalePricePerLiter = 380;
         const coyoteTotal = volume * coyotePricePerLiter;
         const yucuTotal = volume * yucuFairPricePerLiter;
-        const tequioFund = yucuTotal * 0.10;
+        const tequioFund = yucuTotal * (PROTOCOL_FEES.escrowTequioPct / 100);
         const addedValueToProducer = yucuTotal - coyoteTotal;
         const gapPercent = Math.round(((retailResalePricePerLiter - coyotePricePerLiter) / retailResalePricePerLiter) * 100);
         return { unit: 'litros de miel virgen de campanilla', coyoteTotal, yucuTotal, tequioFund, addedValueToProducer, gapPercent, fairPrice: yucuFairPricePerLiter, coyotePrice: coyotePricePerLiter };
@@ -66,7 +67,7 @@ export const RaizLandingPage: React.FC<RaizLandingPageProps> = ({
         const retailResalePricePerUnit = 320;
         const coyoteTotal = volume * coyotePricePerUnit;
         const yucuTotal = volume * yucuFairPricePerUnit;
-        const tequioFund = yucuTotal * 0.10;
+        const tequioFund = yucuTotal * (PROTOCOL_FEES.escrowTequioPct / 100);
         const addedValueToProducer = yucuTotal - coyoteTotal;
         const gapPercent = Math.round(((retailResalePricePerUnit - coyotePricePerUnit) / retailResalePricePerUnit) * 100);
         return { unit: 'sombreros / tenates de palma fina', coyoteTotal, yucuTotal, tequioFund, addedValueToProducer, gapPercent, fairPrice: yucuFairPricePerUnit, coyotePrice: coyotePricePerUnit };

@@ -1,4 +1,4 @@
-# 🌾 Official Validated MVP Specification: Yucu Protocol
+# 🌾 MVP Specification (draft, pending field validation): Yucu Protocol
 ### *Traceability, Visibility, and Verifiable Provenance in Tlaxiaco, Oaxaca*
 
 * **Version:** 1.2.0 (Release Candidate MVP)

@@ -4,6 +4,7 @@ members = [
     "attestation_registry",
     "fair_escrow",
     "perpetual_royalties",
+    "lot_passport",
 ]
 
 [workspace.dependencies]
