@@ -1,115 +1,118 @@
-# ADR-004: La artesana cobra en pesos, sin billetera
+# ADR-004: La artesana cobra en pesos con una cuenta invisible
 
 * **Estado:** Fase 1 aceptada · Fase 2 aceptada solo en testnet (mainnet requiere resolver la sección 5)
 * **Fecha:** 26 de octubre de 2026
 * **Decide:** Mantenedores de Yucu Protocol (Open Hub TecNM, Tlaxiaco), después de una validación de arquitectura con revisión de código, contratos, integraciones, amenazas, privacidad y experiencia de uso
-* **Relación:** Ajusta [ADR-003](./ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md) (D5: llave en el teléfono de cada campesino) y retoma la tarjeta QR comunitaria de [ADR-002](./ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md).
+* **Relación:** Confirma [ADR-003](./ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md) (no custodial; D5: llave en el teléfono de cada persona) y lo adapta a personas mayores con celular compartido. Retoma la tarjeta QR comunitaria de [ADR-002](./ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md).
+
+> El nombre del archivo dice "sin billetera" porque así se llamó la primera propuesta. La decisión final es que la artesana **sí tiene su propia cuenta**, pero **invisible**: nunca ve la palabra billetera ni nada de cripto.
 
 ---
 
 ## 1. Contexto
 
-ADR-003 propone que cada productora tenga una cuenta Stellar en su teléfono con PIN y tarjeta de recuperación (issue #91). Lo que sabemos de las comunidades no encaja con eso:
-
-| Lo que sabemos | Qué implica |
+| Lo que sabemos de las comunidades | Qué implica |
 |---|---|
-| Las artesanas piensan y cobran en **pesos**; hoy, en efectivo. Piden defender su precio (QR de origen), vender directo y **cobrar rápido**. | La interfaz no debe hablar de cripto. |
-| Los grupos están **organizados (asamblea, presidente) pero no constituidos legalmente**: sin RFC ni cuenta bancaria. | El grupo no puede verificarse ante una casa de cambio. Sí puede tener una cuenta Stellar. |
+| Las artesanas piensan y cobran en **pesos**; hoy, en efectivo. Piden defender su precio (QR de origen), vender directo y **cobrar rápido**. | La interfaz no habla de cripto. |
+| Los grupos están **organizados (asamblea, presidente) pero no constituidos legalmente**: sin RFC ni cuenta bancaria. | El grupo **no debe recibir ni repartir dinero de sus socias**: sería custodia de dinero de terceros por un grupo informal. |
 | **Algunas artesanas tienen cuenta bancaria y otras no.** | Hacen falta dos formas de cobrar: SPEI y efectivo. |
-| La mayoría tiene **Android y WhatsApp, pero comparte el celular con sus hijos**. | Una llave en el celular queda al alcance de otras personas. |
+| La mayoría tiene **Android y WhatsApp, pero comparte el celular con sus hijos**. | Desbloquear el celular no debe bastar para firmar. |
+| Algunas **no tienen celular**. | Hace falta una forma de firmar sin celular propio. |
 | Para cobrar en efectivo irían a **tiendas de la cabecera municipal**. | Una red de tiendas es viable si se recluta localmente. |
-| Se quiere vender **primero en México y después en el extranjero**. | La primera fase puede no mover dinero en Stellar. |
+| Se quiere vender **primero en México y después en el extranjero**. | La primera fase no mueve dinero en Stellar. |
+
+**Requisito legal y de diseño:** para ser no custodial de punta a punta, **la artesana firma y recibe en su propia cuenta**. Ni Yucu ni el grupo controlan su llave ni su dinero. En el registro del lote, su firma es además su **consentimiento y la prueba de su autoría**.
 
 ## 2. Qué encontró la validación
 
 | Supuesto | Resultado | Evidencia |
 |---|---|---|
-| Una cuenta multifirma clásica (2 de 3) puede autorizar contratos de Soroban | ✅ | Soroban verifica el umbral medio de la cuenta. Las firmas vencen en minutos (`signatureExpirationLedger`): hace falta un flujo para juntarlas. |
-| `lot_passport` y `perpetual_royalties` pueden dejar de exigir la firma de la artesana | ✅ | Cambio directo de `require_auth` y de los campos guardados. |
-| Trustless Work acepta un receptor distinto del productor | ✅ | Documentación de roles. El receptor necesita trustline de USDC. Comisión del protocolo: 0.3 %. |
-| Trustless Work puede pagar a un receptor distinto por hito | ✅ | Escrow *multi-release*. |
-| El grupo puede crear un retiro en efectivo de **MicoPay** desde su cuenta multifirma | ❌ | El contrato lo acepta, pero el servidor de MicoPay inicia sesión con **una sola llave** (`micopay/backend/src/services/challenge.service.ts`). |
-| El QR de MicoPay se puede mandar por WhatsApp y cobrar horas después | ❌ | El QR dura **15 minutos** y el retiro **2 horas** (`trade.service.ts`). La tienda se elige **antes** de bloquear. |
-| **Etherfuse** paga por SPEI a cualquier artesana | ❌ | Exige **CURP y RFC**, selfie de prueba de vida y una cuenta bancaria **a nombre de la persona verificada**. Acepta USDC en Stellar (v2). Pagar desde la cuenta del grupo solo se podría como socio integrador con KYB, por confirmar. |
-| El resolutor de disputas puede ser la plataforma | ❌ | Quien resuelve decide a dónde va el dinero: contradice ADR-003 D1. |
-
-Conclusión: **la fase 1 está validada; la fase 2, tal como estaba escrita, no funciona hoy.**
+| `lot_passport` exige la firma de la productora | ✅ Ya lo hace | `register_lot`: `producer.require_auth()`. |
+| Trustless Work paga a un receptor distinto por hito | ✅ | Escrow *multi-release*; el receptor puede ser distinto del *service provider*. Necesita trustline de USDC. Comisión del protocolo: 0.3 %. |
+| MicoPay acepta una cuenta de **una sola llave** para crear un retiro | ✅ | Su backend inicia sesión verificando una llave (`challenge.service.ts`); su contrato exige la firma de quien paga. |
+| MicoPay acepta una cuenta **multifirma** | ❌ | Por eso se descarta que el grupo reciba el dinero. |
+| El QR de MicoPay se cobra horas después | ❌ | Dura **15 minutos** a propósito, por seguridad; la tienda se elige antes de bloquear. El retiro se crea **en la tienda**. |
+| Etherfuse paga por SPEI a cualquier artesana | ⚠️ | Exige **CURP, RFC**, selfie y una cuenta bancaria **a su nombre**, desde su propia cuenta Stellar. Solo para quien tenga RFC. |
+| Yucu puede resolver disputas | ❌ | Quien resuelve decide a dónde va el dinero: contradice ADR-003 D1. |
+| Un PIN de 4 dígitos protege una llave copiada del celular | ⚠️ | Son 10 000 combinaciones: se pueden probar todas fuera de la app. Se mitiga con llave no exportable, límites y avisos. |
 
 ## 3. Decisiones
 
 ### Fase 1 — aceptada
 
-**D1. La artesana solo ve pesos.** Su interfaz no muestra "billetera", USDC, XLM, hashes ni llaves. Ve su lote, su QR y cuánto le pagarán en pesos.
+**D1. La artesana solo ve pesos.** Tiene su propia cuenta Stellar, pero la interfaz nunca muestra "billetera", USDC, XLM, direcciones, hashes ni llaves. Ve su lote, su QR, cuánto le pagarán en pesos y cuándo.
 
-**D2. Compradores en México: el dinero va directo y en pesos.** SPEI a la artesana con banco, o efectivo al entregar. **El dinero no pasa por Stellar.** En Stellar solo va el **pasaporte del lote** (`lot_passport`, `attestation_registry`).
+**D2. Compradores en México: el dinero va directo y en pesos.** SPEI a la artesana con banco, o efectivo al entregar. **El dinero no pasa por Stellar.** En Stellar solo va el **pasaporte del lote**.
 
-**D3. El grupo firma el registro por sus socias.** Cada grupo tiene una cuenta Stellar **multifirma** (por ejemplo, 2 de 3 responsables elegidas por la asamblea, de familias distintas; llave maestra con peso 0; la plataforma sin ninguna firma). Una responsable escanea la tarjeta QR de la artesana (ADR-002) y el registro lo firman el grupo y el certificador (ADR-003 D6). La artesana no firma.
+**D3. La artesana firma el registro de su lote.** Lo firman **ella y el certificador** (ADR-003 D6). El grupo puede acompañarla, pero no firma por ella.
 
-**D4. Referencia anónima por lote.** En la cadena no va la dirección ni el nombre de la artesana, sino una referencia **distinta en cada lote**: `ref = HMAC(secreto_artesana, código_del_lote)`. Así sus lotes no se pueden vincular entre sí, y ella (o el grupo) puede demostrar la autoría cuando quiera. El secreto es aleatorio (32 bytes), vive en su tarjeta QR y en una copia del grupo, **nunca en el servidor de Yucu**, y nunca se calcula a partir de CURP, nombre o teléfono. Además: ubicación como municipio o región, categoría y variedad de una lista cerrada, volumen por rangos.
+**D4. Dónde vive su llave.**
+* **Con celular:** la llave se genera en su celular, cifrada con un **PIN de 4 dígitos** (botones grandes, issue #97). Se guarda **no exportable** cuando el navegador lo permite. Tarjeta de recuperación en papel que se queda con ella.
+* **Sin celular:** su llave va en su **tarjeta QR**, cifrada con un **PIN de 6 dígitos**. La promotora del grupo escanea la tarjeta en su celular, la artesana escribe su PIN, se firma y **la llave se borra de ese celular al terminar**. Nunca se guarda en el celular de otra persona.
+* **Límites y avisos:** límite por cobro y aviso por WhatsApp a ella, o a una persona de confianza que ella elija, en cada cobro.
 
-**D5. Protecciones mínimas.**
-* El teléfono arma el resumen de lo que se va a firmar **a partir de la transacción**, no del texto que manda el servidor.
-* La tarjeta QR solo identifica; para registrar se pide además un PIN corto de la responsable.
-* Un libro por socia (fuera de la cadena) que revisa la asamblea: qué lote se registró a su nombre y cuánto se le pagó.
-* En la cadena no se publican pagos por socia.
+**D5. Una cuenta por artesana y lo mínimo en la cadena.** En el registro van: municipio o región (no la comunidad exacta), categoría y variedad de una lista cerrada, volumen por rangos, hash de la foto y **ningún monto**. Sus lotes quedan ligados a su dirección; esa es la contraparte de firmar ella misma, y la reducción de datos evita que la identifiquen fácilmente.
+
+**D6. El teléfono arma el resumen de lo que se firma** a partir de la transacción, no del texto que manda el servidor.
 
 ### Fase 2 — se construye en testnet
 
-Compradores del extranjero y compras protegidas. **Los estudiantes la construyen en testnet**, sin dinero real. Pasar a mainnet exige resolver las preguntas de la sección 5 (MicoPay, campo y opinión legal).
+Compradores del extranjero y compras protegidas. Los estudiantes la construyen en testnet, sin dinero real. Pasar a mainnet exige resolver la sección 5.
 
-**D6. Pago del comprador.** El comprador paga **USDC desde su propia billetera** (por ejemplo, Freighter). Una guía neutral explica cómo conseguir USDC, sin recomendar una casa de cambio. Yucu no integra la compra de USDC con Etherfuse, porque eso exige que Yucu se registre como organización (KYB), y no ve datos de identidad del comprador. Los compradores de México que prefieran pesos usan la fase 1.
+**D7. Pago del comprador.** USDC **desde su propia billetera** (por ejemplo, Freighter), con una guía neutral para conseguirlo. Yucu no integra la compra de USDC (exigiría registrar a Yucu como organización ante Etherfuse) y no ve datos de identidad del comprador. Los compradores de México que prefieran pesos usan la fase 1.
 
-**D7. Escrow de Trustless Work (V1, testnet).** Hitos: **30 %** cuando el grupo marca "enviado" y el comprador aprueba, y **70 %** cuando el comprador confirma que recibió. El receptor es la cuenta multifirma del grupo. Cada equipo de estudiantes usa su propia API key de testnet en su `.env` local; el CI usa una versión simulada de la API. Los porcentajes y la comisión del protocolo (0.3 %) van en `src/config/protocolFees.ts`.
+**D8. Escrow de Trustless Work (V1, testnet), *multi-release*.**
 
-**D8. Disputas.** Quien resuelve es un **parámetro de cada escrow**, nunca Yucu. En testnet se usa una cuenta multifirma de prueba que representa a la asamblea. La respuesta definitiva sale de #103. Si el comprador no aprueba, el grupo puede abrir una disputa **15 días** después de marcar "enviado" (plazo que aplica la app y se configura en un solo lugar).
+| Rol | Quién | ¿Toca dinero? |
+|---|---|---|
+| Receptora de cada hito | **La artesana** (su cuenta) | Sí, le llega directo |
+| Marca el hito como "enviado" (*service provider*) | El grupo o la promotora | No |
+| Aprueba los hitos | El comprador | No |
+| Resuelve disputas | Un tercero, como parámetro (en testnet, una cuenta multifirma de prueba de la asamblea; nunca Yucu) | Decide el reparto en disputa; no recibe |
 
-**D9. Salida a pesos detrás de un puerto.** Un puerto `PayoutPort` con versión simulada, para que la pantalla y el escrow no dependan del riel. Implementaciones:
+Hitos: **30 %** cuando el grupo marca "enviado" y el comprador aprueba; **70 %** cuando el comprador confirma que recibió. Si no aprueba, se puede abrir disputa **15 días** después de "enviado" (plazo que aplica la app). Porcentajes, plazo y comisión del protocolo (0.3 %) en `src/config/protocolFees.ts`. Cada equipo de estudiantes usa su propia API key de testnet en su `.env` local; el CI usa una versión simulada.
 
-* **Camino preferido — MicoPay con multifirma:** contribuir a MicoPay (PR en su repositorio, coordinado con su equipo) y pedirle que su inicio de sesión respete umbrales de cuentas multifirma, que el QR dure lo suficiente para bajar a la cabecera y que agregue una palabra clave para cobrar. Si lo acepta: escrow de Trustless Work → cuenta del grupo → retiro en efectivo en una tienda elegida por la artesana.
-* **Plan B — cuenta invisible por artesana:** escrow *multi-release* que paga directo a una cuenta de cada artesana (por ejemplo, billeteras embebidas de Etherfuse, con llave que guarda ella). Solo si en campo se confirma que suficientes artesanas tienen celular propio, y RFC para cobrar por SPEI.
-* **Descartado:** una cuenta puente a nombre de una responsable. Pondría el dinero de varias socias a nombre de una persona (riesgo de abuso, fiscal y de prevención de lavado).
-* **Disputas:** las resuelve un tercero o una multifirma de la asamblea, nunca Yucu (#103).
+**D9. Salida a pesos desde su propia cuenta, detrás de `PayoutPort`.**
+* **Efectivo — MicoPay:** cuando la artesana ya está en la tienda, crea el retiro desde su cuenta con su PIN y recibe el QR (vale 15 minutos). No espera a nadie.
+* **SPEI — Etherfuse:** solo para quien tenga RFC y cuenta bancaria a su nombre, desde su propia cuenta.
+* Las dos van detrás de `PayoutPort`, con una versión simulada para construir sin esperar a los proveedores.
+
+**D10. El grupo nunca recibe dinero.** Sus roles son: acompañar el registro, marcar "enviado", y poner el **sello comunitario** en las regalías (`perpetual_royalties`). Se descarta cualquier diseño en que una cuenta del grupo o de una responsable reciba el dinero de las socias.
 
 ## 4. Qué cambia
 
-**Ahora (fase 1)**
-* **Contratos** (una sola issue de Rust y un solo redespliegue, junto con el rol `certifier` del PR #102):
-  * `register_lot(caller /*certifier*/, group, lot_ref, …)`: firman el certificador y la cuenta del grupo.
-  * `perpetual_royalties`: registra la pieza con el grupo y la referencia; receptor de regalías cambiable (`set_royalty_recipient`).
-  * El pasaporte no debe expirar: función pública para extender su TTL y tarea periódica.
-  * Inicialización atada a quien despliega (constructor o despliegue e inicialización en la misma transacción).
-  * `revoke_certification` por si se filtra la llave del certificador.
-  * Una regalía a una cuenta sin trustline no debe revertir la reventa.
-* **#91:** billetera de las **responsables del grupo**, con firmas parciales para la multifirma.
-* **#92 y #93:** el registro lo firman el grupo y el certificador; la referencia es por lote.
-* **#97:** la pantalla de firma muestra "Esperando a 1 compañera más".
+**Fase 1**
+* **Contratos** (#110, un solo redespliegue junto con el rol `certifier` del PR #102): se mantiene la firma de la productora; pasaporte que no expira; inicialización segura; `revoke_certification`; regalías robustas ante falta de trustline; campos con formato cerrado.
+* **#91:** billetera de cada artesana con PIN, llave no exportable, límites y avisos.
+* **Tarjeta QR con la llave cifrada** y firma en el celular de la promotora (issue nueva).
+* **#92 y #93:** registro firmado por la artesana y el certificador.
+* **Configuración de red** (issue nueva): leer `contracts/deployments/testnet.json` y elegir entre la versión simulada y testnet.
 
 **Fase 2 (testnet)**
-* `PayoutPort` con versión simulada.
-* **#96** (escrow) con los hitos de D7 y las disputas de D8.
-* Contribución a MicoPay: inicio de sesión con cuentas multifirma.
-* Flujo "estoy en la tienda": la artesana avisa, las responsables firman y se genera el QR (el QR de MicoPay dura 15 minutos a propósito, por seguridad).
-* Billetera del comprador (por ejemplo Freighter) como implementación de `WalletPort`.
-* Guía neutral para conseguir USDC.
-* El contrato didáctico `fair_escrow` aclara que su modelo de "autoridad MicoPay" no corresponde a cómo funciona MicoPay.
+* **#96:** escrow *multi-release* con la artesana como receptora.
+* **#112:** `PayoutPort` desde la cuenta de la artesana.
+* **#114:** "Ya estoy en la tienda": la artesana crea su propio retiro.
+* **#115:** billetera del comprador. **#116:** guía para conseguir USDC.
+* **"Mis cobros"** (issue nueva): la artesana ve en pesos lo que ha recibido.
 
-## 5. Preguntas abiertas
+## 5. Preguntas abiertas (antes de mainnet)
 
-1. **MicoPay:** ¿acepta cuentas multifirma, un QR de mayor duración y la palabra clave? ¿Haría un piloto en la Mixteca? ¿Cuándo llega a mainnet?
-2. **Etherfuse:** ¿se puede pagar a una artesana verificada desde la cuenta del grupo como socio? ¿Hay alternativa al RFC? ¿Las billeteras embebidas pueden recibir USDC de un contrato?
-3. **Campo** (guion en la validación): cuántas artesanas tienen RFC y celular propio, si confían en el QR, quiénes serían las responsables, qué tienda sería la primera.
-4. **Legal:** ¿un grupo no constituido puede repartir el dinero de sus socias? ¿Qué figura le conviene (cooperativa, SPR, A.C.)? ¿Una referencia con HMAC en una cadena pública es dato personal? Se consulta con un abogado antes de la fase 2.
+1. **Campo** (guía en `docs/ux-testing/`): ¿las artesanas recuerdan su PIN? ¿Quién guarda la tarjeta? ¿Cuántas tienen celular propio y RFC? ¿Qué tienda sería la primera?
+2. **MicoPay:** ¿haría un piloto en la Mixteca? ¿Agregaría una palabra clave para cobrar? ¿Cuándo llega a mainnet? (Está en desarrollo.)
+3. **Etherfuse:** ¿hay alternativa al RFC? ¿Límites por persona?
+4. **Disputas:** quién resuelve (#103).
+5. **Legal:** confirmar con un abogado que este diseño no tiene custodia por parte de Yucu ni del grupo, y que una dirección por persona en una cadena pública es aceptable con la reducción de datos.
 
 ## 6. Consecuencias
 
 **A favor**
-* La artesana no aprende nada de cripto ni cuida una llave.
-* La fase 1 entrega lo que pidieron (defender su precio) con lo que ya existe, sin mover dinero en la cadena.
-* Riesgo legal bajo mientras no haya fase 2.
-* La plataforma sigue sin custodiar nada.
+* No custodial de punta a punta: ni Yucu ni el grupo controlan la llave o el dinero de la artesana.
+* Su firma prueba su autoría y su consentimiento.
+* El dinero le llega directo, y MicoPay funciona con su cuenta tal como está hoy.
+* Ella sigue viendo solo pesos.
 
 **En contra / riesgos**
-* Sin compradores del extranjero hasta resolver la fase 2.
-* El grupo podría registrar lotes a nombre de una socia sin que ella lo sepa: lo mitigan el PIN, el libro por socia y la revisión en asamblea.
-* Juntar 2 firmas en pocos minutos exige que las responsables estén disponibles.
-* Requiere cambiar y redesplegar `lot_passport` y `perpetual_royalties`.
+* Tiene que recordar un PIN (4 dígitos con celular, 6 con tarjeta).
+* Si pierde el celular y la tarjeta de recuperación, o la tarjeta QR, pierde el acceso.
+* Sus lotes quedan ligados a una dirección pública (mitigado con lo mínimo en la cadena).
+* Un PIN corto se puede adivinar si alguien copia la llave cifrada (mitigado con llave no exportable, límites y avisos).
