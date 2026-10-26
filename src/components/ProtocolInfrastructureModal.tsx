@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RaizAIOracles, VoiceParsingResult, QualityAttestation, EUDRComplianceReport, SettlementRouteSolution } from '../core/ai/RaizAIOracles';
 import { YucuProtocolSDK } from '../core/sdk/RaizProtocolSDK';
+import { DemoBadge } from './DemoBadge';
 import { TrustlessWorkEscrowAdapter, TrustlessWorkEscrowOrder } from '../core/blockchain/TrustlessWorkEscrowAdapter';
 
 interface ProtocolInfrastructureModalProps {
@@ -156,6 +157,7 @@ export const ProtocolInfrastructureModal: React.FC<ProtocolInfrastructureModalPr
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold">Yucu Infrastructure Protocol</h2>
+                <DemoBadge detail="Oráculos basados en reglas, escrow en memoria y métricas fijas: nada de esto toca la red todavía." />
                 <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#a3f6c6]/20 text-[#a3f6c6] border border-[#a3f6c6]/30">
                   v1.2.0 • Stellar Soroban
                 </span>

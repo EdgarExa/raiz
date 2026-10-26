@@ -6,8 +6,7 @@
 //! - La autenticidad de cada atestación la garantiza `issuer.require_auth()`.
 //!   El campo `signature` se guarda como referencia externa y NO se verifica en la cadena.
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, symbol_short, Address, BytesN, Env,
-    String,
+    contract, contracterror, contractimpl, contracttype, symbol_short, Address, BytesN, Env, String,
 };
 
 #[contracterror]
@@ -72,7 +71,9 @@ impl AttestationRegistryContract {
         }
         admin.require_auth();
         env.storage().instance().set(&DataKey::Admin, &admin);
-        env.storage().instance().set(&DataKey::AttestationCount, &0u64);
+        env.storage()
+            .instance()
+            .set(&DataKey::AttestationCount, &0u64);
         env.storage()
             .instance()
             .extend_ttl(STORAGE_TTL_THRESHOLD, STORAGE_BUMP_AMOUNT);
@@ -177,7 +178,9 @@ impl AttestationRegistryContract {
             .get(&DataKey::AttestationCount)
             .unwrap_or(0);
         count += 1;
-        env.storage().instance().set(&DataKey::AttestationCount, &count);
+        env.storage()
+            .instance()
+            .set(&DataKey::AttestationCount, &count);
         env.storage()
             .instance()
             .extend_ttl(STORAGE_TTL_THRESHOLD, STORAGE_BUMP_AMOUNT);

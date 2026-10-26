@@ -12,19 +12,21 @@ Contributions here deliver real-world impact: validating smallholder harvests, p
 ## 🚀 1. Local Development Setup (In 3 Steps)
 
 ### Prerequisites:
-- **Node.js** (v20 or higher).
+- **Node.js 22** (the exact version is in `.nvmrc`; with nvm run `nvm use`).
+- **Rust 1.94** with `rustup target add wasm32v1-none` (only if you work on `contracts/`).
 - **Git**.
 
 ### Step 1: Clone the repository
 ```bash
-git clone https://github.com/Open-Hub-Tec/yucu.git
-cd yucu
+git clone https://github.com/Open-Hub-Tec/yucu-protocol.git
+cd yucu-protocol
 ```
 
 ### Step 2: Install dependencies
 ```bash
-npm install
+npm ci
 ```
+`npm ci` installs exactly the versions in `package-lock.json`, the same ones CI uses. Only use `npm install <package>` when you intentionally add a dependency, and commit the updated `package-lock.json`.
 
 ### Step 3: Start the local development server
 ```bash
@@ -121,7 +123,13 @@ npm run lint && npm run test
 ```
 Ensure all tests pass cleanly with zero errors.
 
-If you touched `contracts/`, also run `cd contracts && cargo test --locked`.
+If you touched `contracts/`, also run:
+```bash
+cd contracts
+cargo fmt --all && cargo clippy --locked --all-targets -- -D warnings && cargo test --locked
+```
+
+**Simulated results:** if your screen shows a result that does not come from a real source (payments, escrow, certifications, rule-based AI, test login, fixed metrics), add `<DemoBadge />` from `src/components/DemoBadge.tsx` next to its title and update the "real vs. simulated" table in the README.
 
 **Privacy (mandatory for research and UX work):** never commit names of interviewees, student control numbers, audio, video, photos of people or signed PDFs. Publish by role and community (e.g. *"rebozo artisan, Amoltepec"*) and keep evidence in `.investigacion_privada/`. Read [`docs/research/PRIVACIDAD.md`](./docs/research/PRIVACIDAD.md). The CI rejects PRs that add media files to `docs/research/`, `docs/ux-testing/` or `public/videos/`.
 

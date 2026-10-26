@@ -97,12 +97,16 @@ const TTL_THRESHOLD: u32 = 100_000;
 const TTL_EXTEND_TO: u32 = 500_000;
 
 fn bump_instance(env: &Env) {
-    env.storage().instance().extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
+    env.storage()
+        .instance()
+        .extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
 }
 
 fn save_order(env: &Env, key: &DataKey, order: &EscrowOrder) {
     env.storage().persistent().set(key, order);
-    env.storage().persistent().extend_ttl(key, TTL_THRESHOLD, TTL_EXTEND_TO);
+    env.storage()
+        .persistent()
+        .extend_ttl(key, TTL_THRESHOLD, TTL_EXTEND_TO);
 }
 
 fn admin(env: &Env) -> Result<Address, EscrowError> {
@@ -157,7 +161,9 @@ impl FairEscrowContract {
         }
         let key = DataKey::MinPrice(producer, token);
         env.storage().persistent().set(&key, &min_price);
-        env.storage().persistent().extend_ttl(&key, TTL_THRESHOLD, TTL_EXTEND_TO);
+        env.storage()
+            .persistent()
+            .extend_ttl(&key, TTL_THRESHOLD, TTL_EXTEND_TO);
         bump_instance(&env);
         Ok(())
     }
@@ -261,8 +267,8 @@ impl FairEscrowContract {
             .instance()
             .get(&DataKey::AttestationRegistry)
             .ok_or(EscrowError::AttestationRegistryFailed)?;
-        let valid =
-            AttestationRegistryClient::new(&env, &registry).verify_attestation(&delivery_attestation_uid);
+        let valid = AttestationRegistryClient::new(&env, &registry)
+            .verify_attestation(&delivery_attestation_uid);
         if !valid {
             return Err(EscrowError::DeliveryAttestationInvalid);
         }
@@ -282,7 +288,9 @@ impl FairEscrowContract {
                     .ok_or(EscrowError::InvalidPayoutMethod)?;
                 token_client.transfer(&contract_address, &micopay_authority, &producer_net);
             }
-            PayoutRail::EtherfuseSpeiBanxico | PayoutRail::PolarBoliviaQr | PayoutRail::PixBrazil => {
+            PayoutRail::EtherfuseSpeiBanxico
+            | PayoutRail::PolarBoliviaQr
+            | PayoutRail::PixBrazil => {
                 token_client.transfer(&contract_address, &order.producer, &producer_net);
             }
         }

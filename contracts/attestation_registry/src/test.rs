@@ -58,7 +58,13 @@ fn test_register_schema_and_attestation() {
     assert!(!is_still_valid);
 }
 
-fn base<'a>() -> (Env, AttestationRegistryContractClient<'a>, Address, Address, BytesN<32>) {
+fn base<'a>() -> (
+    Env,
+    AttestationRegistryContractClient<'a>,
+    Address,
+    Address,
+    BytesN<32>,
+) {
     let env = Env::default();
     env.mock_all_auths();
     let id = env.register(AttestationRegistryContract, ());

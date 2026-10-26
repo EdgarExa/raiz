@@ -17,7 +17,10 @@ impl MockRegistry {
         env.storage().persistent().set(&uid, &valid);
     }
     pub fn verify_attestation(env: Env, attestation_uid: BytesN<32>) -> bool {
-        env.storage().persistent().get(&attestation_uid).unwrap_or(false)
+        env.storage()
+            .persistent()
+            .get(&attestation_uid)
+            .unwrap_or(false)
     }
 }
 
@@ -49,12 +52,24 @@ fn setup<'a>() -> Setup<'a> {
     client.initialize(&admin, &registry_id, &micopay, &treasury);
 
     let token_admin = Address::generate(&env);
-    let token = env.register_stellar_asset_contract_v2(token_admin).address();
+    let token = env
+        .register_stellar_asset_contract_v2(token_admin)
+        .address();
     let buyer = Address::generate(&env);
     let producer = Address::generate(&env);
     StellarAssetClient::new(&env, &token).mint(&buyer, &10_000);
 
-    Setup { env, client, registry, token, admin, micopay, treasury, buyer, producer }
+    Setup {
+        env,
+        client,
+        registry,
+        token,
+        admin,
+        micopay,
+        treasury,
+        buyer,
+        producer,
+    }
 }
 
 fn uid(env: &Env, n: u8) -> BytesN<32> {
@@ -65,12 +80,21 @@ fn uid(env: &Env, n: u8) -> BytesN<32> {
 fn compra_y_liberacion_con_atestacion_valida() {
     let s = setup();
     let order = uid(&s.env, 1);
-    s.client.create_and_fund_order(&order, &s.buyer, &s.producer, &s.token, &5_000, &1_000, &PayoutRail::EtherfuseSpeiBanxico);
+    s.client.create_and_fund_order(
+        &order,
+        &s.buyer,
+        &s.producer,
+        &s.token,
+        &5_000,
+        &1_000,
+        &PayoutRail::EtherfuseSpeiBanxico,
+    );
     assert_eq!(s.client.get_order(&order).status, OrderStatus::Funded);
 
     let delivery = uid(&s.env, 9);
     s.registry.set_valid(&delivery, &true);
-    s.client.release_with_attestation(&order, &delivery, &s.buyer);
+    s.client
+        .release_with_attestation(&order, &delivery, &s.buyer);
 
     let tk = TokenClient::new(&s.env, &s.token);
     assert_eq!(tk.balance(&s.producer), 4_900); // 98%
@@ -82,26 +106,50 @@ fn compra_y_liberacion_con_atestacion_valida() {
 fn rail_micopay_paga_a_la_autoridad_micopay() {
     let s = setup();
     let order = uid(&s.env, 1);
-    s.client.create_and_fund_order(&order, &s.buyer, &s.producer, &s.token, &5_000, &1_000, &PayoutRail::MicoPayScaleCash);
+    s.client.create_and_fund_order(
+        &order,
+        &s.buyer,
+        &s.producer,
+        &s.token,
+        &5_000,
+        &1_000,
+        &PayoutRail::MicoPayScaleCash,
+    );
     let delivery = uid(&s.env, 9);
     s.registry.set_valid(&delivery, &true);
-    s.client.release_with_attestation(&order, &delivery, &s.admin);
-    assert_eq!(TokenClient::new(&s.env, &s.token).balance(&s.micopay), 4_900);
+    s.client
+        .release_with_attestation(&order, &delivery, &s.admin);
+    assert_eq!(
+        TokenClient::new(&s.env, &s.token).balance(&s.micopay),
+        4_900
+    );
 }
 
 #[test]
 fn un_tercero_no_puede_liberar() {
     let s = setup();
     let order = uid(&s.env, 1);
-    s.client.create_and_fund_order(&order, &s.buyer, &s.producer, &s.token, &5_000, &1_000, &PayoutRail::EtherfuseSpeiBanxico);
+    s.client.create_and_fund_order(
+        &order,
+        &s.buyer,
+        &s.producer,
+        &s.token,
+        &5_000,
+        &1_000,
+        &PayoutRail::EtherfuseSpeiBanxico,
+    );
     let delivery = uid(&s.env, 9);
     s.registry.set_valid(&delivery, &true);
 
     let intruso = Address::generate(&s.env);
-    let res = s.client.try_release_with_attestation(&order, &delivery, &intruso);
+    let res = s
+        .client
+        .try_release_with_attestation(&order, &delivery, &intruso);
     assert_eq!(res, Err(Ok(EscrowError::Unauthorized)));
     // Ni siquiera el productor puede liberarse a sí mismo
-    let res = s.client.try_release_with_attestation(&order, &delivery, &s.producer);
+    let res = s
+        .client
+        .try_release_with_attestation(&order, &delivery, &s.producer);
     assert_eq!(res, Err(Ok(EscrowError::Unauthorized)));
 }
 
@@ -109,8 +157,18 @@ fn un_tercero_no_puede_liberar() {
 fn atestacion_invalida_no_libera() {
     let s = setup();
     let order = uid(&s.env, 1);
-    s.client.create_and_fund_order(&order, &s.buyer, &s.producer, &s.token, &5_000, &1_000, &PayoutRail::EtherfuseSpeiBanxico);
-    let res = s.client.try_release_with_attestation(&order, &uid(&s.env, 77), &s.buyer);
+    s.client.create_and_fund_order(
+        &order,
+        &s.buyer,
+        &s.producer,
+        &s.token,
+        &5_000,
+        &1_000,
+        &PayoutRail::EtherfuseSpeiBanxico,
+    );
+    let res = s
+        .client
+        .try_release_with_attestation(&order, &uid(&s.env, 77), &s.buyer);
     assert_eq!(res, Err(Ok(EscrowError::DeliveryAttestationInvalid)));
 }
 
@@ -118,16 +176,40 @@ fn atestacion_invalida_no_libera() {
 fn precio_minimo_lo_fija_el_productor() {
     let s = setup();
     s.client.set_min_price(&s.producer, &s.token, &4_500);
-    let res = s.client.try_create_and_fund_order(&uid(&s.env, 1), &s.buyer, &s.producer, &s.token, &3_000, &1_000, &PayoutRail::EtherfuseSpeiBanxico);
+    let res = s.client.try_create_and_fund_order(
+        &uid(&s.env, 1),
+        &s.buyer,
+        &s.producer,
+        &s.token,
+        &3_000,
+        &1_000,
+        &PayoutRail::EtherfuseSpeiBanxico,
+    );
     assert_eq!(res, Err(Ok(EscrowError::PriceBelowAntiCoyoteGuardrail)));
-    s.client.create_and_fund_order(&uid(&s.env, 2), &s.buyer, &s.producer, &s.token, &4_500, &1_000, &PayoutRail::EtherfuseSpeiBanxico);
+    s.client.create_and_fund_order(
+        &uid(&s.env, 2),
+        &s.buyer,
+        &s.producer,
+        &s.token,
+        &4_500,
+        &1_000,
+        &PayoutRail::EtherfuseSpeiBanxico,
+    );
 }
 
 #[test]
 fn reembolso_del_comprador_solo_despues_de_la_fecha_limite() {
     let s = setup();
     let order = uid(&s.env, 1);
-    s.client.create_and_fund_order(&order, &s.buyer, &s.producer, &s.token, &5_000, &1_000, &PayoutRail::EtherfuseSpeiBanxico);
+    s.client.create_and_fund_order(
+        &order,
+        &s.buyer,
+        &s.producer,
+        &s.token,
+        &5_000,
+        &1_000,
+        &PayoutRail::EtherfuseSpeiBanxico,
+    );
 
     let res = s.client.try_refund(&order, &s.buyer);
     assert_eq!(res, Err(Ok(EscrowError::DeadlineNotReached)));
@@ -140,7 +222,9 @@ fn reembolso_del_comprador_solo_despues_de_la_fecha_limite() {
     // Una orden reembolsada ya no se puede liberar
     let delivery = uid(&s.env, 9);
     s.registry.set_valid(&delivery, &true);
-    let res = s.client.try_release_with_attestation(&order, &delivery, &s.buyer);
+    let res = s
+        .client
+        .try_release_with_attestation(&order, &delivery, &s.buyer);
     assert_eq!(res, Err(Ok(EscrowError::InvalidOrderStatus)));
 }
 
@@ -148,7 +232,15 @@ fn reembolso_del_comprador_solo_despues_de_la_fecha_limite() {
 fn el_arbitro_puede_reembolsar_antes_de_la_fecha() {
     let s = setup();
     let order = uid(&s.env, 1);
-    s.client.create_and_fund_order(&order, &s.buyer, &s.producer, &s.token, &5_000, &1_000, &PayoutRail::EtherfuseSpeiBanxico);
+    s.client.create_and_fund_order(
+        &order,
+        &s.buyer,
+        &s.producer,
+        &s.token,
+        &5_000,
+        &1_000,
+        &PayoutRail::EtherfuseSpeiBanxico,
+    );
     s.client.refund(&order, &s.admin);
     assert_eq!(TokenClient::new(&s.env, &s.token).balance(&s.buyer), 10_000);
 }

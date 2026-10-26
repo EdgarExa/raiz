@@ -1,6 +1,7 @@
 import { PROTOCOL_FEES } from '../config/protocolFees';
 import React, { useState, useEffect } from 'react';
 import { MOCK_PAYMENTS } from '../data/mockData';
+import { DemoBadge } from './DemoBadge';
 import { SupportedCountry, COUNTRY_CONFIGS } from '../core/settlement/HybridSettlementOrchestrator';
 
 interface MyPaymentsModalProps {
@@ -158,8 +159,11 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
               3
             </div>
             <div>
-              <h3 className="text-[18px] font-bold text-[#032517]">Mis Pagos y Recibos</h3>
-              <p className="text-[12px] text-[#424843]">Liquidaciones directas sin comisiones</p>
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-[18px] font-bold text-[#032517]">Mis Pagos y Recibos</h3>
+                <DemoBadge detail="Pagos y regalías de ejemplo: todavía no hay liquidaciones reales en SPEI ni en Stellar." />
+              </div>
+              <p className="text-[12px] text-[#424843]">Pagos de ejemplo para conocer cómo se verán tus liquidaciones</p>
             </div>
           </div>
           <button

@@ -32,8 +32,8 @@ pub struct LotPassport {
     pub location: String, // comunidad o región, nunca un domicilio
     pub category: String, // p. ej. "Miel de abeja", "Textil en telar"
     pub variety: String,
-    pub volume_units: u64, // kilogramos o piezas
-    pub photo_hash: BytesN<32>, // SHA-256 de la foto (la foto vive fuera de la cadena)
+    pub volume_units: u64,                 // kilogramos o piezas
+    pub photo_hash: BytesN<32>,            // SHA-256 de la foto (la foto vive fuera de la cadena)
     pub lab_cert_hash: Option<BytesN<32>>, // SHA-256 del dictamen; None hasta certificar
     pub certification_score: u32,
     pub registered_at: u64,
@@ -61,8 +61,12 @@ fn admin(env: &Env) -> Result<Address, Error> {
 
 fn save(env: &Env, key: &DataKey, lot: &LotPassport) {
     env.storage().persistent().set(key, lot);
-    env.storage().persistent().extend_ttl(key, TTL_THRESHOLD, TTL_EXTEND_TO);
-    env.storage().instance().extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
+    env.storage()
+        .persistent()
+        .extend_ttl(key, TTL_THRESHOLD, TTL_EXTEND_TO);
+    env.storage()
+        .instance()
+        .extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
 }
 
 #[contract]
@@ -77,7 +81,9 @@ impl LotPassportContract {
         }
         admin.require_auth();
         env.storage().instance().set(&DataKey::Admin, &admin);
-        env.storage().instance().extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
+        env.storage()
+            .instance()
+            .extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
         Ok(())
     }
 

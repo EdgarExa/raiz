@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PRESET_USERS, RaizAuthEngine, UserProfile, UserRole } from '../core/auth/RaizAuthEngine';
 import { SupportedCountry } from '../core/settlement/HybridSettlementOrchestrator';
+import { DemoBadge } from './DemoBadge';
 
 interface RaizAuthModalProps {
   isOpen: boolean;
@@ -119,6 +120,7 @@ export const RaizAuthModal: React.FC<RaizAuthModalProps> = ({
             <div>
               <div className="flex items-center gap-1.5">
                 <h3 className="text-[17px] font-black tracking-tight text-white">Identidad Yucu</h3>
+                <DemoBadge detail="Inicio de sesión de prueba: el código OTP es fijo y las cuentas Stellar no son reales." />
                 <span className="text-[10px] bg-amber-400 text-neutral-950 font-black px-1.5 py-0.5 rounded-md uppercase">
                   Sin Contraseñas
                 </span>

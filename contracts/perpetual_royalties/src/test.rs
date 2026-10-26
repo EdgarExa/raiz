@@ -39,9 +39,18 @@ fn setup<'a>() -> Setup<'a> {
     );
 
     let token_admin = Address::generate(&env);
-    let token = env.register_stellar_asset_contract_v2(token_admin).address();
+    let token = env
+        .register_stellar_asset_contract_v2(token_admin)
+        .address();
 
-    Setup { env, client, token, treasury, artisan, item_id }
+    Setup {
+        env,
+        client,
+        token,
+        treasury,
+        artisan,
+        item_id,
+    }
 }
 
 #[test]
@@ -72,7 +81,8 @@ fn reventa_reparte_regalia_y_tequio() {
     StellarAssetClient::new(&s.env, &s.token).mint(&buyer, &10_000);
 
     // Primera venta: la artesana es la dueña actual, así que recibe regalía + venta.
-    s.client.execute_secondary_sale(&s.item_id, &buyer, &s.token, &10_000);
+    s.client
+        .execute_secondary_sale(&s.item_id, &buyer, &s.token, &10_000);
 
     let tk = TokenClient::new(&s.env, &s.token);
     assert_eq!(tk.balance(&s.artisan), 1_000 + 8_800);
@@ -85,11 +95,15 @@ fn la_reventa_exige_la_firma_del_dueno_actual() {
     let s = setup();
     let buyer = Address::generate(&s.env);
     StellarAssetClient::new(&s.env, &s.token).mint(&buyer, &10_000);
-    s.client.execute_secondary_sale(&s.item_id, &buyer, &s.token, &10_000);
+    s.client
+        .execute_secondary_sale(&s.item_id, &buyer, &s.token, &10_000);
 
     let firmantes: std::vec::Vec<Address> = s.env.auths().iter().map(|(a, _)| a.clone()).collect();
     assert!(firmantes.contains(&buyer));
-    assert!(firmantes.contains(&s.artisan), "el dueño actual debe firmar la venta");
+    assert!(
+        firmantes.contains(&s.artisan),
+        "el dueño actual debe firmar la venta"
+    );
 }
 
 #[test]
@@ -97,15 +111,21 @@ fn rechaza_precios_que_borran_la_regalia() {
     let s = setup();
     let buyer = Address::generate(&s.env);
     StellarAssetClient::new(&s.env, &s.token).mint(&buyer, &10_000);
-    let res = s.client.try_execute_secondary_sale(&s.item_id, &buyer, &s.token, &1);
+    let res = s
+        .client
+        .try_execute_secondary_sale(&s.item_id, &buyer, &s.token, &1);
     assert_eq!(res, Err(Ok(RoyaltyError::InvalidResalePrice)));
-    let res = s.client.try_execute_secondary_sale(&s.item_id, &buyer, &s.token, &0);
+    let res = s
+        .client
+        .try_execute_secondary_sale(&s.item_id, &buyer, &s.token, &0);
     assert_eq!(res, Err(Ok(RoyaltyError::InvalidResalePrice)));
 }
 
 #[test]
 fn el_dueno_no_se_vende_a_si_mismo() {
     let s = setup();
-    let res = s.client.try_execute_secondary_sale(&s.item_id, &s.artisan, &s.token, &10_000);
+    let res = s
+        .client
+        .try_execute_secondary_sale(&s.item_id, &s.artisan, &s.token, &10_000);
     assert_eq!(res, Err(Ok(RoyaltyError::Unauthorized)));
 }
