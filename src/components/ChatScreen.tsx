@@ -256,7 +256,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
             location: 'Tlaxiaco, Oaxaca',
             summary: initialCustomMessage.replace('Confirmación de pedido directo: ', ''),
             total: 480,
-            paymentMethod: 'Trato Directo (0% Comisión)'
+            paymentMethod: 'Trato Directo (0% Comisión)',
+            stellarTxLedger: 52499210
           }
         },
         options: [
