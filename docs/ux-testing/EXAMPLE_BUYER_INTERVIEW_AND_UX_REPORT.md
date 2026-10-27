@@ -24,7 +24,7 @@
 ---
 
 ## 👤 2. Buyer Profile & Demographics
-- **Identifier / Alias:** Buyer-01 (Rodrigo V., 32 years old, Professional Barista & Cultural Textile Collector)
+- **Identifier / Alias:** Buyer-01 (professional barista & cultural textile collector)
 - **Age & Occupation:** 32, Head Barista and Co-owner of cultural specialty café
 - **City of Residence:** Tlaxiaco, Oaxaca (frequently serves tourists and wholesale buyers from Mexico City)
 - **Buyer Segment:**
@@ -88,7 +88,7 @@
 
 ## 📊 5. Standardized System Usability Scale (SUS)
 
-*Responses given by Rodrigo V. (Scale 1 to 5):*
+*Responses given by Buyer-01 (Scale 1 to 5):*
 1. Frequent use intention: `5`
 2. Unnecessary complexity: `1`
 3. Ease of use: `5`
