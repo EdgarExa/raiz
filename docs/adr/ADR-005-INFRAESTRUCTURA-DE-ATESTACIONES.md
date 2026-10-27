@@ -55,7 +55,7 @@ export interface AttestationPort {
 | **Se quita `signature`** | Parece una firma verificada y no lo es; la autenticidad ya la da `require_auth` del emisor |
 | **Se rechaza un vencimiento pasado** y se guarda `revoked_at` | Igual que hace Attest Protocol |
 | Se **mantienen** `payload_hash`, el registro de esquemas solo por el administrador, el almacenamiento `persistent` y `verify_attestation()` | Protegen la privacidad, evitan basura en el contrato y facilitan verificar |
-| Constructor, `upgrade` y una función pública para extender el TTL | Mismos riesgos que #110 resuelve en `lot_passport` |
+| Una función pública para extender el TTL | El constructor y `upgrade` ya los pide #110 para los tres contratos; aquí solo falta el TTL |
 
 El tipo de almacenamiento por esquema (temporal o persistente) ya es la issue #100, y se mantiene.
 
