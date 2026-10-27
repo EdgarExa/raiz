@@ -7,7 +7,7 @@ description: Guía pedagógica para estudiantes del TecNM Tlaxiaco sobre cómo d
 
 Esta guía enseña a los estudiantes de Sistemas Computacionales cómo convertir un producto físico agrícola o artesanal en un registro verificable en Stellar Soroban.
 
-> En la cadena va **lo mínimo** ([ADR-004](https://github.com/Open-Hub-Tec/yucu-protocol/pull/104), D5): municipio o región (nunca la comunidad exacta), categoría y variedad de una lista cerrada, volumen por rangos, hash de la foto y ningún monto. Nunca nombres de personas.
+> En la cadena va **lo mínimo** ([ADR-004](../../docs/adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md), D5): municipio o región (nunca la comunidad exacta), categoría y variedad de una lista cerrada, volumen por rangos, hash de la foto y ningún monto. Nunca nombres de personas.
 
 ---
 
