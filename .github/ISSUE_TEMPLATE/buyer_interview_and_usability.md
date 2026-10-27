@@ -38,7 +38,7 @@ assignees: ''
 ---
 
 ## 👤 2. Buyer Profile & Demographics
-- **Identifier / Alias:** <!-- e.g., Buyer-01 (Rodrigo V., 32, Barista & cultural collector) -->
+- **Identifier / Alias:** <!-- e.g., Buyer-01 (barista & cultural collector). No name or exact age. -->
 - **Age & Occupation:** 
 - **City of Residence:** <!-- e.g., Tlaxiaco, Oaxaca / Mexico City / International tourist -->
 - **Buyer Segment:**
@@ -52,17 +52,10 @@ assignees: ''
 
 ---
 
-## 📱 2.1 Early Adopter Contact & Future Launch Notification (Pre-Order Lead)
-> 💡 **Instructions for TecNM Students:** The strongest validation signal is whether a buyer is willing to leave their phone number to be notified when the platform and artisan logistics officially launch. Always ask for explicit verbal consent.
+## 🔒 2.1 Contact details
+> **Do not publish them here.** This issue is public. If the buyer agrees to be contacted at launch, store the contact in the team's private folder (`.investigacion_privada/`), never in an issue ([`docs/research/PRIVACIDAD.md`](../../docs/research/PRIVACIDAD.md), rules 2 and 5).
 
-- **Buyer Full Name / Contact Person:** <!-- e.g., Rodrigo Vásquez -->
-- **WhatsApp / Phone Number:** <!-- e.g., +52 953 123 4567 -->
-- **City / Destination for Future Delivery:** <!-- e.g., Tlaxiaco, Oaxaca / CDMX / Querétaro -->
-- **Interested Products / Pieces:** <!-- e.g., High-altitude specialty coffee (2kg), Backstrap-loom rebozo -->
-- **Target Budget / Willingness to Pay:** <!-- e.g., $1,200 MXN -->
-- **Re-Contact Authorization Consent:**
-  - [ ] **YES:** Buyer explicitly agreed to save their phone/WhatsApp to be notified as soon as the project is officially launched and artisan production orders open.
-  - [ ] **NO:** Buyer preferred anonymous feedback only.
+- **Agreed to be contacted?** [ ] Yes (stored in the private folder) · [ ] No
 
 ---
 

@@ -3,13 +3,15 @@ name: student-git-collaboration
 description: Guía de colaboración en GitHub, Drips Network y flujo de Pull Requests para estudiantes de residencias profesionales del TecNM en Yucu Protocol.
 ---
 
-# 🐙 Skill TecNM: Colaboración en GitHub y Financiamiento Drips
+# 🐙 Skill TecNM: Colaboración en GitHub y Drips Wave
 
-Esta guía establece el estándar de ingeniería para que los estudiantes del TecNM contribuyan al repositorio `Open-Hub-Tec/yucu`, documenten sus avances y reciban reconocimiento y fondos comunitarios a través de **Drips Network** en Stellar.
+Esta guía establece el estándar de ingeniería para que los estudiantes del TecNM contribuyan al repositorio `Open-Hub-Tec/yucu-protocol` y documenten sus avances. Algunas issues del backlog llevan puntos de **Drips Wave**. Lee primero [`AGENTS.md`](../../AGENTS.md): sus reglas mandan sobre esta guía.
 
 ---
 
-## 1. Convención de Commits Semánticos
+## 1. Ramas y Commits
+
+Trabaja en una rama `feat/issue-<número>-<tema>` o `fix/issue-<número>-<tema>`. Nunca en `main`, y nunca pongas tu nombre en la rama.
 
 Cada commit debe iniciar con un prefijo claro:
 
@@ -30,12 +32,16 @@ npm run verify
 
 Este comando ejecuta en secuencia:
 1. `npm run lint` (verificación de tipos de TypeScript sin errores).
-2. `npm run test` (las 7 suites de pruebas del protocolo, criptografía y contratos).
+2. `npm run test` (todas las pruebas que lista el script `test` de `package.json`; si agregas un archivo de prueba, agrégalo ahí).
 3. `npm run build` (compilación exitosa del bundle de producción y servidor).
+
+Si tocaste `contracts/`, corre también `cargo fmt --all`, `cargo clippy --locked --all-targets -- -D warnings` y `cargo test --locked` dentro de `contracts/`.
 
 ---
 
-## 3. Vincular el Trabajo con Drips Network
+## 3. Vincular el Trabajo con la Issue
 
-1. Cada Pull Request debe vincular el Issue correspondiente (ej. `Closes #14`).
-2. Al fusionarse en la rama principal, el contrato de Drips Network registra la autoría comunitaria del estudiante para asignación de becas de investigación y fondos de desarrollo de la Stellar Development Foundation.
+1. Pide que te asignen la issue **antes** de escribir código (un equipo por issue).
+2. Cada Pull Request debe decir `Resolves #<número>` en su descripción y explicar cómo lo probaste.
+3. Los puntos de Drips Wave se asignan según las reglas de cada Wave en Drips. Esta guía no promete becas ni fondos.
+4. En la revisión tendrás que explicar tu código. Un PR que no sepas explicar no se fusiona, aunque funcione.
