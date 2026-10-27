@@ -199,11 +199,12 @@ Clone, install, and run Yucu Protocol locally:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Open-Hub-Tec/yucu.git
-cd yucu
+git clone https://github.com/Open-Hub-Tec/yucu-protocol.git
+cd yucu-protocol
 
-# 2. Install dependencies
-npm install
+# 2. Use Node 22 (see .nvmrc) and install the exact dependencies
+nvm use
+npm ci
 
 # 3. Launch local development server
 npm run dev
