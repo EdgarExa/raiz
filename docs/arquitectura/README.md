@@ -1,6 +1,6 @@
 # Arquitectura final de Yucu (propuesta)
 
-* **Estado:** propuesta, octubre de 2026. Se decide en un ADR-005 que todavía no existe. Mientras tanto mandan [`ARCHITECTURE.md`](../ARCHITECTURE.md) y los ADR: si algo de aquí los contradice, manda el ADR.
+* **Estado:** propuesta, octubre de 2026. Se decide en el [ADR-005](../adr/ADR-005-INFRAESTRUCTURA-DE-ATESTACIONES.md), que todavía es un borrador. Mientras tanto mandan [`ARCHITECTURE.md`](../ARCHITECTURE.md) y los ADR: si algo de aquí los contradice, manda el ADR.
 * **Qué agrega:** las piezas de infraestructura que no estaban contempladas: el **verificador público**, la **consola de emisores**, `AttestationPort` y una API de solo lectura en el servidor.
 * **Supuesto abierto:** el diagrama dibuja el verificador y la consola como apps separadas de la PWA de la artesana. La otra opción es una sola PWA con roles.
 
