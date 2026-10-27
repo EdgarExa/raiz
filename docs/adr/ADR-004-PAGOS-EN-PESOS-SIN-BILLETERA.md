@@ -33,6 +33,9 @@
 | MicoPay acepta una cuenta **multifirma** | ❌ | Por eso se descarta que el grupo reciba el dinero. |
 | El QR de MicoPay se cobra horas después | ❌ | Dura **15 minutos** a propósito, por seguridad; la tienda se elige antes de bloquear. El retiro se crea **en la tienda**. |
 | Etherfuse paga por SPEI a cualquier artesana | ⚠️ | Exige **CURP, RFC**, selfie y una cuenta bancaria **a su nombre**, desde su propia cuenta Stellar. Solo para quien tenga RFC. |
+| MicoPay acepta USDC | ❌ hoy | Su escrow solo acepta XLM; USDC está pendiente en su plan. El cobro en efectivo de la fase 2 se construye con la versión simulada hasta entonces. |
+| Un escrow de Trustless Work acepta uno o varios hitos | ✅ | De 1 a 50 hitos, cada uno con su monto y su receptora (`core/validators/escrow.rs`, rama `multi-release-main`). |
+| La comisión de Trustless Work (0.3 %) se puede cobrar en testnet | ⚠️ por confirmar | En su contrato de código abierto va a una dirección fija que no existía en testnet el 26 de octubre de 2026. Se pregunta en #96. |
 | Yucu puede resolver disputas | ❌ | Quien resuelve decide a dónde va el dinero: contradice ADR-003 D1. |
 | Un PIN de 4 dígitos protege una llave copiada del celular | ⚠️ | Son 10 000 combinaciones: se pueden probar todas fuera de la app. Se mitiga con llave no exportable, límites y avisos. |
 
@@ -66,42 +69,57 @@ Compradores del extranjero y compras protegidas. Los estudiantes la construyen e
 | Rol | Quién | ¿Toca dinero? |
 |---|---|---|
 | Receptora de cada hito | **La artesana** (su cuenta) | Sí, le llega directo |
+| Libera el pago (*release signer*) | **La artesana**: cuando el comprador aprueba, le llega "Ya te pagaron. Toca para recibir" y confirma con su PIN | Solo libera hacia su propia cuenta; el contrato no deja cambiar la receptora |
 | Marca el hito como "enviado" (*service provider*) | El grupo o la promotora | No |
 | Aprueba los hitos | El comprador | No |
-| Resuelve disputas | Un tercero, como parámetro (en testnet, una cuenta multifirma de prueba de la asamblea; nunca Yucu) | Decide el reparto en disputa; no recibe |
+| Plataforma (*platform address*) | La entidad constituida que cobra la comisión (D11). En testnet, una cuenta de prueba | Recibe solo su comisión, en el momento de liberar |
+| Resuelve disputas | Un tercero, como parámetro (en testnet, una cuenta multifirma de prueba de la asamblea; nunca Yucu) | Decide el reparto en disputa; no debe recibir. **El contrato no lo impide**, por eso es una persona de confianza de las dos partes (#103) |
 
-Hitos: **30 %** cuando el grupo marca "enviado" y el comprador aprueba; **70 %** cuando el comprador confirma que recibió. Si no aprueba, se puede abrir disputa **15 días** después de "enviado" (plazo que aplica la app). Porcentajes, plazo y comisión del protocolo (0.3 %) en `src/config/protocolFees.ts`. Cada equipo de estudiantes usa su propia API key de testnet en su `.env` local; el CI usa una versión simulada.
+**Hitos: de 1 a N, según una plantilla.** Por defecto, **un solo hito (100 %)** que se paga cuando el comprador confirma que recibió. Se deja lista una segunda plantilla, "con adelanto" (por ejemplo, 30 % al enviar y 70 % al recibir), que se activa si la visita de campo muestra que las artesanas necesitan el adelanto. Cambiar de plantilla no cambia el contrato ni las pantallas.
+
+**Protecciones del comprador.** Antes de fondear, su app lee el escrow en la cadena y comprueba receptoras, montos, comisión y roles; el contrato rechaza el fondeo si el escrow cambió (`expected_escrow`). Solo aprueba los hitos de la plantilla, así un hito agregado después no se paga.
+
+Si el comprador no aprueba, se puede abrir disputa **15 días** después de "enviado". **Ese plazo lo aplica la app; el contrato no tiene plazos.** Plantillas de hitos, plazo, comisión de Trustless Work (0.3 %) y comisión de la plataforma van en `src/config/protocolFees.ts`. Cada equipo de estudiantes usa su propia API key de testnet en su `.env` local; el CI usa una versión simulada.
 
 **D9. Salida a pesos desde su propia cuenta, detrás de `PayoutPort`.**
 * **Efectivo — MicoPay:** cuando la artesana ya está en la tienda, crea el retiro desde su cuenta con su PIN y recibe el QR (vale 15 minutos). No espera a nadie.
 * **SPEI — Etherfuse:** solo para quien tenga RFC y cuenta bancaria a su nombre, desde su propia cuenta.
 * Las dos van detrás de `PayoutPort`, con una versión simulada para construir sin esperar a los proveedores.
 
-**D10. El grupo nunca recibe dinero.** Sus roles son: acompañar el registro, marcar "enviado", y poner el **sello comunitario** en las regalías (`perpetual_royalties`). Se descarta cualquier diseño en que una cuenta del grupo o de una responsable reciba el dinero de las socias.
+**D10. El grupo nunca recibe dinero de las ventas.** Sus roles son: acompañar el registro, marcar "enviado", y poner el **sello comunitario** en las regalías (`perpetual_royalties`). Se descarta cualquier diseño en que una cuenta del grupo o de una responsable reciba el dinero de las socias. **El escrow no descuenta Tequio.** El Tequio (2 %) solo existe en las **reventas** que pasan por `perpetual_royalties`, y va a una cuenta **de la comunidad que Yucu nunca controla** (en testnet, una cuenta de prueba).
+
+**D11. Sostenibilidad: la artesana nunca paga.** El proyecto necesita ingresos, y los cobra a quien obtiene valor:
+* **Comisión de plataforma en la compra protegida (fase 2), encima del precio.** La app ajusta el monto del escrow para que la artesana reciba **su precio completo**. La comisión se reparte en la misma transacción que libera el pago: nadie retiene el dinero, así que no es custodia.
+* **Servicios para compradores y marcas:** verificación de origen, sello embebible (#79), API de pasaportes y pasaporte digital de producto (#77). Funcionan también en la fase 1 y no tocan el dinero de las artesanas.
+* **Tequio comunitario** en las reventas (D10).
+
+Dos condiciones: la comisión va a la cuenta de una **entidad constituida** con RFC que emita facturas (CFDI), nunca a la cuenta personal de un mantenedor; y **el porcentaje no se inventa**: se define con una cifra justificada en `src/config/protocolFees.ts`. En testnet se usa un valor de prueba marcado como tal.
 
 ## 4. Qué cambia
 
 **Fase 1**
 * **Contratos** (#110, un solo redespliegue junto con el rol `certifier` del PR #102): se mantiene la firma de la productora; pasaporte que no expira; inicialización segura; `revoke_certification`; regalías robustas ante falta de trustline; campos con formato cerrado.
 * **#91:** billetera de cada artesana con PIN, llave no exportable, límites y avisos.
-* **Tarjeta QR con la llave cifrada** y firma en el celular de la promotora (issue nueva).
+* **#117:** tarjeta QR con la llave cifrada y firma en el celular de la promotora.
 * **#92 y #93:** registro firmado por la artesana y el certificador.
-* **Configuración de red** (issue nueva): leer `contracts/deployments/testnet.json` y elegir entre la versión simulada y testnet.
+* **#118:** configuración de red: leer `contracts/deployments/testnet.json` y elegir entre la versión simulada y testnet.
 
 **Fase 2 (testnet)**
-* **#96:** escrow *multi-release* con la artesana como receptora.
+* **#96:** escrow *multi-release* con la artesana como receptora y quien libera, plantillas de 1 a N hitos y comisión de plataforma encima del precio.
 * **#112:** `PayoutPort` desde la cuenta de la artesana.
 * **#114:** "Ya estoy en la tienda": la artesana crea su propio retiro.
 * **#115:** billetera del comprador. **#116:** guía para conseguir USDC.
-* **"Mis cobros"** (issue nueva): la artesana ve en pesos lo que ha recibido.
+* **#119:** "Mis cobros": la artesana ve en pesos lo que ha recibido.
 
 ## 5. Preguntas abiertas (antes de mainnet)
 
 1. **Campo** (guía en `docs/ux-testing/`): ¿las artesanas recuerdan su PIN? ¿Quién guarda la tarjeta? ¿Cuántas tienen celular propio y RFC? ¿Qué tienda sería la primera?
-2. **MicoPay:** ¿haría un piloto en la Mixteca? ¿Agregaría una palabra clave para cobrar? ¿Cuándo llega a mainnet? (Está en desarrollo.)
+2. **MicoPay:** ¿cuándo acepta USDC? ¿Haría un piloto en la Mixteca? ¿Agregaría una palabra clave para cobrar? ¿Cuándo llega a mainnet? (Está en desarrollo.)
 3. **Etherfuse:** ¿hay alternativa al RFC? ¿Límites por persona?
 4. **Disputas:** quién resuelve (#103).
-5. **Legal:** confirmar con un abogado que este diseño no tiene custodia por parte de Yucu ni del grupo, y que una dirección por persona en una cadena pública es aceptable con la reducción de datos.
+5. **Sostenibilidad:** qué entidad cobra la comisión (TecNM, una asociación civil o una cooperativa de servicios), cuál es el porcentaje y por qué, y qué servicios se ofrecen a compradores y marcas.
+6. **Campo:** ¿las artesanas necesitan un adelanto al enviar? Decide la plantilla de hitos por defecto.
+7. **Legal:** confirmar con un abogado que este diseño no tiene custodia por parte de Yucu ni del grupo, que una dirección por persona en una cadena pública es aceptable con la reducción de datos, que la comisión de plataforma no convierte a la entidad en captadora de recursos, y quién puede recibir el Tequio de las reventas.
 
 ## 6. Consecuencias
 

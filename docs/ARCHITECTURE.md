@@ -54,7 +54,7 @@
 | Certificador (servidor) | Llave de la plataforma, en `.env` | Su parte del registro y la certificación de lotes | No |
 | Comprador del extranjero | Su propia billetera | El pago al escrow y la aprobación de hitos | No |
 | Quien resuelve disputas | Un tercero (nunca Yucu) | El reparto en una disputa | No |
-| Plataforma Yucu | Ninguna que mueva fondos | Nada que mueva dinero | No |
+| Entidad que opera Yucu (constituida, con RFC) | Propia, solo para cobrar | Nada que mueva el dinero de otros | Solo su comisión, encima del precio, al liberarse el pago (ADR-004 D11) |
 
 ## 4. Flujos
 
@@ -69,11 +69,12 @@
 
 ### Fase 2: compra protegida (solo testnet)
 
-1. El comprador paga USDC desde su propia billetera a un escrow *multi-release* de Trustless Work. **La receptora de cada hito es la artesana.**
-2. Hito 1 (**30 %**): el grupo marca "enviado" y el comprador aprueba.
-3. Hito 2 (**70 %**): el comprador confirma que recibió.
-4. Si el comprador no aprueba, se puede abrir disputa 15 días después de "enviado". Resuelve un tercero.
-5. Para cobrar en efectivo, la artesana va a la tienda, toca "Ya estoy en la tienda" y firma el retiro con su PIN. Recibe un QR que vale 15 minutos. Quien tiene RFC y banco puede cobrar por SPEI.
+1. El comprador paga USDC desde su propia billetera a un escrow *multi-release* de Trustless Work. Su app comprueba el escrow en la cadena antes de pagar. **La receptora de cada hito es la artesana**, y la comisión de la plataforma va encima del precio.
+2. Por defecto hay **un solo hito**: el grupo marca "enviado", el comprador confirma que recibió y aprueba.
+3. A la artesana le llega "Ya te pagaron. Toca para recibir" y libera el pago con su PIN. Su parte y la comisión se reparten en la misma transacción.
+4. Si el comprador no aprueba, se puede abrir disputa 15 días después de "enviado" (plazo de la app). Resuelve un tercero.
+5. Hay una plantilla "con adelanto" (varios hitos) por si las artesanas la necesitan.
+6. Para cobrar en efectivo, la artesana va a la tienda, toca "Ya estoy en la tienda" y firma el retiro con su PIN. Recibe un QR que vale 15 minutos. Quien tiene RFC y banco puede cobrar por SPEI.
 
 Los porcentajes, el plazo y las comisiones salen de [`src/config/protocolFees.ts`](../src/config/protocolFees.ts).
 
