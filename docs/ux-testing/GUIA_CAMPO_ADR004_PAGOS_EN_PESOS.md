@@ -21,6 +21,7 @@
 6. Si confían en un QR como forma de cobrar en efectivo. En MicoPay, el QR se crea **cuando ya está en la tienda** y **dura 15 minutos**.
 7. Qué tienda de la cabecera podría ser la primera en entregar efectivo.
 8. Qué protección prefieren con un celular compartido: límite por cobro o aviso a una persona de confianza.
+9. En una venta al extranjero, si pueden esperar a que el comprador reciba la pieza para cobrar todo, o si necesitan **un adelanto al enviar** para comprar material. De esto depende si se activa la plantilla de pago con adelanto (ADR-004, D8).
 
 ## 2. Equipo y material
 
@@ -48,6 +49,7 @@ Se cuenta con la mano levantada y sin nombres.
 5. Si les llega un QR que vale $500 y solo sirve 15 minutos en una tienda, ¿lo cuidarían como un billete?
 6. ¿En qué tienda de la cabecera confían y suele tener efectivo? Se anota el giro del negocio, no el nombre de la persona.
 7. ¿Qué les preocupa? Por ejemplo: olvidar el PIN, que alguien de la familia lo vea, robo o que la tienda no tenga efectivo.
+8. Si alguien de otro país les compra una pieza, ¿pueden esperar a que le llegue para cobrar todo, o necesitan una parte al enviarla, por ejemplo para comprar hilo? ¿Cuánto tiempo pueden esperar?
 
 **20–45 min · Prueba con el prototipo (3 o 4 voluntarias, una por una)**
 
@@ -77,14 +79,15 @@ Se cuenta con la mano levantada y sin nombres.
 | Socias que confían en el QR como efectivo | 50 % o más | Replantear el efectivo con QR en la fase 2 |
 | Socias con celular propio, banco y RFC | Se reporta el número | Decide cuántas usarían tarjeta QR y cuántas SPEI |
 | Tiendas candidatas | Al menos 1 | Sin tienda no hay efectivo en la fase 2 |
+| Socias que necesitan un adelanto al enviar | Se reporta el número | Si son la mayoría, se activa la plantilla con adelanto (ADR-004, D8) |
 | Palabras técnicas que causen preguntas (billetera, cripto, hash, llave) | 0 | Revisar textos con #108 |
 
 ## 5. Hoja de registro (papel)
 
-| Participante | Oficio | Celular propio (sí/no) | Banco (sí/no) | RFC (sí/no/no sabe) | Tiempo A o B | ¿La promotora vio el PIN? (B) | C correcta | Recordó su PIN (D) | Tiempo E | Protección preferida (F) | ¿Necesitó ayuda? | Cita textual anónima |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| P1 | | | | | | | | | | | | |
-| P2 | | | | | | | | | | | | |
+| Participante | Oficio | Celular propio (sí/no) | Banco (sí/no) | RFC (sí/no/no sabe) | Tiempo A o B | ¿La promotora vio el PIN? (B) | C correcta | Recordó su PIN (D) | Tiempo E | Protección preferida (F) | ¿Necesita adelanto? (sí/no) | ¿Necesitó ayuda? | Cita textual anónima |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| P1 | | | | | | | | | | | | | |
+| P2 | | | | | | | | | | | | | |
 
 * No anotar la edad si la persona prefiere no ser identificada.
 * No anotar los PIN de prueba en la hoja.
@@ -93,5 +96,5 @@ Se cuenta con la mano levantada y sin nombres.
 ## 6. Cómo se reporta
 
 * Un resumen en Markdown en `docs/ux-testing/TEST_06_PAGOS_PESOS_<oficio>.md`, por rol y comunidad, sin datos personales.
-* Los resultados que cambien el diseño se comentan en #104 (ADR-004) y en la issue afectada.
+* Los resultados que cambien el diseño se comentan en la issue afectada, citando [ADR-004](../adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md).
 * Sin fotos de personas, audio, video, CURP ni teléfonos en el repositorio, issues o PR.
