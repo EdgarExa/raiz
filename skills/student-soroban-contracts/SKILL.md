@@ -1,6 +1,6 @@
 ---
 name: student-soroban-contracts
-description: Guía y skill pedagógica para estudiantes de ingeniería del TecNM Campus Tlaxiaco para diseñar, compilar y auditar Smart Contracts en Soroban (Rust/Wasm) en la red Stellar.
+description: Guía y skill pedagógica para estudiantes de ingeniería del TecNM Campus Tlaxiaco para diseñar, compilar y probar Smart Contracts en Soroban (Rust/Wasm) en la red Stellar.
 ---
 
 # 🎓 Skill TecNM: Desarrollo de Smart Contracts en Soroban (Rust)
@@ -22,7 +22,7 @@ use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Address, B
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LoteCosecha {
     pub productor: Address,
-    pub kilos: u32,
+    pub rango_volumen: u32, // código de rango (ADR-004, D5), nunca kilos exactos ni montos
     pub variedad: Symbol,
     pub digest_hash: BytesN<32>,
 }
@@ -38,16 +38,21 @@ impl ContratoCosechaMixteca {
     pub fn registrar_lote(
         env: Env,
         productor: Address,
-        kilos: u32,
+        rango_volumen: u32,
         variedad: Symbol,
         digest_hash: BytesN<32>,
     ) -> bool {
         // Validación obligatoria de firma
         productor.require_auth();
 
+        // Un lote ya registrado no se sobrescribe
+        if env.storage().persistent().has(&digest_hash) {
+            return false;
+        }
+
         let lote = LoteCosecha {
             productor: productor.clone(),
-            kilos,
+            rango_volumen,
             variedad,
             digest_hash: digest_hash.clone(),
         };
@@ -55,8 +60,9 @@ impl ContratoCosechaMixteca {
         // Guardar en almacenamiento persistente
         env.storage().persistent().set(&digest_hash, &lote);
 
-        // Renovar TTL de renta por 1 año (aproximadamente 6,307,200 ledgers)
-        env.storage().persistent().extend_ttl(&digest_hash, 6307200, 6307200);
+        // Renovar el TTL de renta. Se mide en ledgers (~5 s cada uno), no en segundos,
+        // y la red pone un máximo (`max_entry_ttl`): consúltalo antes de elegir el número.
+        env.storage().persistent().extend_ttl(&digest_hash, 100_000, 500_000);
 
         true
     }
@@ -79,29 +85,38 @@ impl ContratoCosechaMixteca {
    * Usa `env.storage().persistent()` solo para títulos de propiedad y atestaciones de origen.
 3. **Escribir Pruebas Unitarias (`#[test]`):**
    * Soroban permite simular el entorno de blockchain directamente con `cargo test` sin gastar fondos reales ni levantar nodos locales pesados.
+   * Una prueba positiva y una negativa por cada regla. Para errores usa `try_...` y `assert_eq!(res, Err(Ok(Error::X)))`.
+   * `mock_all_auths()` aprueba **todas** las firmas, así que no prueba quién firmó. Para probar la autorización usa `mock_auths` con solo las firmas que quieres (ver #101 [W11]).
+4. **Inicializa en el despliegue:** usa `__constructor` en lugar de una función `initialize` que cualquiera puede llamar primero (ver #110 [W17]).
+5. **Nada de datos personales en la cadena:** ni nombres, ni comunidades exactas, ni montos. Lo que se escribe en la cadena no se puede borrar.
+
+> El escrow de la app es **Trustless Work** (ADR-003). `contracts/fair_escrow` es solo material didáctico.
 
 ---
 
 ## 3. Comandos Esenciales de Soroban CLI en la Terminal
 
 ```bash
+# Requisitos: stellar-cli >= 22 y `rustup target add wasm32v1-none`
+# (el CLI antes se llamaba `soroban`; ahora es `stellar`)
+
 # 1. Compilar el contrato a WebAssembly optimizado
-cargo build --target wasm32-unknown-unknown --release
+cargo build --release --target wasm32v1-none
 
 # 2. Desplegar en la red de pruebas (Stellar Testnet)
-soroban contract deploy \
-  --wasm target/wasm32-unknown-unknown/release/contrato.wasm \
+stellar contract deploy \
+  --wasm target/wasm32v1-none/release/contrato.wasm \
   --source-account alice \
   --network testnet
 
 # 3. Invocar una función pública del contrato
-soroban contract invoke \
+stellar contract invoke \
   --id <CONTRACT_ID> \
   --source-account alice \
   --network testnet \
   -- registrar_lote \
   --productor G... \
-  --kilos 120 \
+  --rango_volumen 2 \
   --variedad "TYPICA" \
   --digest_hash cebc5b...
 ```
