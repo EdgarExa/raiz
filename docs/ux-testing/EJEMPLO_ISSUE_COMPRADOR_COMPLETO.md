@@ -24,7 +24,7 @@
 ---
 
 ## 👤 Perfil del Comprador Entrevistado
-- **Identificador / Alias:** Comprador-01 (Rodrigo V., 32 años, Barista profesional y comprador de café de altura y textiles artesanales para su negocio).
+- **Identificador / Alias:** Comprador-01 (barista profesional que compra café de altura y textiles artesanales para su negocio).
 - **Edad y Ocupación:** 32 años, Barista y copropietario de cafetería cultural.
 - **Lugar de Residencia:** Heroica Ciudad de Tlaxiaco, Oaxaca (con clientes turistas y de CDMX).
 - **Segmento de Comprador:**
@@ -88,7 +88,7 @@
 
 ## 📊 Parte 3: Evaluación de Usabilidad Estandarizada (SUS Adaptado)
 
-*Calificaciones otorgadas por Rodrigo V. (1 a 5):*
+*Calificaciones otorgadas por Comprador-01 (1 a 5):*
 1. Deseo de uso frecuente: `5`
 2. Complejidad innecesaria: `1`
 3. Facilidad de uso: `5`
