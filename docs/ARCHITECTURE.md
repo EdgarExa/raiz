@@ -1,179 +1,96 @@
-# 🏛️ Yucu Protocol Architecture Specification
-### *Software Architecture & Decentralized Protocol on Stellar & Soroban*
+# Arquitectura de Yucu Protocol
 
-* **Ecosystem:** Stellar Network / Soroban / Drips Network / TecNM Campus Tlaxiaco
-* **Architectural Pattern:** Offline-First, Event-Driven, Decoupled Adapter Pattern
-* **Associated ADRs:** [ADR-001 (Trustless Work Escrow)](./adr/ADR-001-TRUSTLESS-WORK-ESCROW.md), [ADR-002 (Offline-First PWA & Rural Identity)](./adr/ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md)
+* **Estado:** prototipo en Stellar **testnet**. La tabla "Qué es real y qué es simulado" del [`README.md`](../README.md) dice el estado de cada módulo.
+* **Decisiones que manda este documento:** [ADR-001](./adr/ADR-001-TRUSTLESS-WORK-ESCROW.md) (escrow con Trustless Work), [ADR-002](./adr/ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md) (PWA sin señal y tarjeta QR), [ADR-003](./adr/ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md) (no custodial) y [ADR-004](./adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md) (la artesana cobra en pesos con una cuenta invisible). Si algo de aquí contradice un ADR, manda el ADR.
 
 ---
 
-## 📐 1. System Layers Architecture Diagram
+## 1. Principios
+
+1. **No custodial de punta a punta.** Ni Yucu ni el grupo generan, guardan ni reciben la llave de nadie, y nunca retienen dinero. La artesana firma y recibe en su propia cuenta.
+2. **Preparar → firmar en el teléfono → enviar.** El servidor (o la API de Trustless Work) prepara una transacción sin firmar; la persona la firma en su dispositivo; después se envía.
+3. **La artesana solo ve pesos.** Su cuenta Stellar es invisible: la interfaz nunca muestra "billetera", USDC, XLM, direcciones, hashes ni llaves.
+4. **Lo mínimo en la cadena.** Municipio o región, catálogos cerrados, volumen por rangos, hash de la foto y ningún monto ni nombre.
+5. **La UI solo habla con los puertos** de `src/core/chain/`. Así se puede pasar de la versión simulada a testnet sin cambiar pantallas.
+
+## 2. Capas
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        LAYER 1: MOBILE CLIENT & ACCESSIBILITY                          │
-│  - Progressive Web App (PWA) Offline-First (React 19 + Tailwind CSS)                   │
-│  - "Elder-Friendly / Modo Abuelo" UI: 112px ergonomic touch targets, zero complex text│
-│  - Web Audio API: 24kbps Opus recording and acoustic normalization                     │
-│  - Zero-Seed IAM: Physical Community QR Cards and SMS OTP authentication               │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                   LAYER 2: DOMAIN CORE & OFFLINE RESILIENCE ENGINE                     │
-│  - Offline Storage Outbox: IndexedDB (ACID transactional offline-first storage)        │
-│  - SyncEngine: Reactive cryptographic synchronization upon connectivity detection      │
-│  - CryptoEngine: Canonical SHA-256 Community Digest calculation and Ed25519 signing    │
-│  - QR Engine: Vectorized SVG ISO/IEC 18004 generation for physical Hang-Tag labels     │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                     LAYER 3: AUTONOMOUS AI ORACLES & AGENT SWARM                       │
-│  - IndigenousVoiceAgent: Acoustic parsing (*Tu'un Savi* / Spanish) & SHA-256 digest    │
-│  - SCAACuppingVisionAgent: SCAA sensory scoring (>85 export) & craft defect audit      │
-│  - SentinelEUDRSatelliteAgent: Sentinel-2 satellite geofence anti-deforestation proof  │
-│  - DPPCircularityAgent: EU Digital Product Passport (ESPR) & agroforestry carbon inset│
-│  - IndigenousIPGuardianAgent: Ancestral collective IP shield (8% + 2% Tequio royalty)  │
-│  - SettlementSolverAgent: Stellar AMM / Banxico SPEI path payment router               │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                    LAYER 4: SOROBAN SMART CONTRACTS & DEVELOPER GATEWAY                │
-│  ┌─────────────────────────┐ ┌─────────────────────────┐ ┌──────────────────────────┐ │
-│  │   lot_passport (Rust)   │ │ attestation_registry(RS)│ │  TRUSTLESS WORK ESCROW   │ │
-│  │ Immutable lot identity  │ │ 8 Canonical RWA Schemas │ │ Milestone-based Soroban  │ │
-│  │ & Tlaxiaco origin proof │ │ Two-Tier TTL Storage    │ │ custody & disbursement   │ │
-│  └─────────────────────────┘ └─────────────────────────┘ └──────────────────────────┘ │
-│  - External Consumption Gateway: React Hooks (`@yucu-protocol/react`)                  │
-│  - Embeddable Trust Badge (`<YucuPassportBadge />`) for Shopify/WooCommerce e-commerce │
-│  - Official Stellar SDK Client (`@stellar/stellar-sdk`) & Stellar Raven MCP Server     │
-│  - Public REST & Webhook Gateway (`/api/v1/protocol/*`, `/api/v1/attestations/*`)      │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                     LAYER 5: SETTLEMENT RAILS & LAST-MILE PAYOUT                       │
-│  - Etherfuse Anchor: Atomic swap USDC -> MXNe -> Banxico SPEI interbank transfers     │
-│  - Financial Inclusion Accounts: Banco del Bienestar, Finabien & Oaxaca Credit Unions  │
-│  - Rural cooperative cash distribution network for unbanked smallholders (MicoPay)     │
-└────────────────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│ Teléfono (PWA, React)                                                │
+│  Pantallas para personas mayores · funciona sin señal (IndexedDB)    │
+│  Llave de la artesana cifrada con su PIN, o en su tarjeta QR         │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                │ solo a través de los puertos
+┌───────────────────────────────▼──────────────────────────────────────┐
+│ Puertos (src/core/chain/ports.ts)                                    │
+│  WalletPort · LotRegistryPort · EscrowPort · PayoutPort              │
+│  Versión simulada (SimulatedChain.ts, source: 'simulated')           │
+│  Versión testnet (en construcción)                                   │
+└───────┬──────────────────────┬──────────────────────┬────────────────┘
+        │                      │                      │
+┌───────▼────────┐   ┌─────────▼─────────┐   ┌────────▼──────────────┐
+│ Servidor       │   │ Trustless Work    │   │ Salida a pesos        │
+│ (server.ts)    │   │ (API, testnet)    │   │ MicoPay (efectivo)    │
+│ Prepara sin    │   │ Escrow multi-     │   │ Etherfuse (SPEI)      │
+│ firmar; firma  │   │ release; prepara  │   │ Desde la cuenta de    │
+│ solo como      │   │ sin firmar        │   │ la artesana           │
+│ certificador   │   │                   │   │                       │
+└───────┬────────┘   └─────────┬─────────┘   └───────────────────────┘
+        │                      │
+┌───────▼──────────────────────▼───────────────────────────────────────┐
+│ Stellar / Soroban (testnet)                                          │
+│  lot_passport · attestation_registry · perpetual_royalties           │
+│  (fair_escrow es material didáctico: la app no lo usa)               │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
----
+## 3. Quién firma qué
 
-## 🔄 2. End-to-End User and System Interaction Sequence Diagram
+| Actor | Cuenta | Qué firma | ¿Recibe dinero? |
+|---|---|---|---|
+| **Artesana** | Propia e invisible. Llave en su celular con PIN de 4 dígitos, o en su tarjeta QR con PIN de 6 | El registro de su lote y sus retiros a pesos | **Sí**, directo en su cuenta |
+| Grupo o promotora | Propia | Marca un pedido como "enviado" y pone el sello comunitario de las regalías | No |
+| Certificador (servidor) | Llave de la plataforma, en `.env` | Su parte del registro y la certificación de lotes | No |
+| Comprador del extranjero | Su propia billetera | El pago al escrow y la aprobación de hitos | No |
+| Quien resuelve disputas | Un tercero (nunca Yucu) | El reparto en una disputa | No |
+| Entidad que opera Yucu (constituida, con RFC) | Propia, solo para cobrar | Nada que mueva el dinero de otros | Solo su comisión, encima del precio, al liberarse el pago (ADR-004 D11) |
 
-The following sequence diagram details the complete flow of events and interactions among the three human actors (**Producer**, **Institutional Buyer**, and **Tlaxiaco Cooperative Validator**) with the client software, offline storage, Stellar ledger anchoring, and the **Trustless Work** smart contract escrow:
+## 4. Flujos
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Producer as 🌾 Producer / Artisan<br/>(Don Juan - Yucuhiti)
-    participant PWA as 📱 Yucu PWA Client<br/>(Offline-First)
-    participant Storage as 💾 IndexedDB Outbox<br/>(Local Storage)
-    participant Sync as 🔄 Sync & Crypto Engine<br/>(SHA-256 / Ed25519)
-    participant Soroban as ⛓️ Stellar / Soroban<br/>(LotPassport & Attestation)
-    actor Buyer as ☕ B2B Buyer / Roaster<br/>(Specialty Coffee SMB)
-    participant TW as 🤝 Trustless Work Escrow<br/>(Milestone-based Soroban)
-    actor Coop as 🏛️ Tlaxiaco Cooperative<br/>(Arbitrator / Validator)
-    participant Payout as 💳 Settlement Rails<br/>(Etherfuse SPEI / Cash)
+### Fase 1: registrar un lote (aceptada)
 
-    %% PHASE 1: OFFLINE PARCEL REGISTRATION
-    Note over Producer,Storage: PHASE 1: Parcel Registration (100% Offline in Tlaxiaco)
-    Producer->>PWA: 1. Presses giant 112px mic button and speaks in Mixteco or Spanish
-    PWA->>PWA: 2. Web Audio API records 24kbps Opus & extracts harvest metadata (kg, variety)
-    PWA->>Storage: 3. Saves lot & voice audio in local IndexedDB (zero data loss in offline mountain)
-    PWA-->>Producer: 4. Shows friendly visual confirmation & provisional ID (MX-2026-CAFE-01)
+1. La artesana llena su lote en el teléfono. Sin señal, los **datos** quedan en IndexedDB; no se guardan transacciones firmadas, porque vencen en minutos.
+2. Con señal, el servidor prepara `register_lot` y firma **solo como certificador**.
+3. El teléfono arma el resumen a partir de la transacción y la artesana firma con su PIN (o con su tarjeta QR en el celular de la promotora).
+4. Se envía. La artesana ve "Tu pieza quedó registrada" y el QR de origen de su lote.
 
-    %% PHASE 2: SYNCHRONIZATION ON NETWORK DETECTION
-    Note over Storage,Soroban: PHASE 2: Network Sync & Cryptographic Anchoring on Stellar
-    PWA->>Sync: 5. Detects internet connection (community WiFi or mobile data upon town arrival)
-    Sync->>Storage: 6. Reads pending lot outbox from local storage
-    Sync->>Sync: 7. Computes canonical SHA-256 Community Digest and signs with Ed25519 key
-    Sync->>Soroban: 8. Invokes lot_passport::register_lot(digest, producer_id, coordinates)
-    Soroban-->>Sync: 9. Emits immutable receipt (Tx Hash and Stellar Ledger Number)
-    Sync->>Storage: 10. Updates lot status locally to 'ANCHORED_ON_CHAIN'
-    PWA-->>Producer: 11. Generates printable Hang-Tag label with ISO/IEC 18004 QR code
+**Compradores en México:** pagan directo en pesos (SPEI o efectivo). Ese dinero no pasa por Stellar; en la cadena solo va el pasaporte del lote.
 
-    %% PHASE 3: ESCROW FUNDING VIA TRUSTLESS WORK
-    Note over Buyer,TW: PHASE 3: B2B Purchase & Escrow Funding (Trustless Work)
-    Buyer->>PWA: 12. Scans physical QR code & inspects digital lot passport
-    Buyer->>TW: 13. initialize_escrow(buyer, producer, coop_tlaxiaco, 1500 USDC)
-    Buyer->>TW: 14. deposit_funds(1500 USDC locked in audited Soroban smart contract)
-    TW-->>TW: 15. Contract locks funds (30% Milestone 1: Origin / 70% Milestone 2: Delivery)
+### Fase 2: compra protegida (solo testnet)
 
-    %% PHASE 4: MILESTONE RELEASE & LAST-MILE SETTLEMENT
-    Note over TW,Payout: PHASE 4: Milestone Verification & Fund Disbursement
-    Sync->>TW: 16. submit_milestone_proof(Milestone 1: Yucu Origin Attestation Verified)
-    TW->>Payout: 17. Releases 30% advance ($450 USDC) directly to Producer
-    Producer->>Coop: 18. Delivers physical coffee bags to Tlaxiaco Municipal Warehouse
-    Coop->>PWA: 19. Scans bag QR tag, validates physical weight & moisture grade
-    Coop->>TW: 20. submit_milestone_proof(Milestone 2: Physical Delivery Approved)
-    TW->>Payout: 21. Releases remaining 70% final settlement ($1,050 USDC)
-    Payout-->>Producer: 22. SPEI deposit to Banco del Bienestar card or local cash network
-    TW-->>Buyer: 23. Transfers certified on-chain ownership of verified lot
-```
+1. El comprador paga USDC desde su propia billetera a un escrow *multi-release* de Trustless Work. Su app comprueba el escrow en la cadena antes de pagar. **La receptora de cada hito es la artesana**, y la comisión de la plataforma va encima del precio.
+2. Por defecto hay **un solo hito**: el grupo marca "enviado", el comprador confirma que recibió y aprueba.
+3. A la artesana le llega "Ya te pagaron. Toca para recibir" y libera el pago con su PIN. Su parte y la comisión se reparten en la misma transacción.
+4. Si el comprador no aprueba, se puede abrir disputa 15 días después de "enviado" (plazo de la app). Resuelve un tercero.
+5. Hay una plantilla "con adelanto" (varios hitos) por si las artesanas la necesitan.
+6. Para cobrar en efectivo, la artesana va a la tienda, toca "Ya estoy en la tienda" y firma el retiro con su PIN. Recibe un QR que vale 15 minutos. Quien tiene RFC y banco puede cobrar por SPEI.
 
-### Breakdown of Sequence Phases:
+Los porcentajes, el plazo y las comisiones salen de [`src/config/protocolFees.ts`](../src/config/protocolFees.ts).
 
-1. **Phase 1 (Parcel Offline Edge):** Don Juan is in the remote mountains of Santa María Yucuhiti without cellular coverage. He opens the Yucu PWA, taps the 112px ergonomic microphone button, and speaks in *Tu'un Savi* (Mixteco). The application captures the audio and harvest metadata locally in IndexedDB with zero dependence on active internet.
-2. **Phase 2 (Stellar Ledger Anchoring):** Upon arriving at a connected zone or community WiFi hotspot in Tlaxiaco, the `SyncEngine` processes the outbox, computes the canonical SHA-256 Community Digest, and interacts with Soroban smart contracts, generating the physical QR Hang-Tag label for the coffee sacks.
-3. **Phase 3 (B2B Escrow with Trustless Work):** An ethical buyer or roaster in Europe, the US, or Mexico City scans the QR code, reviews verifiable proof of origin and quality, and locks 1,500 USDC in **Trustless Work**'s audited Soroban escrow contract.
-4. **Phase 4 (Milestone Disbursement & Delivery):** The farmer immediately receives an automated 30% advance payment ($450 USDC) backed by the certified origin attestation. When physical coffee bags arrive at the Tlaxiaco cooperative, the local validator confirms physical reception, triggering the release of the remaining 70% ($1,050 USDC) via SPEI directly to the farmer's Banco del Bienestar debit card.
+## 5. Mapa del código
 
----
+| Ruta | Qué hay |
+|---|---|
+| `src/components/` | Pantallas React |
+| `src/core/chain/` | Puertos y su versión simulada. Aquí se agregan las versiones de testnet |
+| `src/core/` | Lógica de negocio: cripto, políticas de comercio justo, IA, sincronización |
+| `src/config/protocolFees.ts` | Porcentajes oficiales del protocolo |
+| `server.ts` | Servidor Express: IA (Gemini) y preparación de transacciones sin firmar |
+| `contracts/` | Contratos Soroban en Rust |
+| `contracts/deployments/testnet.json` | IDs de los contratos desplegados en testnet |
+| `docs/adr/` | Decisiones de arquitectura |
 
-## 📂 3. Repository Directory Structure (Technical Mapping)
+## 6. Qué falta
 
-To facilitate onboarding for student-researchers, maintainers, and open-source contributors:
-
-```text
-yucu/
-├── contracts/                     # Rust smart contracts for Soroban (Stellar)
-│   ├── attestation_registry/      # Schema registry & on-chain provenance claims
-│   ├── lot_passport/              # Immutable digital passport for agricultural lots
-│   ├── perpetual_royalties/       # Secondary market royalty engine for female artisans
-│   └── fair_escrow/               # Baseline community escrow implementation
-├── docs/                          # Architectural, technical, and field research docs
-│   ├── adr/                       # Architecture Decision Records (ADR-001, ADR-002)
-│   ├── MVP_SPECIFICATION.md       # Strict MVP specification for Tlaxiaco pilot
-│   ├── ARCHITECTURE.md            # This system architecture document
-│   ├── PROTOCOL_SPECIFICATION.md  # Cryptographic & smart contract protocol spec
-│   └── research/                  # Field research reports & usability interviews in Oaxaca
-├── src/
-│   ├── components/                # React UI components (PWA / Elder-Friendly Mode)
-│   │   ├── ChatScreen.tsx         # Voice registration & conversational interface
-│   │   ├── DigitalPassportScreen.tsx # Public verified lot passport viewer
-│   │   ├── ArtisanQrTagModal.tsx  # Physical QR Hang-Tag label generator
-│   │   └── TopAppBar.tsx          # Main header & role switcher
-│   ├── core/                      # Pure domain core (isolated from UI framework)
-│   │   ├── ai/                    # AI Oracles (Voice STT, SCAA Quality, EUDR Satellite)
-│   │   ├── auth/                  # Zero-Seed identity & Community QR card engine
-│   │   ├── blockchain/            # Soroban RPC adapter & Trustless Work Escrow adapter
-│   │   ├── crypto/                # Canonical SHA-256 digest & Ed25519 signing
-│   │   ├── settlement/            # Hybrid multi-anchor settlement orchestrator (Etherfuse)
-│   │   └── sync/                  # Offline outbox & synchronization engine (IndexedDB)
-│   └── tests/                     # Automated unit and system test suites
-└── drips.config.json              # Drips Network funding configuration & splits
-```
-
----
-
-## 🔒 4. Trustless Work Escrow Integration
-
-In alignment with [ADR-001](./adr/ADR-001-TRUSTLESS-WORK-ESCROW.md), Yucu Protocol utilizes **Trustless Work**'s audited smart contract infrastructure via the `TrustlessWorkEscrowAdapter`:
-
-1. **Funding:** The institutional buyer deposits USDC or MXNe into the Trustless Work contract.
-2. **Milestone 1 (Harvest Advance - 30%):** Automatically released when the smart contract verifies the origin attestation issued by Yucu in Tlaxiaco (`0x01_ORIGIN`).
-3. **Milestone 2 (Final Settlement - 70%):** Released when the Tlaxiaco cooperative issues the physical delivery attestation (`0x04_DELIVERY`).
-4. **Arbitration:** If discrepancies arise in weight, humidity, or defect score, the municipal cooperative acts as the designated arbitrator within Trustless Work to achieve resolution.
-
----
-
-## 📡 5. Channel Policy & Offline Resilience
-
-In alignment with [ADR-002](./adr/ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md):
-* The primary interaction channel is an open **Progressive Web App (PWA)** adhering to W3C standards, ensuring total sovereignty by eliminating dependencies on closed commercial messaging platforms, avoiding per-message API fees, and eliminating the risk of arbitrary account bans.
-* All data is persisted locally in **IndexedDB** at the edge, synchronizing with the Stellar ledger in atomic batches when connectivity is available.
+El trabajo pendiente está en las issues de GitHub con la etiqueta `drips-eligible`. El [ADR-004](./adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md) (sección 4) dice qué issue cubre cada pieza, y su sección 5 dice qué hay que resolver antes de usar dinero real.

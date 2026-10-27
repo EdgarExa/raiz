@@ -8,7 +8,7 @@ Yucu Protocol: una PWA para que productores y artesanas de la Mixteca (Oaxaca) r
 
 ## Reglas que no se rompen
 
-1. **No custodial (ADR-003).** El servidor nunca genera, guarda, deriva ni recibe llaves privadas de usuarios, y nunca retiene fondos. Cada transacción la firma la persona en su dispositivo. Patrón obligatorio: **preparar → firmar en el teléfono → enviar**.
+1. **No custodial (ADR-003 y ADR-004).** El servidor nunca genera, guarda, deriva ni recibe llaves privadas de usuarios, y nunca retiene fondos. Cada transacción la firma la persona a quien corresponde, en su dispositivo. La artesana firma y recibe en su propia cuenta; si no tiene celular, firma con su tarjeta QR en el celular de la promotora y la llave se borra al terminar. Ni el grupo ni Yucu reciben su dinero. Patrón obligatorio: **preparar → firmar en el teléfono → enviar**.
 2. **El escrow es Trustless Work** (ADR-001 y ADR-003). `contracts/fair_escrow` es material didáctico; no lo uses para la app.
 3. **No inventes resultados.** Prohibido generar hashes, números de ledger, calificaciones o certificaciones falsas fuera de `src/core/chain/SimulatedChain.ts`. Si un resultado es simulado, lleva `source: 'simulated'` y la UI muestra `<DemoBadge />` (`src/components/DemoBadge.tsx`).
 4. **La UI solo habla con los puertos** de `src/core/chain/` (`WalletPort`, `LotRegistryPort`, `EscrowPort`). Ningún componente importa `@stellar/stellar-sdk` ni llama a Trustless Work directamente.
@@ -28,7 +28,7 @@ Yucu Protocol: una PWA para que productores y artesanas de la Mixteca (Oaxaca) r
 | `server.ts` | Servidor Express: IA (Gemini) y, en el futuro, preparación de transacciones |
 | `contracts/` | Contratos Soroban en Rust (workspace) |
 | `contracts/deployments/testnet.json` | IDs de los contratos desplegados en testnet |
-| `docs/adr/` | Decisiones de arquitectura: léelas antes de cambiar el diseño |
+| `docs/adr/` | Decisiones de arquitectura: léelas antes de cambiar el diseño. ADR-004: la artesana cobra en pesos y nunca ve nada de cripto |
 
 ## Comandos (deben pasar antes de abrir un PR)
 

@@ -199,11 +199,12 @@ Clone, install, and run Yucu Protocol locally:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Open-Hub-Tec/yucu.git
-cd yucu
+git clone https://github.com/Open-Hub-Tec/yucu-protocol.git
+cd yucu-protocol
 
-# 2. Install dependencies
-npm install
+# 2. Use Node 22 (see .nvmrc) and install the exact dependencies
+nvm use
+npm ci
 
 # 3. Launch local development server
 npm run dev
@@ -226,7 +227,7 @@ npm run build
 
 Technical architecture, field evidence, and academic standards are organized modularly in [`docs/`](./docs/README.md):
 
-* **[Architecture Document](./docs/ARCHITECTURE.md):** 5-layer decoupled architecture, sequence diagrams, and cryptographic verification flow.
+* **[Architecture Document](./docs/ARCHITECTURE.md):** capas, puertos, quién firma qué y camino del dinero (ADR-003 y ADR-004).
 * **[ADR-001: Trustless Work Escrow](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md):** Milestone custody specification and rationale.
 * **[ADR-002: Offline-First PWA & Rural Identity](./docs/adr/ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md):** W3C PWA standards vs. proprietary messaging platforms.
 * **[SEP-XXXX Attestation Draft](./docs/standards/SEP_RWA_ATTESTATION_DRAFT.md):** Verifiable RWA Attestation Standard proposed for Soroban.
