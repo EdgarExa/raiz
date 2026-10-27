@@ -37,25 +37,48 @@ async function run() {
 
   const escrow = new SimulatedEscrow();
   const order = (orderId: string, percents: number[]) => ({
-    orderId, buyerAddress: 'GBUYER', producerAddress: address, approverAddress: 'GCOOP',
-    releaseSignerAddress: 'GCOOP', disputeResolverAddress: 'GASAMBLEA', amount: 1000, asset: 'USDC',
-    milestones: percents.map((percent, i) => ({ description: `Hito ${i + 1}`, percent })),
+    orderId, buyerAddress: 'GBUYER', serviceProviderAddress: 'GGRUPO', releaseSignerAddress: address,
+    platformAddress: 'GPLATAFORMA', platformFeePercent: 0, disputeResolverAddress: 'GTERCERO',
+    amount: 1000, asset: { code: 'USDC', issuer: 'GEMISOR' },
+    milestones: percents.map((percent, i) => ({ description: `Hito ${i + 1}`, percent, receiverAddress: address })),
   });
-  const created = await escrow.submitCreate(await wallet.sign(await escrow.prepareCreate(order('ORD-1', [30, 70])), '1234'));
-  check(created.escrowId === 'ORD-1' && created.source === 'simulated', 'Crear el escrow devuelve su ID');
-  await escrow.submit(await wallet.sign(await escrow.prepareRelease(created.escrowId, 'GCOOP'), '1234'));
-  const st = await escrow.getStatus(created.escrowId);
-  check(st.status === 'released' && st.source === 'simulated', 'El escrow simulado recorre el flujo y se marca como simulado');
+  const send = async (txPromise: Promise<Parameters<typeof wallet.sign>[0]>) => escrow.submit(await wallet.sign(await txPromise, '1234'));
 
-  const badMilestones = await escrow.prepareCreate(order('ORD-2', [30, 60])).then(() => false, () => true);
+  // Un solo hito (plantilla por defecto)
+  const single = await escrow.submitCreate(await wallet.sign(await escrow.prepareCreate(order('ORD-1', [100])), '1234'));
+  check(single.escrowId === 'ORD-1' && single.source === 'simulated', 'Crear el escrow devuelve su ID');
+  check((await escrow.getStatus('ORD-1')).milestones.length === 1, 'Un pago protegido puede tener un solo hito');
+  const releaseTooSoon = await escrow.prepareRelease('ORD-1', 0, address).then(() => false, () => true);
+  check(releaseTooSoon, 'La artesana no puede recibir un hito que el comprador no ha aprobado');
+  await send(escrow.prepareMarkMilestoneDone('ORD-1', 0, 'GGRUPO'));
+  const done = (await escrow.getStatus('ORD-1')).milestones[0];
+  check(done.status === 'done' && typeof done.doneAt === 'number', 'Marcar "enviado" guarda cuándo se envió');
+  await send(escrow.prepareApproveMilestone('ORD-1', 0, 'GBUYER'));
+  await send(escrow.prepareRelease('ORD-1', 0, address));
+  const st = await escrow.getStatus('ORD-1');
+  check(st.milestones[0].status === 'released' && st.source === 'simulated', 'El escrow simulado recorre el flujo y se marca como simulado');
+
+  // Varios hitos (plantilla con adelanto)
+  await escrow.submitCreate(await wallet.sign(await escrow.prepareCreate(order('ORD-2', [30, 70])), '1234'));
+  await send(escrow.prepareApproveMilestone('ORD-2', 0, 'GBUYER'));
+  await send(escrow.prepareRelease('ORD-2', 0, address));
+  const two = (await escrow.getStatus('ORD-2')).milestones;
+  check(two.length === 2 && two[0].status === 'released' && two[1].status === 'pending', 'Con dos hitos, cada uno avanza por separado');
+  const noThird = await escrow.prepareApproveMilestone('ORD-2', 2, 'GBUYER').then(() => false, () => true);
+  check(noThird, 'Se rechaza un hito que no existe');
+
+  const badMilestones = await escrow.prepareCreate(order('ORD-3', [30, 60])).then(() => false, () => true);
   check(badMilestones, 'Se rechaza un escrow cuyos hitos no suman 100%');
+  const noMilestones = await escrow.prepareCreate(order('ORD-4', [])).then(() => false, () => true);
+  check(noMilestones, 'Se rechaza un escrow sin hitos');
 
-  const disputed = await escrow.submitCreate(await wallet.sign(await escrow.prepareCreate(order('ORD-3', [100])), '1234'));
-  await escrow.submit(await wallet.sign(await escrow.prepareDispute(disputed.escrowId, 'GBUYER'), '1234'));
-  check((await escrow.getStatus(disputed.escrowId)).status === 'disputed', 'Una disputa congela el escrow');
-  await escrow.submit(await wallet.sign(await escrow.prepareResolveDispute(disputed.escrowId, 'GASAMBLEA', 0), '1234'));
-  check((await escrow.getStatus(disputed.escrowId)).status === 'refunded', 'Resolver con 0% al productor reembolsa al comprador');
-  const badPercent = await escrow.prepareResolveDispute(disputed.escrowId, 'GASAMBLEA', 120).then(() => false, () => true);
+  // Disputas
+  await escrow.submitCreate(await wallet.sign(await escrow.prepareCreate(order('ORD-5', [100])), '1234'));
+  await send(escrow.prepareDispute('ORD-5', 0, 'GBUYER'));
+  check((await escrow.getStatus('ORD-5')).milestones[0].status === 'disputed', 'Una disputa congela el hito');
+  await send(escrow.prepareResolveDispute('ORD-5', 0, 'GTERCERO', 0));
+  check((await escrow.getStatus('ORD-5')).milestones[0].status === 'resolved', 'Resolver la disputa cierra el hito');
+  const badPercent = await escrow.prepareResolveDispute('ORD-5', 0, 'GTERCERO', 120).then(() => false, () => true);
   check(badPercent, 'Se rechaza resolver una disputa con un porcentaje fuera de 0 a 100');
 
   if (failures > 0) {

@@ -10,8 +10,9 @@ import type {
   CreateEscrowRequest,
   EscrowCreatedReceipt,
   EscrowPort,
-  EscrowStatus,
   LotRecord,
+  MilestoneState,
+  MilestoneStatus,
   LotRegistryPort,
   RegisterLotRequest,
   UnsignedTransaction,
@@ -83,48 +84,59 @@ export class SimulatedLotRegistry implements LotRegistryPort {
 }
 
 export class SimulatedEscrow implements EscrowPort {
-  private readonly status = new Map<string, EscrowStatus>();
+  private readonly escrows = new Map<string, MilestoneState[]>();
 
-  private prepare(escrowId: string, next: EscrowStatus, summary: string) {
-    return Promise.resolve(demoTx(summary, { escrowId, next }));
+  private prepare(escrowId: string, index: number, next: MilestoneStatus, summary: string) {
+    const milestones = this.escrows.get(escrowId);
+    if (milestones && (index < 0 || index >= milestones.length)) {
+      return Promise.reject(new Error(`El pago protegido no tiene un hito ${index + 1}.`));
+    }
+    return Promise.resolve(demoTx(summary, { escrowId, index, next }));
   }
   prepareCreate(req: CreateEscrowRequest) {
     const totalPercent = req.milestones.reduce((sum, m) => sum + m.percent, 0);
-    if (req.milestones.length === 0 || totalPercent !== 100) {
-      return Promise.reject(new Error('Los hitos del pago protegido deben sumar 100%.'));
+    if (req.milestones.length === 0 || totalPercent !== 100 || req.milestones.some((m) => m.percent <= 0)) {
+      return Promise.reject(new Error('Los hitos del pago protegido deben ser mayores que 0 y sumar 100%.'));
     }
-    return this.prepare(req.orderId, 'created', `Crear un pago protegido de ${req.amount} ${req.asset} con ${req.milestones.length} hitos.`);
+    const summary = `Crear un pago protegido de ${req.amount} ${req.asset.code} con ${req.milestones.length} ${req.milestones.length === 1 ? 'hito' : 'hitos'}.`;
+    return Promise.resolve(demoTx(summary, { escrowId: req.orderId, count: req.milestones.length }));
   }
   async submitCreate(signedXdr: string): Promise<EscrowCreatedReceipt> {
-    const { escrowId } = JSON.parse(decodeURIComponent(escape(atob(signedXdr)))) as { escrowId: string };
-    this.status.set(escrowId, 'created');
+    const { escrowId, count } = JSON.parse(decodeURIComponent(escape(atob(signedXdr)))) as { escrowId: string; count: number };
+    this.escrows.set(escrowId, Array.from({ length: count }, () => ({ status: 'pending' as const })));
     return { ...demoReceipt(), escrowId };
   }
   prepareFund(escrowId: string, _buyerAddress: string) {
-    return this.prepare(escrowId, 'funded', 'Depositar el pago en el escrow.');
+    return Promise.resolve(demoTx('Depositar el pago en el escrow.', { escrowId, index: -1, next: 'pending' }));
+  }
+  prepareMarkMilestoneDone(escrowId: string, milestoneIndex: number, _serviceProviderAddress: string) {
+    return this.prepare(escrowId, milestoneIndex, 'done', `Marcar el hito ${milestoneIndex + 1} como enviado.`);
   }
   prepareApproveMilestone(escrowId: string, milestoneIndex: number, _approverAddress: string) {
-    return this.prepare(escrowId, 'milestone_approved', `Aprobar el hito ${milestoneIndex + 1}.`);
+    return this.prepare(escrowId, milestoneIndex, 'approved', `Aprobar el hito ${milestoneIndex + 1}.`);
   }
-  prepareRelease(escrowId: string, _releaseSignerAddress: string) {
-    return this.prepare(escrowId, 'released', 'Liberar el pago al productor.');
-  }
-  prepareDispute(escrowId: string, _signerAddress: string) {
-    return this.prepare(escrowId, 'disputed', 'Abrir una disputa. El pago queda congelado hasta que se resuelva.');
-  }
-  prepareResolveDispute(escrowId: string, _resolverAddress: string, producerPercent: number) {
-    if (!Number.isFinite(producerPercent) || producerPercent < 0 || producerPercent > 100) {
-      return Promise.reject(new Error('El porcentaje para el productor debe estar entre 0 y 100.'));
+  prepareRelease(escrowId: string, milestoneIndex: number, _releaseSignerAddress: string) {
+    if (this.escrows.get(escrowId)?.[milestoneIndex]?.status !== 'approved') {
+      return Promise.reject(new Error('Solo se puede recibir un hito que el comprador ya aprobó.'));
     }
-    const next: EscrowStatus = producerPercent === 0 ? 'refunded' : 'released';
-    return this.prepare(escrowId, next, `Resolver la disputa: ${producerPercent}% al productor y ${100 - producerPercent}% de regreso al comprador.`);
+    return this.prepare(escrowId, milestoneIndex, 'released', `Recibir el pago del hito ${milestoneIndex + 1}.`);
+  }
+  prepareDispute(escrowId: string, milestoneIndex: number, _signerAddress: string) {
+    return this.prepare(escrowId, milestoneIndex, 'disputed', `Abrir una disputa del hito ${milestoneIndex + 1}. Queda congelado hasta que se resuelva.`);
+  }
+  prepareResolveDispute(escrowId: string, milestoneIndex: number, _resolverAddress: string, receiverPercent: number) {
+    if (!Number.isFinite(receiverPercent) || receiverPercent < 0 || receiverPercent > 100) {
+      return Promise.reject(new Error('El porcentaje para la artesana debe estar entre 0 y 100.'));
+    }
+    return this.prepare(escrowId, milestoneIndex, 'resolved', `Resolver la disputa: ${receiverPercent}% a la artesana y ${100 - receiverPercent}% de regreso al comprador.`);
   }
   async submit(signedXdr: string) {
-    const { escrowId, next } = JSON.parse(decodeURIComponent(escape(atob(signedXdr)))) as { escrowId: string; next: EscrowStatus };
-    this.status.set(escrowId, next);
+    const { escrowId, index, next } = JSON.parse(decodeURIComponent(escape(atob(signedXdr)))) as { escrowId: string; index: number; next: MilestoneStatus };
+    const milestones = this.escrows.get(escrowId);
+    if (milestones && index >= 0) milestones[index] = { ...milestones[index], status: next, ...(next === 'done' ? { doneAt: Date.now() } : {}) };
     return demoReceipt();
   }
   async getStatus(escrowId: string) {
-    return { status: this.status.get(escrowId) ?? 'created', source: 'simulated' as const };
+    return { milestones: (this.escrows.get(escrowId) ?? []).map((m) => ({ ...m })), source: 'simulated' as const };
   }
 }

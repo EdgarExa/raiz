@@ -99,25 +99,40 @@ export interface EscrowMilestone {
   description: string;
   /** Porcentaje del monto total que libera este hito. Los hitos deben sumar 100. */
   percent: number;
+  /** Cuenta que recibe este hito: la artesana (ADR-004 D8). */
+  receiverAddress: string;
 }
 
+/** Roles del escrow (ADR-004 D8). Ninguno lo ocupa una cuenta del grupo que reciba dinero. */
 export interface CreateEscrowRequest {
   orderId: string;
+  /** El comprador: fondea y aprueba los hitos. */
   buyerAddress: string;
-  producerAddress: string;
-  /** Cooperativa o persona que aprueba los hitos (no la plataforma). */
-  approverAddress: string;
-  /** Quien firma la liberación del pago al productor (no la plataforma). */
+  /** El grupo o la promotora: marca un hito como "enviado". No recibe dinero. */
+  serviceProviderAddress: string;
+  /** Quien libera cada hito aprobado: la artesana. Solo puede liberar hacia la receptora del hito. */
   releaseSignerAddress: string;
-  /** Quien resuelve una disputa, p. ej. la asamblea o la cooperativa (no la plataforma). */
+  /** Entidad constituida que cobra la comisión de plataforma, encima del precio (ADR-004 D11). */
+  platformAddress: string;
+  /** Comisión de plataforma en porcentaje; sale de src/config/protocolFees.ts. */
+  platformFeePercent: number;
+  /** Quien resuelve una disputa: un tercero, nunca la plataforma (#103). */
   disputeResolverAddress: string;
+  /** Monto total que se reparte entre los hitos, en unidades del activo. */
   amount: number;
-  /** Activo de Stellar, p. ej. 'USDC'. */
-  asset: string;
+  /** Activo de Stellar: el código y su emisor, p. ej. USDC de testnet. */
+  asset: { code: string; issuer: string };
+  /** De 1 a N hitos, según la plantilla (por defecto, uno solo de 100 %). */
   milestones: EscrowMilestone[];
 }
 
-export type EscrowStatus = 'created' | 'funded' | 'milestone_approved' | 'released' | 'disputed' | 'refunded';
+export type MilestoneStatus = 'pending' | 'done' | 'approved' | 'released' | 'disputed' | 'resolved';
+
+export interface MilestoneState {
+  status: MilestoneStatus;
+  /** Momento (ms) en que se marcó "enviado": la app cuenta desde aquí el plazo para abrir disputa. */
+  doneAt?: number;
+}
 
 /** Comprobante de la creación de un escrow: incluye su ID, que solo se conoce después de enviarla. */
 export interface EscrowCreatedReceipt extends ChainReceipt {
@@ -130,16 +145,20 @@ export interface EscrowPort {
   /** Envía la creación firmada y devuelve el ID del escrow. */
   submitCreate(signedXdr: string): Promise<EscrowCreatedReceipt>;
   prepareFund(escrowId: string, buyerAddress: string): Promise<UnsignedTransaction>;
+  /** El grupo o la promotora marca el hito como "enviado". */
+  prepareMarkMilestoneDone(escrowId: string, milestoneIndex: number, serviceProviderAddress: string): Promise<UnsignedTransaction>;
   prepareApproveMilestone(escrowId: string, milestoneIndex: number, approverAddress: string): Promise<UnsignedTransaction>;
-  prepareRelease(escrowId: string, releaseSignerAddress: string): Promise<UnsignedTransaction>;
-  /** Abre una disputa (comprador o productor). Congela el pago hasta que se resuelva. */
-  prepareDispute(escrowId: string, signerAddress: string): Promise<UnsignedTransaction>;
+  /** La artesana libera un hito ya aprobado hacia su propia cuenta. */
+  prepareRelease(escrowId: string, milestoneIndex: number, releaseSignerAddress: string): Promise<UnsignedTransaction>;
+  /** Abre una disputa sobre un hito. Congela ese hito hasta que se resuelva. */
+  prepareDispute(escrowId: string, milestoneIndex: number, signerAddress: string): Promise<UnsignedTransaction>;
   /**
-   * Resuelve una disputa: `producerPercent` (0 a 100) del saldo va al productor y el resto regresa
+   * Resuelve la disputa de un hito: `receiverPercent` (0 a 100) va a la receptora y el resto regresa
    * al comprador. Solo lo firma el `disputeResolverAddress` del escrow.
    */
-  prepareResolveDispute(escrowId: string, resolverAddress: string, producerPercent: number): Promise<UnsignedTransaction>;
+  prepareResolveDispute(escrowId: string, milestoneIndex: number, resolverAddress: string, receiverPercent: number): Promise<UnsignedTransaction>;
   /** Envía cualquier operación firmada que no sea la creación. */
   submit(signedXdr: string): Promise<ChainReceipt>;
-  getStatus(escrowId: string): Promise<{ status: EscrowStatus; source: ChainSource }>;
+  /** Estado de cada hito, en el mismo orden en que se crearon. */
+  getStatus(escrowId: string): Promise<{ milestones: MilestoneState[]; source: ChainSource }>;
 }
