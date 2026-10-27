@@ -24,7 +24,7 @@ assignees: ''
 ---
 
 ## 👤 Perfil del Comprador Entrevistado
-- **Identificador / Alias:** <!-- Ej. Comprador-01 (Lucía M., 34 años, Diseñadora y coleccionista textil) -->
+- **Identificador / Alias:** <!-- Ej. Comprador-01 (diseñadora y coleccionista textil). Sin nombre ni edad exacta. -->
 - **Edad y Ocupación:** 
 - **Lugar de Residencia:** <!-- Ej. Oaxaca de Juárez / CDMX / Extranjero -->
 - **Segmento de Comprador:**
@@ -38,17 +38,10 @@ assignees: ''
 
 ---
 
-## 📱 Datos de Contacto y Autorización de Notificación a Futuro (Lead de Preventa)
-> 💡 **Instrucción para Estudiantes del TecNM:** La mayor señal de validación de dolor y necesidad es si el comprador acepta dar su teléfono para ser contactado cuando la plataforma y las entregas con las artesanas estén formalmente activas.
+## 🔒 Datos de contacto
+> **No se publican aquí.** Esta issue es pública. Si la persona acepta que la contacten cuando se abran pedidos, guarda su contacto en la carpeta privada del equipo (`.investigacion_privada/`), nunca en una issue ([`docs/research/PRIVACIDAD.md`](../../docs/research/PRIVACIDAD.md), reglas 2 y 5).
 
-- **Nombre o Contacto del Comprador:** <!-- Ej. Rodrigo Vásquez -->
-- **Número Celular / WhatsApp:** <!-- Ej. +52 953 123 4567 -->
-- **Ciudad y Destino de Envío Futuro:** <!-- Ej. Tlaxiaco, Oax. / Roma Norte, CDMX -->
-- **Productos / Artesanías de Interés:** <!-- Ej. Café de especialidad Nuu Savi (2kg), Huipil Triqui de telar -->
-- **Presupuesto Estimado / Disposición a Pagar:** <!-- Ej. $1,200 MXN -->
-- **Consentimiento de Contacto al Lanzamiento:**
-  - [ ] **SÍ AUTORIZADO:** El comprador aceptó expresamente guardar su número de WhatsApp/teléfono para ser avisado en cuanto el proyecto esté listo y se abran pedidos formales.
-  - [ ] **NO AUTORIZADO:** El comprador prefirió retroalimentación anónima.
+- **¿Aceptó que la contacten?** [ ] Sí (contacto guardado en la carpeta privada) · [ ] No
 
 ---
 
