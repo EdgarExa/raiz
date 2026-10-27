@@ -23,5 +23,5 @@ Cuando el campesino está en su parcela en Yucuhiti o Tijaltepec, **no hay seña
 
 * **Botones Gigantes de 112px:** Diseñados para dedos callosos por el trabajo de campo y personas de la tercera edad con vista cansada.
 * **Cero Tecleo (Zero-Typing):** Toda la interacción se realiza mediante voz o selección visual de iconos (grano, mazorca, miel, telar).
-* **Cero Frases Semilla (Zero-Seed Phrase):** La persona nunca anota 24 palabras. Su llave se genera **al azar en su propio celular**, cifrada con un PIN, o va cifrada en su tarjeta QR si no tiene celular ([ADR-004](https://github.com/Open-Hub-Tec/yucu-protocol/pull/104), D4; issues #91 y #117).
+* **Cero Frases Semilla (Zero-Seed Phrase):** La persona nunca anota 24 palabras. Su llave se genera **al azar en su propio celular**, cifrada con un PIN, o va cifrada en su tarjeta QR si no tiene celular ([ADR-004](../../docs/adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md), D4; issues #91 y #117).
   * **Nunca derives la llave del número de teléfono, de la CURP ni de otro dato conocido:** cualquiera que sepa el número podría calcular la llave y vaciar la cuenta. El servidor nunca genera ni guarda llaves de usuarios (ADR-003).

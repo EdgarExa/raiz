@@ -7,7 +7,7 @@ description: Comprehensive engineering skill guide and architecture patterns for
 
 This skill guide provides reference patterns, smart contract examples, and SDK integrations for building Real-World Asset (RWA) and supply chain provenance protocols on **Stellar** and **Soroban (Rust/WASM)**.
 
-> **Project rules win over this guide.** Read [`AGENTS.md`](../../AGENTS.md), [ADR-003](../../docs/adr/ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md) and [ADR-004](https://github.com/Open-Hub-Tec/yucu-protocol/pull/104) first. Non-custodial: the server never generates, stores or receives user keys; every transaction follows prepare → sign on the phone → submit. The UI only talks to the ports in `src/core/chain/`.
+> **Project rules win over this guide.** Read [`AGENTS.md`](../../AGENTS.md), [ADR-003](../../docs/adr/ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md) and [ADR-004](../../docs/adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md) first. Non-custodial: the server never generates, stores or receives user keys; every transaction follows prepare → sign on the phone → submit. The UI only talks to the ports in `src/core/chain/`.
 
 ---
 
@@ -183,7 +183,7 @@ const addressScVal = nativeToScVal('GPRODUCER_ADDRESS...', { type: 'address' });
 
 ## 5. Trustless Work Milestone Escrow Pattern (ADR-001)
 
-Rather than maintaining custom custody contracts, use **Trustless Work**'s Soroban escrow contracts through `EscrowPort` (ADR-003). `contracts/fair_escrow` is teaching material only. Roles and milestones follow [ADR-004](https://github.com/Open-Hub-Tec/yucu-protocol/pull/104), D8 (testnet, *multi-release*):
+Rather than maintaining custom custody contracts, use **Trustless Work**'s Soroban escrow contracts through `EscrowPort` (ADR-003). `contracts/fair_escrow` is teaching material only. Roles and milestones follow [ADR-004](../../docs/adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md), D8 (testnet, *multi-release*):
 
 1. **Buyer funds the escrow in USDC from their own wallet.** Before funding, the buyer's app reads the escrow on chain and checks receivers, amounts, fee and roles.
 2. **Milestones come from a template, 1 to N.** The default is **a single milestone (100 %)** paid when the buyer confirms receipt. An "advance" template (for example 30 % on shipping and 70 % on receipt) exists but is off unless field research shows artisans need it. Templates live in `src/config/protocolFees.ts`; never hard-code percentages.

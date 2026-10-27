@@ -94,3 +94,5 @@ Los porcentajes, el plazo y las comisiones salen de [`src/config/protocolFees.ts
 ## 6. Qué falta
 
 El trabajo pendiente está en las issues de GitHub con la etiqueta `drips-eligible`. El [ADR-004](./adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md) (sección 4) dice qué issue cubre cada pieza, y su sección 5 dice qué hay que resolver antes de usar dinero real.
+
+La propuesta de arquitectura completa, con el verificador público y la consola de emisores que todavía no tienen issue, está en [`arquitectura/`](./arquitectura/README.md). Es una propuesta: se decide en el [ADR-005](./adr/ADR-005-INFRAESTRUCTURA-DE-ATESTACIONES.md), todavía en borrador.
