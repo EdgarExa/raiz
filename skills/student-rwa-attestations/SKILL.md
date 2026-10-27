@@ -5,7 +5,9 @@ description: Guía pedagógica para estudiantes del TecNM Tlaxiaco sobre cómo d
 
 # 🌾 Skill TecNM: Creación de Atestaciones Físicas y Oráculos de Campo
 
-Esta guía enseña a los estudiantes de Sistemas Computacionales cómo convertir un producto físico agrícola o artesanal en un activo criptográfico inmutable en Stellar Soroban.
+Esta guía enseña a los estudiantes de Sistemas Computacionales cómo convertir un producto físico agrícola o artesanal en un registro verificable en Stellar Soroban.
+
+> En la cadena va **lo mínimo** ([ADR-004](../../docs/adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md), D5): municipio o región (nunca la comunidad exacta), categoría y variedad de una lista cerrada, volumen por rangos, hash de la foto y ningún monto. Nunca nombres de personas.
 
 ---
 
@@ -17,19 +19,19 @@ Para evitar que intermediarios alteren el peso o procedencia de un saco de café
 import crypto from 'crypto';
 
 export function calcularDigestLote(params: {
-  folio: string;          // ej. "MX-2024-884"
-  productorId: string;    // Billetera Stellar del productor
-  comunidad: string;      // ej. "Santa María Yucuhiti"
-  kilos: number;          // ej. 120
-  humedadPorcentaje: number; // ej. 11.2%
+  folio: string;          // ej. "MIEL-001"
+  productorId: string;    // Dirección G… de la productora (nunca su nombre)
+  municipio: number;      // Clave del municipio, nunca la comunidad exacta
+  rangoVolumen: number;   // Código de rango, ej. 1 = menos de 10 kg
+  fotoHash: string;       // SHA-256 de la foto completa del lote
 }): string {
   // Orden estricto de campos para garantizar reproducibilidad matemática
   const cargaCanonico = [
     params.folio.toUpperCase().trim(),
     params.productorId.trim(),
-    params.comunidad.trim(),
-    params.kilos.toFixed(2),
-    params.humedadPorcentaje.toFixed(2),
+    String(params.municipio),
+    String(params.rangoVolumen),
+    params.fotoHash.toLowerCase(),
   ].join('|');
 
   return crypto.createHash('sha256').update(cargaCanonico).digest('hex');
@@ -40,21 +42,23 @@ export function calcularDigestLote(params: {
 
 ## 2. Los 3 Oráculos que Conectan el Campo con Soroban
 
+> **Hoy los tres son de demostración** (`src/core/ai/RaizAIOracles.ts` da puntajes fijos y el EUDR siempre dice "sin deforestación"). Todo resultado simulado lleva `source: 'simulated'` y `<DemoBadge />`. Un oráculo no certifica nada: una certificación la firma una persona validadora (#106 [W13]).
+
 1. **Oráculo de Voz en Tu'un Savi:**
    * Utiliza la API de audio multimodal para transcribir el relato oral del campesino grabado en la parcela.
    * Extrae automáticamente kilos, variedad y comunidad.
 2. **Oráculo Óptico de Calidad SCAA:**
    * Evalúa la fotografía de la muestra sobre fondo blanco o jícara tradicional.
-   * Clasifica granos con broca, vanos o fermentados, estimando el puntaje de catación (>85 puntos).
+   * Podría clasificar granos con broca, vanos o fermentados y sugerir un puntaje. La calificación SCAA la da una persona catadora, no la IA.
 3. **Oráculo Satelital Anti-Deforestación (EUDR):**
-   * Cruza las coordenadas del cafetal con el satélite Copernicus Sentinel-2 de la Agencia Espacial Europea (ESA).
-   * Genera el certificado de cero tala forestal posterior a diciembre de 2020 exigido por la Unión Europea.
+   * La idea: cruzar el polígono del cafetal con imágenes de Copernicus Sentinel-2 (ESA). No está implementado.
+   * Daría una evidencia para la debida diligencia del reglamento europeo (EUDR), no un certificado. Las coordenadas de la parcela no van a la cadena.
 
 ---
 
 ## 3. Generación de la Etiqueta Física Hang-Tag QR
 
 El código QR no almacena datos pesados, sino el enlace canónico GS1 Digital Link:
-`https://yucu.tecnm.mx/01/0750100000001/10/MX-2024-884`
+`https://<dominio-de-yucu>/01/<GTIN>/10/MIEL-001` (el dominio y el GTIN todavía no están definidos)
 
-Al escanearse en el puerto de Hamburgo o en una cafetería en Ciudad de México, el enlace consulta el contrato Soroban y despliega la atestación de origen verificada con la firma del TecNM.
+Al escanearse, el enlace consulta el contrato `lot_passport` y muestra el registro del lote con la firma de la productora y la del certificador. Solo prueba algo si el lote está registrado de verdad en testnet (#93 [W3]).

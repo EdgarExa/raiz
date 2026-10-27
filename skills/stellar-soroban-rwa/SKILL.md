@@ -5,7 +5,9 @@ description: Comprehensive engineering skill guide and architecture patterns for
 
 # 🌟 Stellar & Soroban RWA Architecture Skill Guide
 
-This skill guide provides the official architectural constitution, smart contract patterns, and SDK integrations for building Real-World Asset (RWA) and supply chain provenance protocols on **Stellar** and **Soroban (Rust/WASM)**.
+This skill guide provides reference patterns, smart contract examples, and SDK integrations for building Real-World Asset (RWA) and supply chain provenance protocols on **Stellar** and **Soroban (Rust/WASM)**.
+
+> **Project rules win over this guide.** Read [`AGENTS.md`](../../AGENTS.md), [ADR-003](../../docs/adr/ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md) and [ADR-004](../../docs/adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md) first. Non-custodial: the server never generates, stores or receives user keys; every transaction follows prepare → sign on the phone → submit. The UI only talks to the ports in `src/core/chain/`.
 
 ---
 
@@ -30,7 +32,7 @@ Stellar provides a native dual-layer architecture uniquely suited for real-world
 │  - Complex RWA Logic: Attestation registries, milestone escrows, oracles    │
 │  - Two-Tier TTL Storage: Temporary (Telemetry) vs. Persistent (Origin)      │
 │  - Zero-Gas Rural Sponsorship via CAP-0015 Fee-Bump Envelopes               │
-│  - Executable Settlements: Direct trigger to Banxico SPEI & PIX off-ramps   │
+│  - Off-ramps (SPEI, cash) run outside Soroban, behind `PayoutPort`          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -84,6 +86,11 @@ impl RwaAttestationRegistry {
     ) -> BytesN<32> {
         issuer.require_auth();
 
+        // Never overwrite an existing attestation
+        if env.storage().persistent().has(&lot_uid) {
+            panic!("attestation already exists"); // use a contracterror in real code
+        }
+
         let expiration = env.ledger().timestamp() + validity_seconds;
         let attestation = RwaAttestation {
             schema_id,
@@ -95,9 +102,11 @@ impl RwaAttestationRegistry {
             revoked: false,
         };
 
-        // Write to persistent storage and bump TTL rent
+        // Write to persistent storage and bump TTL rent.
+        // TTL is measured in ledgers (~5 s each), not seconds, and capped by the network's `max_entry_ttl`.
+        let ttl_ledgers = (validity_seconds / 5) as u32;
         env.storage().persistent().set(&lot_uid, &attestation);
-        env.storage().persistent().extend_ttl(&lot_uid, validity_seconds as u32, validity_seconds as u32);
+        env.storage().persistent().extend_ttl(&lot_uid, ttl_ledgers, ttl_ledgers);
 
         lot_uid
     }
@@ -121,7 +130,7 @@ impl RwaAttestationRegistry {
 ### 3.1 Initializing Horizon and Soroban RPC Clients
 
 ```typescript
-import { Horizon, rpc, Networks, Keypair, TransactionBuilder } from '@stellar/stellar-sdk';
+import { Horizon, rpc, Networks, Keypair, Transaction, TransactionBuilder } from '@stellar/stellar-sdk';
 
 const horizonServer = new Horizon.Server('https://horizon-testnet.stellar.org');
 const sorobanServer = new rpc.Server('https://soroban-testnet.stellar.org');
@@ -130,18 +139,19 @@ const networkPassphrase = Networks.TESTNET;
 
 ### 3.2 CAP-0015 Fee-Bump Gas Sponsorship (Zero-Gas for Smallholders)
 
-Smallholder producers in rural areas sign inner transactions without owning XLM. The university or protocol treasury wraps the transaction with a Fee-Bump envelope:
+Smallholder producers in rural areas sign inner transactions without owning XLM. A sponsor account wraps the transaction with a Fee-Bump envelope. This runs **only on the server**, with the sponsor's own key from `.env`; it pays fees and never signs for the user. Before wrapping, check that the inner transaction only calls allowed contracts and functions, or anyone could spend the sponsor's XLM (see #94 [W4]).
 
 ```typescript
 // 1. Farmer signs the inner transaction (paying 0 fee)
 const innerTx = TransactionBuilder.fromXDR(farmerSignedTxXdr, networkPassphrase);
 
 // 2. Protocol treasury wraps with Fee-Bump
-const treasuryKeypair = Keypair.fromSecret(TREASURY_SECRET_KEY);
+if (!(innerTx instanceof Transaction)) throw new Error('Expected an inner transaction');
+const treasuryKeypair = Keypair.fromSecret(process.env.STELLAR_SPONSOR_SECRET!); // server only, never in the repo
 const feeBumpTx = TransactionBuilder.buildFeeBumpTransaction(
   treasuryKeypair,
   '200000', // Max fee in stroops (~0.02 XLM)
-  innerTx as any,
+  innerTx,
   networkPassphrase
 );
 
@@ -173,12 +183,12 @@ const addressScVal = nativeToScVal('GPRODUCER_ADDRESS...', { type: 'address' });
 
 ## 5. Trustless Work Milestone Escrow Pattern (ADR-001)
 
-Rather than maintaining custom custody contracts, utilize **Trustless Work**'s audited Soroban smart contracts (`@trustlesswork/sdk`):
+Rather than maintaining custom custody contracts, use **Trustless Work**'s Soroban escrow contracts through `EscrowPort` (ADR-003). `contracts/fair_escrow` is teaching material only. Roles and milestones follow [ADR-004](../../docs/adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md), D8 (testnet, *multi-release*):
 
-1. **Buyer deposits USDC / MXNe:** Smart contract locks funds into milestone escrow.
-2. **Milestone 1 (30% Advance):** Released automatically upon verification of origin attestation (`0x01_ORIGIN`).
-3. **Milestone 2 (70% Final Payout):** Released upon warehouse handover and physical QR tag scan in Tlaxiaco.
-4. **2% Communal Tequio:** Simultaneously credited to the municipal water/school public works fund.
+1. **Buyer funds the escrow in USDC from their own wallet.** Before funding, the buyer's app reads the escrow on chain and checks receivers, amounts, fee and roles.
+2. **Milestones come from a template, 1 to N.** The default is **a single milestone (100 %)** paid when the buyer confirms receipt. An "advance" template (for example 30 % on shipping and 70 % on receipt) exists but is off unless field research shows artisans need it. Templates live in `src/config/protocolFees.ts`; never hard-code percentages.
+3. **Roles:** the artisan receives each milestone in her own account and releases it with her PIN; the group marks "shipped" and never touches money; the buyer approves; the platform account receives only its fee, on top of the price; a third party trusted by both sides resolves disputes.
+4. **No Tequio in the escrow (D10).** The 2 % Tequio exists only on resales through `perpetual_royalties`, paid to a community account Yucu never controls.
 
 ---
 

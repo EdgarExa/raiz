@@ -33,13 +33,15 @@ Cada issue en GitHub está asignado a una brigada técnica específica de acuerd
 Antes de escribir una sola línea de código, abre y lee con detenimiento el archivo markdown correspondiente en la carpeta `/skills/`. Cada skill contiene los patrones de diseño, snippets de código probados y errores comunes que debes evitar.
 
 ### Paso 3: Configurar tu Rama de Trabajo (Git)
-Crea una rama limpia a partir de `main`:
+Usa **Node 22** (la versión exacta está en `.nvmrc`). Con Node 20 algunas cosas fallan. Crea una rama limpia a partir de `main` e instala exactamente las dependencias del proyecto:
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feature/estudiante-<tu_nombre>-<tema_issue>
+nvm use
+npm ci
+git checkout -b feat/issue-<número>-<tema>
 ```
-*Ejemplo:* `feature/estudiante-mariana-soroban-ttl`
+*Ejemplo:* `feat/issue-110-contratos-fase-1`. No pongas tu nombre en la rama (ver `AGENTS.md`).
 
 ### Paso 4: Implementar la Solución
 * Si tu tarea involucra crear un nuevo módulo para una cooperativa o producto, utiliza el generador interactivo:
@@ -49,14 +51,13 @@ git checkout -b feature/estudiante-<tu_nombre>-<tema_issue>
 * Marca en el issue de GitHub las casillas `- [ ]` que vayas completando.
 
 ### Paso 5: Validar Localmente (Testing Riguroso)
-El protocolo cuenta con una suite de **88+ pruebas automatizadas**. Tu código no debe romper ninguna prueba existente y debe incluir pruebas para la nueva funcionalidad:
+Tu código no debe romper ninguna prueba existente y debe incluir pruebas para la nueva funcionalidad (una positiva y una negativa por cada regla nueva). Corre lo mismo que corre el CI:
 ```bash
-# Correr pruebas unitarias y de integración
-npm test
-
-# Verificar compilación TypeScript sin errores
-npm run build
+npm run lint   # TypeScript sin errores
+npm test       # pruebas
+npm run build  # build de producción
 ```
+Si tocaste `contracts/`, corre también `cargo fmt --all`, `cargo clippy --locked --all-targets -- -D warnings` y `cargo test --locked` dentro de `contracts/`.
 
 ### Paso 6: Enviar tu Pull Request (PR)
 Sube tu rama y crea el PR en GitHub:

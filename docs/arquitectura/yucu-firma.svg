@@ -1,0 +1,68 @@
+<svg viewBox="0 0 1200 250" role="img" xmlns="http://www.w3.org/2000/svg" width="1200" height="250" aria-label="Cinco pasos: la app pide, el servidor prepara la transacción sin firmar, el teléfono la firma con el PIN, el puerto la envía y Stellar devuelve un recibo. La llave nunca sale del teléfono.">
+<style>
+.band { fill: #E8EAF1; }
+.bl { fill: #586078; font: 600 10.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; letter-spacing: .14em; }
+.box { fill: #FFFFFF; stroke: #B9BED0; stroke-width: 1.4; }
+.box.todo { stroke-dasharray: 6 4; }
+.box.new { fill: #E1E7F8; stroke: #2C4799; }
+.box.ext { fill: #F5EAD0; stroke: #9A6A0C; }
+.bnd { fill: none; stroke: #A8213C; stroke-width: 1.5; stroke-dasharray: 6 4; }
+.t { fill: #1B1F2E; font: 700 13.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.p { fill: #1B1F2E; font: 600 13px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.s { fill: #586078; font: 400 12px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.m { fill: #586078; font: 400 11px 'JetBrains Mono',ui-monospace,Menlo,monospace; }
+.tag { font: 700 10px 'Source Sans 3','Segoe UI',system-ui,sans-serif; letter-spacing: .08em; fill: #586078; }
+.tag.new, .s.new { fill: #2C4799; }
+.tag.ext { fill: #9A6A0C; }
+.warn { fill: #A8213C; font: 700 11.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.ar { stroke: currentColor; stroke-width: 1.4; fill: none; }
+.ar.dash { stroke-dasharray: 5 4; }
+.al { fill: #1B1F2E; font: 600 11px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.num { fill: #1B1F2E; font: 700 11px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+ svg{color:#1B1F2E}</style>
+<rect width="1200" height="250" fill="#FFFFFF"/>
+<g color="#1B1F2E">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+          </defs>
+          <rect class="bnd" x="494" y="44" width="192" height="144" rx="12"/>
+          <text class="warn" x="590" y="34" text-anchor="middle">La llave nunca sale de aquí</text>
+
+          <rect class="box" x="20" y="70" width="170" height="96" rx="8"/>
+          <text class="t" x="105" y="100" text-anchor="middle">App</text>
+          <text class="s" x="105" y="122" text-anchor="middle">arma la solicitud</text>
+          <text class="s" x="105" y="140" text-anchor="middle">«registrar mi lote»</text>
+
+          <rect class="box" x="262" y="70" width="170" height="96" rx="8"/>
+          <text class="t" x="347" y="100" text-anchor="middle">Servidor</text>
+          <text class="s" x="347" y="122" text-anchor="middle">prepara la transacción</text>
+          <text class="s" x="347" y="140" text-anchor="middle">sin firmar · sin llaves</text>
+
+          <rect class="box" x="504" y="70" width="170" height="96" rx="8"/>
+          <text class="t" x="589" y="100" text-anchor="middle">Teléfono</text>
+          <text class="s" x="589" y="122" text-anchor="middle">muestra el resumen (D6)</text>
+          <text class="s" x="589" y="140" text-anchor="middle">ella escribe su PIN</text>
+
+          <rect class="box" x="746" y="70" width="170" height="96" rx="8"/>
+          <text class="t" x="831" y="100" text-anchor="middle">Puerto</text>
+          <text class="s" x="831" y="122" text-anchor="middle">envía la firmada</text>
+          <text class="m" x="831" y="140" text-anchor="middle">submit(signedXdr)</text>
+
+          <rect class="box" x="988" y="70" width="170" height="96" rx="8"/>
+          <text class="t" x="1073" y="100" text-anchor="middle">Stellar</text>
+          <text class="s" x="1073" y="122" text-anchor="middle">guarda el registro</text>
+          <text class="m" x="1073" y="140" text-anchor="middle">source: 'testnet'</text>
+
+          <line class="ar" x1="190" y1="118" x2="259" y2="118" marker-end="url(#ah2)"/>
+          <text class="al" x="225" y="108" text-anchor="middle">pide</text>
+          <line class="ar" x1="432" y1="118" x2="501" y2="118" marker-end="url(#ah2)"/>
+          <text class="al" x="467" y="108" text-anchor="middle">sin firmar</text>
+          <line class="ar" x1="674" y1="118" x2="743" y2="118" marker-end="url(#ah2)"/>
+          <text class="al" x="709" y="108" text-anchor="middle">firmada</text>
+          <line class="ar" x1="916" y1="118" x2="985" y2="118" marker-end="url(#ah2)"/>
+          <text class="al" x="951" y="108" text-anchor="middle">envía</text>
+
+          <polyline class="ar dash" points="1073,166 1073,210 105,210 105,169" marker-end="url(#ah2)"/>
+          <text class="al" x="589" y="232" text-anchor="middle">recibo con enlace al explorador (W8) · si es simulado, la app muestra la etiqueta de demostración</text>
+        </g>
+</svg>

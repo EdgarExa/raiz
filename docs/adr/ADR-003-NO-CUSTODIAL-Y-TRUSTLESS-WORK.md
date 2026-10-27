@@ -41,15 +41,35 @@ El servidor puede **preparar** y **pagar comisiones** (fee-bump, CAP-15) y **pat
 
 > Pendiente de validar en campo: si las llaves de acceso (*passkeys*) con billeteras inteligentes de Soroban son más usables que el PIN, y si son compatibles con el flujo de transacciones de Trustless Work. Hasta entonces, D5 es la base.
 
+Con la tarjeta de recuperación y un PIN nuevo, la persona recupera su cuenta en otro teléfono (`DeviceWalletPort.restoreAccount`). La tarjeta nunca se envía al servidor.
+
+**D6. El nodo certificador co-firma el registro de lotes.** `register_lot` en `lot_passport` exige dos firmas: la del nodo certificador (el rol `certifier` del contrato) y la del productor. El flujo es:
+
+1. `server.ts` prepara la transacción y firma **solo la autorización del nodo certificador** (su *auth entry* de Soroban).
+2. La cuenta fuente de la transacción es la del productor: el teléfono firma el sobre con su PIN.
+3. El teléfono envía el XDR firmado (`LotRegistryPort.submit`). El servidor puede envolverlo en un fee-bump (D5) sin modificar la transacción interna.
+
+La llave del nodo certificador es **de la plataforma, no de una persona**, así que no contradice D1. Vive solo en el `.env` del servidor (`STELLAR_CERTIFIER_SECRET`), nunca en el código ni en el cliente. Es una cuenta **distinta del `admin`** que despliega el contrato: el servidor nunca tiene la llave del admin, y si la del certificador se filtra, el admin la reemplaza con `set_certifier` sin volver a desplegar. El servidor nunca firma por el productor: sin su firma, la transacción no es válida.
+
 ## 3. Puertos de la arquitectura (`src/core/chain/`)
 
 La interfaz de usuario **solo** habla con estos puertos; nunca con el SDK de Stellar ni con Trustless Work directamente.
 
 | Puerto | Responsabilidad | Implementación real | Implementación de demostración |
 |---|---|---|---|
-| `WalletPort` | Crear la cuenta en el dispositivo, desbloquear con PIN, **firmar** XDR. | Llave cifrada en IndexedDB | Firma simulada |
-| `LotRegistryPort` | Registrar y consultar lotes en `lot_passport`. | `server.ts` prepara, el teléfono firma | `SimulatedChain` |
-| `EscrowPort` | Crear, fondear, aprobar hitos y liberar escrows. | Trustless Work API | `SimulatedChain` |
+| `WalletPort` | Unión de las tres billeteras de abajo; `kind` dice cuál es. La UI elige sus textos según `kind`. | — | — |
+| `DeviceWalletPort` (`kind: 'device'`) | Teléfono de la artesana, la promotora o el certificador: crear la cuenta, desbloquear con PIN, **firmar** XDR y restaurar con la tarjeta de recuperación. | Llave cifrada en IndexedDB (#91) | Firma simulada; acepta solo la tarjeta de demostración |
+| `CardWalletPort` (`kind: 'card'`) | Tarjeta QR de la artesana sin celular: crear la tarjeta, leer su dirección y firmar en el celular de la promotora sin guardar nada. | Llave cifrada en la tarjeta (#117) | La tarjeta solo vale en la instancia que la creó |
+| `ExternalWalletPort` (`kind: 'external'`) | Billetera propia del comprador: conectar y firmar. Yucu nunca ve su llave. | Freighter u otra (#115) | Simula billetera ausente, cancelación y red equivocada |
+| `LotRegistryPort` | Registrar y consultar lotes en `lot_passport`. | `server.ts` prepara, el teléfono firma la autorización del productor, el servidor co-firma como nodo certificador (D6) | `SimulatedChain` |
+| `EscrowPort` | Crear (devuelve el `escrowId`), fondear, aprobar hitos, liberar, abrir y resolver disputas. | Trustless Work API | `SimulatedChain` |
+
+Reglas del escrow que toda implementación debe respetar:
+
+* Los hitos suman 100 %.
+* Los roles de aprobar, liberar y resolver disputas son personas o la cooperativa, **nunca la plataforma**.
+* El ID del escrow solo se conoce después de enviar la creación: `submitCreate` lo devuelve (en Trustless Work es el `contractId`).
+* Al resolver una disputa, el porcentaje para el productor va de 0 a 100; el resto regresa al comprador.
 
 Cada resultado indica su origen (`source: 'testnet' | 'simulated'`). Si es `simulated`, la UI muestra `<DemoBadge />`. **Está prohibido inventar un hash o un número de ledger fuera de `SimulatedChain`.**
 

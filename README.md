@@ -38,7 +38,7 @@ Conceived in the mountainous Mixteca Highlands of Oaxaca (**Heroica Ciudad de Tl
 | PWA (React + Vite, service worker) | ✅ Real | Installable app; assets cached for offline use. |
 | Offline storage (`src/utils/offlineStorage.ts`) | ✅ Real | Saves lots in IndexedDB (localStorage fallback). |
 | Chat, image analysis, audio transcription (`server.ts`) | ✅ Real, needs `GEMINI_API_KEY` | Calls Gemini. Without a key it returns responses marked `isSimulated: true`. |
-| Soroban contracts (`contracts/`) | ✅ Real, **deployed on testnet** | 4 contracts with 20 passing tests. IDs in [`contracts/deployments/testnet.json`](./contracts/deployments/testnet.json): lot_passport [`CAPXWY…`](https://stellar.expert/explorer/testnet/contract/CAPXWYKU5GESGPZ57LNRCLOVHSBGDOZQVAWC6CWIQ655RSZ2ZGZI2BO7), attestation_registry [`CAIYZN…`](https://stellar.expert/explorer/testnet/contract/CAIYZNZIFHFU357CVFC5UF2YNHBI7KPVORPOGHOBN2HBI4EDQQGIUNHT), perpetual_royalties [`CCNPTD…`](https://stellar.expert/explorer/testnet/contract/CCNPTDDVW3RW53YQACZ2UFFHVLUJXNCMZ3TSK7TB552SUU6DDL26FRKU). `fair_escrow` [`CCVDEQ…`](https://stellar.expert/explorer/testnet/contract/CCVDEQ64Q4PJX73HLLPL3OYXLW4ARA652I34ZYIDQDXYQDQVJNLFSAQB) is **teaching material only**; real escrow is Trustless Work ([ADR-003](./docs/adr/ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md)). Not on mainnet. |
+| Soroban contracts (`contracts/`) | ✅ Real, **deployed on testnet** | 4 contracts with 23 passing tests. ⚠️ The deployed `lot_passport` predates the separate `certifier` role (ADR-003 D6); it must be redeployed with `contracts/scripts/deploy-testnet.sh`. IDs in [`contracts/deployments/testnet.json`](./contracts/deployments/testnet.json): lot_passport [`CAPXWY…`](https://stellar.expert/explorer/testnet/contract/CAPXWYKU5GESGPZ57LNRCLOVHSBGDOZQVAWC6CWIQ655RSZ2ZGZI2BO7), attestation_registry [`CAIYZN…`](https://stellar.expert/explorer/testnet/contract/CAIYZNZIFHFU357CVFC5UF2YNHBI7KPVORPOGHOBN2HBI4EDQQGIUNHT), perpetual_royalties [`CCNPTD…`](https://stellar.expert/explorer/testnet/contract/CCNPTDDVW3RW53YQACZ2UFFHVLUJXNCMZ3TSK7TB552SUU6DDL26FRKU). `fair_escrow` [`CCVDEQ…`](https://stellar.expert/explorer/testnet/contract/CCVDEQ64Q4PJX73HLLPL3OYXLW4ARA652I34ZYIDQDXYQDQVJNLFSAQB) is **teaching material only**; real escrow is Trustless Work ([ADR-003](./docs/adr/ADR-003-NO-CUSTODIAL-Y-TRUSTLESS-WORK.md)). Not on mainnet. |
 | Chain ports (`src/core/chain/`) | 🟡 Architecture ready | Non-custodial ports (`WalletPort`, `LotRegistryPort`, `EscrowPort`): prepare → user signs on device → submit. Only the demo implementation exists; the real ones are student issues. |
 | `src/core/blockchain/SorobanAdapter.ts` | 🔴 Simulated | Builds fake tx hashes and ledger numbers; does not call the network. |
 | `src/core/blockchain/StellarLiveClient.ts` | 🟡 Partial | Real Stellar SDK objects, but contract invocations return `simulated: true`; not used by the UI. |
@@ -56,9 +56,9 @@ Conceived in the mountainous Mixteca Highlands of Oaxaca (**Heroica Ciudad de Tl
 
 ## ⚡ Executive Summary in 60 Seconds
 
-* **The Problem:** Smallholder indigenous coffee farmers, beekeepers, and textile artisans in Oaxaca lose up to 70% of their product value to predatory middlemen (*coyotes*), face systematic counterfeiting from industrial knockoffs, and face deep barriers to digital banking (no internet in parcels, no credit cards, language barriers in *Tu'un Savi*).
-* **The Solution:** An **Offline-First Voice PWA** that allows an elder artisan to register a harvest by voice without typing. The system computes a cryptographic SHA-256 digest, prints a physical ISO/IEC 18004 hang-tag QR, anchors verifiable attestations on Stellar/Soroban, and locks purchase funds in milestone-based escrow.
-* **The Impact:** When delivered, funds are converted from on-chain USDC directly into local Mexican Pesos (**MXN**) via Banxico SPEI into Banco del Bienestar debit cards or cash via local transport cooperatives (MicoPay)—with transparent, fixed fees: **2% to the community Tequio fund** when an escrow is released, and on resales that go through the contract **10% royalty to the original artisan + 2% Tequio** (single source of truth: [`src/config/protocolFees.ts`](./src/config/protocolFees.ts)).
+* **The Problem:** Smallholder indigenous coffee farmers, beekeepers, and textile artisans in Oaxaca lose a large share of their product value to middlemen (*coyotes*), face systematic counterfeiting from industrial knockoffs, and face deep barriers to digital banking (no internet in parcels, no credit cards, language barriers in *Tu'un Savi*).
+* **The Solution:** An **Offline-First Voice PWA** that allows an elder artisan to register a harvest by voice without typing. The system computes a cryptographic SHA-256 digest, prints a physical ISO/IEC 18004 hang-tag QR, anchors verifiable attestations on Stellar/Soroban, and, for protected purchases, locks funds in a Trustless Work milestone escrow.
+* **The Impact (target design, [ADR-004](./docs/adr/ADR-004-PAGOS-EN-PESOS-SIN-BILLETERA.md)):** Buyers in Mexico pay the artisan directly in pesos (SPEI or cash); only the lot passport goes on Stellar. Foreign buyers pay in USDC into an escrow that releases to the artisan's own account, and she cashes out in pesos (MicoPay cash or Etherfuse SPEI). The artisan never pays a fee; the escrow takes **no Tequio**. On resales that go through the contract: **10% royalty to the original artisan + 2% Tequio** to a community account (single source of truth: [`src/config/protocolFees.ts`](./src/config/protocolFees.ts)). Today the payout rails are simulated; see the status table above.
 
 ---
 
@@ -75,11 +75,11 @@ How a coffee grower or textile artisan interacts with Yucu Protocol—step by st
 
 | Step | User & System Action | Technical Component & Direct Code Link |
 | :---: | :--- | :--- |
-| **1** | **Oral Harvest Log (Offline):** Don Juan presses the 112px voice button in Yucuhiti, speaking in *Tu'un Savi*: *"Kuni yu kiti 120 kilos café pergamino"*. Audio is encoded at 24kbps Opus without cell signal. | [`src/components/VoiceAssistantModal.tsx`](./src/components/VoiceAssistantModal.tsx)<br>[`src/core/sync/IndexedDbOutbox.ts`](./src/core/sync/IndexedDbOutbox.ts) |
-| **2** | **Cryptographic Digital Twin:** The system extracts metadata, computes the canonical SHA-256 Community Digest, and generates a printable vector SVG hang-tag QR for the physical coffee sack. | [`src/core/crypto/CryptoEngine.ts`](./src/core/crypto/CryptoEngine.ts)<br>[`src/components/PhysicalQRCard.tsx`](./src/components/PhysicalQRCard.tsx) |
-| **3** | **B2B Escrow Lock (Soroban):** A specialty coffee buyer in Zurich or CDMX inspects the digital lot passport and locks $10,000 MXNe in an audited milestone escrow contract. | [`contracts/fair_escrow/`](./contracts/fair_escrow/)<br>[`src/core/blockchain/TrustlessWorkEscrowAdapter.ts`](./src/core/blockchain/TrustlessWorkEscrowAdapter.ts) |
-| **4** | **Milestone 1 Release (30%):** The Tlaxiaco Cooperative Oracle signs the origin & quality attestation conforming to the SEP-RWA standard. A 30% advance ($3,000 MXN) is released to the producer. | [`docs/standards/SEP_RWA_ATTESTATION_DRAFT.md`](./docs/standards/SEP_RWA_ATTESTATION_DRAFT.md)<br>[`src/core/ai/RaizAIOracles.ts`](./src/core/ai/RaizAIOracles.ts) |
-| **5** | **Physical Delivery & Final Payout (70%):** Sacks are delivered to the Tlaxiaco warehouse. Scanning the physical QR triggers the release of the remaining 70% ($7,000 MXN) directly to Don Juan's card or in cash via MicoPay. | [`src/core/settlement/HybridSettlementOrchestrator.ts`](./src/core/settlement/HybridSettlementOrchestrator.ts) *(simulated)*<br>[`docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md`](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md) |
+| **1** | **Oral Harvest Log (Offline):** Don Juan presses the 112px voice button in Yucuhiti, speaking in *Tu'un Savi*: *"Kuni yu kiti 120 kilos café pergamino"*. Audio is encoded at 24kbps Opus without cell signal. | [`src/components/RegisterCoffeeLotScreen.tsx`](./src/components/RegisterCoffeeLotScreen.tsx)<br>[`src/utils/offlineStorage.ts`](./src/utils/offlineStorage.ts) |
+| **2** | **Cryptographic Digital Twin:** The system extracts metadata, computes the canonical SHA-256 Community Digest, and generates a printable vector SVG hang-tag QR for the physical coffee sack. | [`src/core/crypto/CryptoEngine.ts`](./src/core/crypto/CryptoEngine.ts)<br>[`src/components/ArtisanQrTagModal.tsx`](./src/components/ArtisanQrTagModal.tsx) |
+| **3** | **Protected Purchase (Trustless Work escrow, testnet):** A buyer abroad inspects the digital lot passport and funds a Trustless Work escrow in USDC from their own wallet. The artisan is the receiver. | [`src/core/chain/ports.ts`](./src/core/chain/ports.ts) (`EscrowPort`)<br>[`src/core/blockchain/TrustlessWorkEscrowAdapter.ts`](./src/core/blockchain/TrustlessWorkEscrowAdapter.ts) *(simulated)* |
+| **4** | **Shipping:** The group marks the milestone as "shipped". By default there is a single milestone (100 %); an "advance" template (e.g. 30 % / 70 %) is only enabled if field research shows artisans need it. | [`docs/standards/SEP_RWA_ATTESTATION_DRAFT.md`](./docs/standards/SEP_RWA_ATTESTATION_DRAFT.md)<br>[`src/core/ai/RaizAIOracles.ts`](./src/core/ai/RaizAIOracles.ts) |
+| **5** | **Delivery & Payout:** The buyer confirms receipt; the artisan releases the payment to her own account with her PIN and cashes out in pesos (MicoPay cash or Etherfuse SPEI, behind `PayoutPort`). | [`src/core/settlement/HybridSettlementOrchestrator.ts`](./src/core/settlement/HybridSettlementOrchestrator.ts) *(simulated)*<br>[`docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md`](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md) |
 
 ---
 
@@ -168,10 +168,10 @@ To resolve ambiguity between on-chain escrow, off-ramps, and cash distribution:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ TIER 1: ON-CHAIN ESCROW CUSTODY (Soroban Smart Contract)                    │
-│ Buyer locks funds in USDC using the Trustless Work milestone standard:     │
-│  • Milestone 1 (30%): Disbursed upon origin attestation verification.       │
-│  • Milestone 2 (70%): Disbursed upon physical delivery confirmation.        │
+│ TIER 1: ON-CHAIN ESCROW (Trustless Work, testnet)                           │
+│ Buyer locks funds in USDC from their own wallet:                            │
+│  • Default: 1 milestone (100%), released when the buyer confirms receipt.   │
+│  • Optional template with advance (e.g. 30% / 70%), off by default.         │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │
                                        ▼
@@ -199,11 +199,12 @@ Clone, install, and run Yucu Protocol locally:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Open-Hub-Tec/yucu.git
-cd yucu
+git clone https://github.com/Open-Hub-Tec/yucu-protocol.git
+cd yucu-protocol
 
-# 2. Install dependencies
-npm install
+# 2. Use Node 22 (see .nvmrc) and install the exact dependencies
+nvm use
+npm ci
 
 # 3. Launch local development server
 npm run dev
@@ -226,7 +227,7 @@ npm run build
 
 Technical architecture, field evidence, and academic standards are organized modularly in [`docs/`](./docs/README.md):
 
-* **[Architecture Document](./docs/ARCHITECTURE.md):** 5-layer decoupled architecture, sequence diagrams, and cryptographic verification flow.
+* **[Architecture Document](./docs/ARCHITECTURE.md):** capas, puertos, quién firma qué y camino del dinero (ADR-003 y ADR-004).
 * **[ADR-001: Trustless Work Escrow](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md):** Milestone custody specification and rationale.
 * **[ADR-002: Offline-First PWA & Rural Identity](./docs/adr/ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md):** W3C PWA standards vs. proprietary messaging platforms.
 * **[SEP-XXXX Attestation Draft](./docs/standards/SEP_RWA_ATTESTATION_DRAFT.md):** Verifiable RWA Attestation Standard proposed for Soroban.
