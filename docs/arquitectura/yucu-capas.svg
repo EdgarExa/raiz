@@ -1,0 +1,180 @@
+<svg viewBox="0 0 1200 842" role="img" xmlns="http://www.w3.org/2000/svg" width="1200" height="842" aria-label="Seis capas: personas, apps, puertos, preparar y firmar, Stellar y pagos fuera de Stellar. Las apps solo hablan con los puertos; el servidor prepara transacciones sin firmar y nunca recibe llaves ni dinero; cada persona firma en su teléfono.">
+<style>
+.band { fill: #E8EAF1; }
+.bl { fill: #586078; font: 600 10.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; letter-spacing: .14em; }
+.box { fill: #FFFFFF; stroke: #B9BED0; stroke-width: 1.4; }
+.box.todo { stroke-dasharray: 6 4; }
+.box.new { fill: #E1E7F8; stroke: #2C4799; }
+.box.ext { fill: #F5EAD0; stroke: #9A6A0C; }
+.bnd { fill: none; stroke: #A8213C; stroke-width: 1.5; stroke-dasharray: 6 4; }
+.t { fill: #1B1F2E; font: 700 13.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.p { fill: #1B1F2E; font: 600 13px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.s { fill: #586078; font: 400 12px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.m { fill: #586078; font: 400 11px 'JetBrains Mono',ui-monospace,Menlo,monospace; }
+.tag { font: 700 10px 'Source Sans 3','Segoe UI',system-ui,sans-serif; letter-spacing: .08em; fill: #586078; }
+.tag.new, .s.new { fill: #2C4799; }
+.tag.ext { fill: #9A6A0C; }
+.warn { fill: #A8213C; font: 700 11.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.ar { stroke: currentColor; stroke-width: 1.4; fill: none; }
+.ar.dash { stroke-dasharray: 5 4; }
+.al { fill: #1B1F2E; font: 600 11px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.num { fill: #1B1F2E; font: 700 11px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+ svg{color:#1B1F2E}</style>
+<rect width="1200" height="842" fill="#FFFFFF"/>
+<g color="#1B1F2E">
+          <defs>
+            <marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+          </defs>
+
+          <!-- Bandas -->
+          <rect class="band" x="10" y="10" width="1170" height="100" rx="10"/>
+          <rect class="band" x="10" y="126" width="1170" height="166" rx="10"/>
+          <rect class="band" x="10" y="308" width="1170" height="112" rx="10"/>
+          <rect class="band" x="10" y="436" width="1170" height="128" rx="10"/>
+          <rect class="band" x="10" y="580" width="1170" height="120" rx="10"/>
+          <rect class="band" x="10" y="716" width="1170" height="116" rx="10"/>
+          <text class="bl" text-anchor="middle" transform="translate(27 60) rotate(-90)">PERSONAS</text>
+          <text class="bl" text-anchor="middle" transform="translate(27 209) rotate(-90)">APPS</text>
+          <text class="bl" text-anchor="middle" transform="translate(27 364) rotate(-90)">PUERTOS</text>
+          <text class="bl" text-anchor="middle" transform="translate(27 500) rotate(-90)">PREPARAR Y FIRMAR</text>
+          <text class="bl" text-anchor="middle" transform="translate(27 640) rotate(-90)">STELLAR · TESTNET</text>
+          <text class="bl" text-anchor="middle" transform="translate(27 774) rotate(-90)">FUERA DE STELLAR</text>
+
+          <!-- Personas -->
+          <text class="p" x="175" y="50" text-anchor="middle">Artesana y productora</text>
+          <text class="s" x="175" y="70" text-anchor="middle">con el grupo y la promotora</text>
+          <text class="p" x="457" y="50" text-anchor="middle">Comprador extranjero</text>
+          <text class="s" x="457" y="70" text-anchor="middle">o en México que quiere compra protegida</text>
+          <text class="p" x="739" y="50" text-anchor="middle">Cualquier persona</text>
+          <text class="s" x="739" y="70" text-anchor="middle">y tiendas en línea</text>
+          <text class="p" x="1021" y="50" text-anchor="middle">Certificadoras, marcas, FONART</text>
+          <text class="s" x="1021" y="70" text-anchor="middle">y la administración de Yucu</text>
+          <line class="ar" x1="175" y1="84" x2="175" y2="153" marker-end="url(#ah1)"/>
+          <line class="ar" x1="457" y1="84" x2="457" y2="153" marker-end="url(#ah1)"/>
+          <line class="ar" x1="739" y1="84" x2="739" y2="153" marker-end="url(#ah1)"/>
+          <line class="ar" x1="1021" y1="84" x2="1021" y2="153" marker-end="url(#ah1)"/>
+
+          <!-- Apps -->
+          <rect class="box" x="44" y="156" width="262" height="122" rx="8"/>
+          <text class="t" x="175" y="182" text-anchor="middle">PWA de la artesana</text>
+          <text class="tag" x="175" y="199" text-anchor="middle">EXISTE · PROTOTIPO</text>
+          <text class="s" x="175" y="221" text-anchor="middle">registra su lote · imprime el QR</text>
+          <text class="s" x="175" y="237" text-anchor="middle">firma con PIN o con tarjeta QR</text>
+          <text class="s" x="175" y="253" text-anchor="middle">«Mis cobros» en pesos</text>
+          <text class="m" x="175" y="270" text-anchor="middle">usa: Wallet · LotRegistry · Payout</text>
+
+          <rect class="box todo" x="326" y="156" width="262" height="122" rx="8"/>
+          <text class="t" x="457" y="182" text-anchor="middle">Compra protegida</text>
+          <text class="tag" x="457" y="199" text-anchor="middle">POR CONSTRUIR · W6 · W21</text>
+          <text class="s" x="457" y="221" text-anchor="middle">escaparate de lotes</text>
+          <text class="s" x="457" y="237" text-anchor="middle">paga en USDC desde Freighter</text>
+          <text class="s" x="457" y="253" text-anchor="middle">aprueba cuando recibe</text>
+          <text class="m" x="457" y="270" text-anchor="middle">usa: Wallet · Escrow · LotRegistry</text>
+
+          <rect class="box new" x="608" y="156" width="262" height="122" rx="8"/>
+          <text class="t" x="739" y="182" text-anchor="middle">Verificador público</text>
+          <text class="tag new" x="739" y="199" text-anchor="middle">NUEVO · SIN CUENTA NI BILLETERA</text>
+          <text class="s" x="739" y="221" text-anchor="middle">escanea el QR o abre el enlace</text>
+          <text class="s" x="739" y="237" text-anchor="middle">✓ vigente · ✗ revocado</text>
+          <text class="s" x="739" y="253" text-anchor="middle">+ sello embebible y SDK (#79)</text>
+          <text class="m" x="739" y="270" text-anchor="middle">usa: LotRegistry · Attestation (leer)</text>
+
+          <rect class="box new" x="890" y="156" width="262" height="122" rx="8"/>
+          <text class="t" x="1021" y="182" text-anchor="middle">Consola de emisores</text>
+          <text class="tag new" x="1021" y="199" text-anchor="middle">NUEVO</text>
+          <text class="s" x="1021" y="221" text-anchor="middle">darse de alta como emisor</text>
+          <text class="s" x="1021" y="237" text-anchor="middle">emitir y revocar · historial</text>
+          <text class="s" x="1021" y="253" text-anchor="middle">+ admin de esquemas (solo Yucu)</text>
+          <text class="m" x="1021" y="270" text-anchor="middle">usa: Wallet · Attestation</text>
+
+          <!-- Puertos -->
+          <text class="s" x="44" y="330">src/core/chain · cada puerto tiene una versión simulada y una de testnet · las apps no importan @stellar/stellar-sdk</text>
+          <rect class="box" x="44" y="342" width="206" height="64" rx="8"/>
+          <text class="t" x="147" y="364" text-anchor="middle">WalletPort</text>
+          <text class="s" x="147" y="381" text-anchor="middle">pide la firma en el teléfono</text>
+          <text class="tag" x="147" y="397" text-anchor="middle">EXISTE · DEMO</text>
+
+          <rect class="box" x="268" y="342" width="206" height="64" rx="8"/>
+          <text class="t" x="371" y="364" text-anchor="middle">LotRegistryPort</text>
+          <text class="s" x="371" y="381" text-anchor="middle">registra y lee lotes</text>
+          <text class="tag" x="371" y="397" text-anchor="middle">EXISTE · DEMO</text>
+
+          <rect class="box new" x="492" y="342" width="206" height="64" rx="8"/>
+          <text class="t" x="595" y="364" text-anchor="middle">AttestationPort</text>
+          <text class="s" x="595" y="381" text-anchor="middle">emite, revoca y verifica</text>
+          <text class="tag new" x="595" y="397" text-anchor="middle">NUEVO</text>
+
+          <rect class="box" x="716" y="342" width="206" height="64" rx="8"/>
+          <text class="t" x="819" y="364" text-anchor="middle">EscrowPort</text>
+          <text class="s" x="819" y="381" text-anchor="middle">compra protegida</text>
+          <text class="tag" x="819" y="397" text-anchor="middle">EXISTE · DEMO</text>
+
+          <rect class="box todo" x="940" y="342" width="206" height="64" rx="8"/>
+          <text class="t" x="1043" y="364" text-anchor="middle">PayoutPort</text>
+          <text class="s" x="1043" y="381" text-anchor="middle">de su cuenta a pesos</text>
+          <text class="tag" x="1043" y="397" text-anchor="middle">POR CONSTRUIR · W18</text>
+
+          <!-- Puertos → preparar y firmar -->
+          <line class="ar" x1="147" y1="406" x2="147" y2="469" marker-end="url(#ah1)"/>
+          <text class="al" x="155" y="448">pide el PIN</text>
+          <line class="ar" x1="371" y1="406" x2="371" y2="469" marker-end="url(#ah1)"/>
+          <text class="al" x="379" y="448">registrar lote</text>
+          <line class="ar" x1="595" y1="406" x2="595" y2="469" marker-end="url(#ah1)"/>
+          <text class="al" x="603" y="448">emitir · revocar</text>
+          <line class="ar" x1="819" y1="406" x2="819" y2="469" marker-end="url(#ah1)"/>
+          <text class="al" x="827" y="448">crear · fondear · liberar</text>
+          <line class="ar" x1="1043" y1="406" x2="1043" y2="745" marker-end="url(#ah1)"/>
+          <text class="al" x="1051" y="488">retiro desde</text>
+          <text class="al" x="1051" y="503">su propia cuenta</text>
+
+          <!-- Firma y servidor -->
+          <rect class="box todo" x="44" y="472" width="206" height="82" rx="8"/>
+          <rect class="bnd" x="38" y="466" width="218" height="94" rx="11"/>
+          <text class="t" x="147" y="494" text-anchor="middle">Firma en el teléfono</text>
+          <text class="s" x="147" y="512" text-anchor="middle">PIN · llave no exportable (W1)</text>
+          <text class="s" x="147" y="528" text-anchor="middle">tarjeta QR con promotora (W23)</text>
+          <text class="s" x="147" y="544" text-anchor="middle">Freighter del comprador (W21)</text>
+
+          <rect class="box" x="268" y="472" width="654" height="82" rx="8"/>
+          <text class="t" x="284" y="494">Servidor · server.ts</text>
+          <text class="warn" x="906" y="494" text-anchor="end">Nunca recibe llaves ni dinero</text>
+          <text class="s" x="284" y="516">prepara transacciones sin firmar (W2) · patrocina comisiones (W4) · asistente con IA, Gemini</text>
+          <text class="s new" x="284" y="538">+ API de lectura: índice de lotes y atestaciones para el verificador y el SDK (nuevo)</text>
+
+          <!-- Servidor → Stellar -->
+          <line class="ar" x1="300" y1="554" x2="202" y2="611" marker-end="url(#ah1)"/>
+          <text class="al" x="236" y="578" text-anchor="end">reventas</text>
+          <line class="ar" x1="371" y1="554" x2="371" y2="611" marker-end="url(#ah1)"/>
+          <text class="al" x="379" y="590">envía ya firmada</text>
+          <line class="ar" x1="595" y1="554" x2="595" y2="611" marker-end="url(#ah1)"/>
+          <text class="al" x="603" y="590">envía ya firmada</text>
+          <line class="ar" x1="819" y1="554" x2="819" y2="611" marker-end="url(#ah1)"/>
+          <text class="al" x="827" y="590">vía la API de Trustless Work</text>
+
+          <!-- Contratos -->
+          <rect class="box" x="44" y="614" width="206" height="66" rx="8"/>
+          <text class="t" x="147" y="640" text-anchor="middle">perpetual_royalties</text>
+          <text class="s" x="147" y="660" text-anchor="middle">regalía y Tequio en reventas</text>
+
+          <rect class="box" x="268" y="614" width="206" height="66" rx="8"/>
+          <text class="t" x="371" y="640" text-anchor="middle">lot_passport</text>
+          <text class="s" x="371" y="660" text-anchor="middle">pasaporte del lote · W17</text>
+
+          <rect class="box todo" x="492" y="614" width="206" height="66" rx="8"/>
+          <text class="t" x="595" y="640" text-anchor="middle">attestation_registry</text>
+          <text class="s new" x="595" y="660" text-anchor="middle">varios emisores · liga al lote</text>
+
+          <rect class="box ext" x="716" y="614" width="206" height="66" rx="8"/>
+          <text class="t" x="819" y="640" text-anchor="middle">Trustless Work</text>
+          <text class="s" x="819" y="660" text-anchor="middle">escrow multi-release · USDC</text>
+
+          <!-- Fuera de Stellar -->
+          <rect class="box ext" x="44" y="748" width="878" height="66" rx="8"/>
+          <text class="t" x="483" y="774" text-anchor="middle">Pagos de la fase 1 (México)</text>
+          <text class="s" x="483" y="794" text-anchor="middle">SPEI o efectivo directo a la artesana · el dinero no pasa por Stellar · en Stellar solo va el pasaporte</text>
+
+          <rect class="box ext" x="940" y="748" width="206" height="66" rx="8"/>
+          <text class="t" x="1043" y="774" text-anchor="middle">MicoPay · Etherfuse</text>
+          <text class="s" x="1043" y="794" text-anchor="middle">efectivo · SPEI → pesos</text>
+        </g>
+</svg>

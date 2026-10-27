@@ -1,0 +1,87 @@
+<svg viewBox="0 0 1200 390" role="img" xmlns="http://www.w3.org/2000/svg" width="1200" height="390" aria-label="Fase 1: el comprador en México paga en pesos directo a la artesana y en Stellar solo va el pasaporte del lote. Fase 2: el comprador paga en USDC a un escrow de Trustless Work, la artesana libera a su propia cuenta, la comisión va a una entidad con RFC y ella retira a pesos.">
+<style>
+.band { fill: #E8EAF1; }
+.bl { fill: #586078; font: 600 10.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; letter-spacing: .14em; }
+.box { fill: #FFFFFF; stroke: #B9BED0; stroke-width: 1.4; }
+.box.todo { stroke-dasharray: 6 4; }
+.box.new { fill: #E1E7F8; stroke: #2C4799; }
+.box.ext { fill: #F5EAD0; stroke: #9A6A0C; }
+.bnd { fill: none; stroke: #A8213C; stroke-width: 1.5; stroke-dasharray: 6 4; }
+.t { fill: #1B1F2E; font: 700 13.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.p { fill: #1B1F2E; font: 600 13px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.s { fill: #586078; font: 400 12px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.m { fill: #586078; font: 400 11px 'JetBrains Mono',ui-monospace,Menlo,monospace; }
+.tag { font: 700 10px 'Source Sans 3','Segoe UI',system-ui,sans-serif; letter-spacing: .08em; fill: #586078; }
+.tag.new, .s.new { fill: #2C4799; }
+.tag.ext { fill: #9A6A0C; }
+.warn { fill: #A8213C; font: 700 11.5px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.ar { stroke: currentColor; stroke-width: 1.4; fill: none; }
+.ar.dash { stroke-dasharray: 5 4; }
+.al { fill: #1B1F2E; font: 600 11px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+.num { fill: #1B1F2E; font: 700 11px 'Source Sans 3','Segoe UI',system-ui,sans-serif; }
+ svg{color:#1B1F2E}</style>
+<rect width="1200" height="390" fill="#FFFFFF"/>
+<g color="#1B1F2E">
+          <defs>
+            <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+          </defs>
+          <text class="bl" x="20" y="28">FASE 1 · MÉXICO · ACEPTADA</text>
+          <rect class="box" x="20" y="44" width="200" height="72" rx="8"/>
+          <text class="t" x="120" y="74" text-anchor="middle">Comprador en México</text>
+          <text class="s" x="120" y="94" text-anchor="middle">paga al recibir o por SPEI</text>
+          <line class="ar" x1="220" y1="80" x2="517" y2="80" marker-end="url(#ah3)"/>
+          <text class="al" x="368" y="70" text-anchor="middle">pesos, directo · sin Stellar</text>
+          <rect class="box" x="520" y="44" width="200" height="72" rx="8"/>
+          <text class="t" x="620" y="74" text-anchor="middle">Artesana</text>
+          <text class="s" x="620" y="94" text-anchor="middle">recibe su precio completo</text>
+          <line class="ar dash" x1="720" y1="80" x2="817" y2="80" marker-end="url(#ah3)"/>
+          <text class="al" x="768" y="70" text-anchor="middle">registra</text>
+          <rect class="box todo" x="820" y="44" width="340" height="72" rx="8"/>
+          <text class="t" x="990" y="74" text-anchor="middle">Stellar: solo el pasaporte del lote</text>
+          <text class="s" x="990" y="94" text-anchor="middle">municipio, categoría, rangos · ningún monto (D5)</text>
+
+          <text class="bl" x="20" y="172">FASE 2 · COMPRA PROTEGIDA · SE CONSTRUYE EN TESTNET</text>
+          <rect class="box" x="20" y="188" width="170" height="80" rx="8"/>
+          <text class="t" x="105" y="218" text-anchor="middle">Comprador</text>
+          <text class="s" x="105" y="238" text-anchor="middle">su propia Freighter</text>
+          <text class="s" x="105" y="254" text-anchor="middle">aprueba al recibir</text>
+
+          <rect class="box ext" x="250" y="188" width="190" height="80" rx="8"/>
+          <text class="t" x="345" y="218" text-anchor="middle">Escrow</text>
+          <text class="s" x="345" y="238" text-anchor="middle">Trustless Work</text>
+          <text class="s" x="345" y="254" text-anchor="middle">el grupo marca «enviado»</text>
+
+          <rect class="box" x="500" y="188" width="190" height="80" rx="8"/>
+          <text class="t" x="595" y="218" text-anchor="middle">Cuenta de la artesana</text>
+          <text class="s" x="595" y="238" text-anchor="middle">invisible para ella (D1)</text>
+          <text class="s" x="595" y="254" text-anchor="middle">ella libera con su PIN</text>
+
+          <rect class="box todo" x="750" y="188" width="170" height="80" rx="8"/>
+          <text class="t" x="835" y="218" text-anchor="middle">PayoutPort</text>
+          <text class="s" x="835" y="238" text-anchor="middle">retiro desde</text>
+          <text class="s" x="835" y="254" text-anchor="middle">su propia cuenta</text>
+
+          <rect class="box ext" x="980" y="188" width="180" height="80" rx="8"/>
+          <text class="t" x="1070" y="218" text-anchor="middle">Pesos</text>
+          <text class="s" x="1070" y="238" text-anchor="middle">efectivo: MicoPay</text>
+          <text class="s" x="1070" y="254" text-anchor="middle">SPEI: Etherfuse</text>
+
+          <line class="ar" x1="190" y1="228" x2="247" y2="228" marker-end="url(#ah3)"/>
+          <text class="al" x="219" y="218" text-anchor="middle">USDC</text>
+          <line class="ar" x1="440" y1="228" x2="497" y2="228" marker-end="url(#ah3)"/>
+          <text class="al" x="469" y="218" text-anchor="middle">libera</text>
+          <line class="ar" x1="690" y1="228" x2="747" y2="228" marker-end="url(#ah3)"/>
+          <text class="al" x="719" y="218" text-anchor="middle">retira</text>
+          <line class="ar" x1="920" y1="228" x2="977" y2="228" marker-end="url(#ah3)"/>
+          <text class="al" x="949" y="218" text-anchor="middle">pesos</text>
+
+          <line class="ar" x1="345" y1="268" x2="345" y2="317" marker-end="url(#ah3)"/>
+          <text class="al" x="353" y="298">comisión, al liberar (D11)</text>
+          <rect class="box" x="250" y="320" width="190" height="56" rx="8"/>
+          <text class="t" x="345" y="344" text-anchor="middle">Entidad con RFC</text>
+          <text class="s" x="345" y="362" text-anchor="middle">emite CFDI · nunca Yucu</text>
+
+          <text class="warn" x="595" y="344" text-anchor="start">El grupo nunca recibe dinero de las ventas (D10).</text>
+          <text class="s" x="595" y="364" text-anchor="start">La comisión va encima del precio: la artesana no paga nada.</text>
+        </g>
+</svg>
