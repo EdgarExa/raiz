@@ -6,22 +6,26 @@
  * No toca la red, no guarda llaves y no mueve dinero.
  */
 import type {
+  CardWalletPort,
   ChainReceipt,
   CreateEscrowRequest,
+  DeviceWalletPort,
   EscrowCreatedReceipt,
   EscrowPort,
+  ExternalWalletPort,
   LotRecord,
   MilestoneState,
   MilestoneStatus,
   LotRegistryPort,
   RegisterLotRequest,
   UnsignedTransaction,
-  WalletPort,
 } from './ports';
 
 const DEMO_PASSPHRASE = 'Yucu Demo ; sin red';
 const DEMO_ADDRESS = 'GDEMOYUCUSIMULADANOEXISTEENLARED0000000000000000000000000';
 const DEMO_RECOVERY_CARD = 'TARJETA DE DEMOSTRACIÓN: no protege ninguna cuenta real.';
+const DEMO_CARD_ADDRESS = 'GDEMOYUCUTARJETAQRSIMULADANOEXISTE00000000000000000000000';
+const DEMO_BUYER_ADDRESS = 'GDEMOYUCUCOMPRADORSIMULADONOEXISTE0000000000000000000000';
 
 function randomHex(bytes: number): string {
   return Array.from({ length: bytes }, () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0')).join('');
@@ -35,7 +39,8 @@ function demoReceipt(): ChainReceipt {
   return { source: 'simulated', txHash: randomHex(32), ledger: 52_490_000 + Math.floor(Math.random() * 10_000), explorerUrl: null };
 }
 
-export class SimulatedWallet implements WalletPort {
+export class SimulatedWallet implements DeviceWalletPort {
+  readonly kind = 'device' as const;
   private created = false;
   async hasAccount() {
     return this.created;
@@ -59,11 +64,66 @@ export class SimulatedWallet implements WalletPort {
   }
 }
 
+/** Tarjeta QR de demostración: no cifra nada. Una tarjeta solo vale en la instancia que la creó. */
+export class SimulatedCardWallet implements CardWalletPort {
+  readonly kind = 'card' as const;
+  private readonly pins = new Map<string, string>();
+
+  async createCard(pin: string) {
+    if (!/^\d{6}$/.test(pin)) throw new Error('El PIN de la tarjeta debe tener 6 números.');
+    const cardData = `TARJETA-DEMO-${randomHex(8)}`;
+    this.pins.set(cardData, pin);
+    return { address: DEMO_CARD_ADDRESS, cardData };
+  }
+  async getAddress(cardData: string) {
+    if (!this.pins.has(cardData)) throw new Error('No se pudo leer la tarjeta. Revisa que sea la tuya y que no esté dañada.');
+    return DEMO_CARD_ADDRESS;
+  }
+  async sign(tx: UnsignedTransaction, pin: string, cardData: string) {
+    const expected = this.pins.get(cardData);
+    if (expected === undefined) throw new Error('No se pudo leer la tarjeta. Revisa que sea la tuya y que no esté dañada.');
+    if (pin !== expected) throw new Error('El PIN no es correcto.');
+    return tx.xdr;
+  }
+}
+
+/** Billetera del comprador de demostración. Las opciones simulan que no está instalada o que la persona cancela. */
+export class SimulatedExternalWallet implements ExternalWalletPort {
+  readonly kind = 'external' as const;
+  private connected = false;
+
+  constructor(private readonly options: { installed?: boolean; approves?: boolean; networkPassphrase?: string } = {}) {}
+
+  async isAvailable() {
+    return this.options.installed ?? true;
+  }
+  async connect() {
+    if (!(await this.isAvailable())) throw new Error('No encontramos tu billetera. Instálala y vuelve a intentar.');
+    if (this.options.approves === false) throw new Error('Cancelaste la conexión con tu billetera.');
+    this.connected = true;
+    return { address: DEMO_BUYER_ADDRESS };
+  }
+  async getAddress() {
+    return this.connected ? DEMO_BUYER_ADDRESS : null;
+  }
+  async sign(tx: UnsignedTransaction) {
+    if (!this.connected) throw new Error('Primero conecta tu billetera.');
+    if ((this.options.networkPassphrase ?? DEMO_PASSPHRASE) !== tx.networkPassphrase) {
+      throw new Error('Tu billetera está en otra red. Cámbiala a la red de pruebas.');
+    }
+    if (this.options.approves === false) throw new Error('Cancelaste la firma. No se envió nada.');
+    return tx.xdr;
+  }
+}
+
 export class SimulatedLotRegistry implements LotRegistryPort {
   private readonly lots = new Map<string, LotRecord>();
 
   async prepareRegisterLot(req: RegisterLotRequest) {
-    return demoTx(`Registrar el lote ${req.code} (${req.volumeUnits} unidades de ${req.category}).`, { op: 'register_lot', req });
+    if (!Number.isInteger(req.volumeRange) || req.volumeRange < 1) {
+      throw new Error('El rango de volumen debe ser un código de la lista (1, 2, 3…).');
+    }
+    return demoTx(`Registrar el lote ${req.code} de ${req.category} (${req.variety}).`, { op: 'register_lot', req });
   }
   async submit(signedXdr: string) {
     const { req } = JSON.parse(decodeURIComponent(escape(atob(signedXdr)))) as { req: RegisterLotRequest };
@@ -72,6 +132,9 @@ export class SimulatedLotRegistry implements LotRegistryPort {
       producerAddress: req.producerAddress,
       location: req.location,
       category: req.category,
+      variety: req.variety,
+      volumeRange: req.volumeRange,
+      photoHashHex: req.photoHashHex,
       certified: false,
       registeredAt: Date.now(),
     });

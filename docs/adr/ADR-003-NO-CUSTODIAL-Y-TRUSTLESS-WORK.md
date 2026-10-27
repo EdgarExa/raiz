@@ -41,7 +41,7 @@ El servidor puede **preparar** y **pagar comisiones** (fee-bump, CAP-15) y **pat
 
 > Pendiente de validar en campo: si las llaves de acceso (*passkeys*) con billeteras inteligentes de Soroban son más usables que el PIN, y si son compatibles con el flujo de transacciones de Trustless Work. Hasta entonces, D5 es la base.
 
-Con la tarjeta de recuperación y un PIN nuevo, la persona recupera su cuenta en otro teléfono (`WalletPort.restoreAccount`). La tarjeta nunca se envía al servidor.
+Con la tarjeta de recuperación y un PIN nuevo, la persona recupera su cuenta en otro teléfono (`DeviceWalletPort.restoreAccount`). La tarjeta nunca se envía al servidor.
 
 **D6. El nodo certificador co-firma el registro de lotes.** `register_lot` en `lot_passport` exige dos firmas: la del nodo certificador (el rol `certifier` del contrato) y la del productor. El flujo es:
 
@@ -57,8 +57,10 @@ La interfaz de usuario **solo** habla con estos puertos; nunca con el SDK de Ste
 
 | Puerto | Responsabilidad | Implementación real | Implementación de demostración |
 |---|---|---|---|
-| `WalletPort` | Crear la cuenta en el dispositivo, desbloquear con PIN, **firmar** XDR. | Llave cifrada en IndexedDB | Firma simulada |
-| `WalletPort` (recuperación) | Restaurar la cuenta con la tarjeta de recuperación y un PIN nuevo. | En el dispositivo | Acepta solo la tarjeta de demostración |
+| `WalletPort` | Unión de las tres billeteras de abajo; `kind` dice cuál es. La UI elige sus textos según `kind`. | — | — |
+| `DeviceWalletPort` (`kind: 'device'`) | Teléfono de la artesana, la promotora o el certificador: crear la cuenta, desbloquear con PIN, **firmar** XDR y restaurar con la tarjeta de recuperación. | Llave cifrada en IndexedDB (#91) | Firma simulada; acepta solo la tarjeta de demostración |
+| `CardWalletPort` (`kind: 'card'`) | Tarjeta QR de la artesana sin celular: crear la tarjeta, leer su dirección y firmar en el celular de la promotora sin guardar nada. | Llave cifrada en la tarjeta (#117) | La tarjeta solo vale en la instancia que la creó |
+| `ExternalWalletPort` (`kind: 'external'`) | Billetera propia del comprador: conectar y firmar. Yucu nunca ve su llave. | Freighter u otra (#115) | Simula billetera ausente, cancelación y red equivocada |
 | `LotRegistryPort` | Registrar y consultar lotes en `lot_passport`. | `server.ts` prepara, el teléfono firma la autorización del productor, el servidor co-firma como nodo certificador (D6) | `SimulatedChain` |
 | `EscrowPort` | Crear (devuelve el `escrowId`), fondear, aprobar hitos, liberar, abrir y resolver disputas. | Trustless Work API | `SimulatedChain` |
 

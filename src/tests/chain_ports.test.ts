@@ -2,7 +2,13 @@
  * Pruebas de los puertos de src/core/chain (ADR-003).
  * Cualquier implementación real debe cumplir el mismo flujo: preparar -> firmar -> enviar.
  */
-import { SimulatedEscrow, SimulatedLotRegistry, SimulatedWallet } from '../core/chain/SimulatedChain';
+import {
+  SimulatedCardWallet,
+  SimulatedEscrow,
+  SimulatedExternalWallet,
+  SimulatedLotRegistry,
+  SimulatedWallet,
+} from '../core/chain/SimulatedChain';
 
 let failures = 0;
 function check(cond: boolean, msg: string) {
@@ -13,6 +19,7 @@ function check(cond: boolean, msg: string) {
 async function run() {
   console.log('\n🔗 PUERTOS DE CADENA (SimulatedChain)');
   const wallet = new SimulatedWallet();
+  check(wallet.kind === 'device', 'La billetera del teléfono se identifica como device');
   check(!(await wallet.hasAccount()), 'Sin cuenta al inicio');
   const { address, recoveryCard } = await wallet.createAccount('1234');
   check(address.startsWith('G'), 'La cuenta tiene dirección pública G...');
@@ -25,15 +32,46 @@ async function run() {
   check(badCard && !(await otherPhone.hasAccount()), 'Una tarjeta equivocada no restaura ninguna cuenta');
 
   const lots = new SimulatedLotRegistry();
-  const tx = await lots.prepareRegisterLot({
+  const lotRequest = {
     code: 'MIEL-001', producerAddress: address, location: 'San Juan Ñumí', category: 'Miel de abeja',
-    variety: 'Multifloral', volumeUnits: 120, photoHashHex: 'a'.repeat(64),
-  });
+    variety: 'Multifloral', volumeRange: 3, photoHashHex: 'a'.repeat(64),
+  };
+  const tx = await lots.prepareRegisterLot(lotRequest);
   check(tx.summary.includes('MIEL-001'), 'La transacción preparada explica qué se firma');
   const receipt = await lots.submit(await wallet.sign(tx, '1234'));
   check(receipt.source === 'simulated' && receipt.explorerUrl === null, 'El comprobante se marca como simulado');
   const lot = await lots.getLot('MIEL-001');
   check(lot?.source === 'simulated' && lot.producerAddress === address && !lot.certified, 'El lote se registra sin certificar');
+  check(lot?.volumeRange === 3 && lot.photoHashHex === 'a'.repeat(64), 'El lote guarda el rango de volumen y el hash de la foto');
+  const badRange = await lots.prepareRegisterLot({ ...lotRequest, code: 'MIEL-002', volumeRange: 0 }).then(() => false, () => true);
+  check(badRange, 'Se rechaza un rango de volumen que no es un código de la lista');
+
+  // Tarjeta QR: la artesana sin celular firma en el celular de la promotora (#117)
+  const card = new SimulatedCardWallet();
+  const { address: cardAddress, cardData } = await card.createCard('123456');
+  check(card.kind === 'card' && (await card.getAddress(cardData)) === cardAddress, 'La tarjeta da su dirección sin pedir el PIN');
+  const cardTx = await lots.prepareRegisterLot({ ...lotRequest, code: 'MIEL-003', producerAddress: cardAddress });
+  await lots.submit(await card.sign(cardTx, '123456', cardData));
+  check((await lots.getLot('MIEL-003'))?.producerAddress === cardAddress, 'Con la tarjeta y su PIN, la artesana registra su lote');
+  const wrongPin = await card.sign(cardTx, '654321', cardData).then(() => false, () => true);
+  check(wrongPin, 'Un PIN equivocado no firma con la tarjeta');
+  const otherCard = await card.sign(cardTx, '123456', 'TARJETA-AJENA').then(() => false, () => true);
+  check(otherCard, 'Una tarjeta dañada o ajena no firma');
+  const shortPin = await card.createCard('1234').then(() => false, () => true);
+  check(shortPin, 'La tarjeta exige un PIN de 6 números');
+
+  // Billetera propia del comprador (#115)
+  const buyer = new SimulatedExternalWallet();
+  const { address: buyerAddress } = await buyer.connect();
+  check(buyer.kind === 'external' && (await buyer.getAddress()) === buyerAddress, 'El comprador conecta su propia billetera');
+  check((await buyer.sign(tx)) === tx.xdr, 'El comprador firma con su billetera');
+  const notInstalled = await new SimulatedExternalWallet({ installed: false }).connect().then(() => false, () => true);
+  check(notInstalled, 'Sin billetera instalada no se conecta');
+  const cancelled = new SimulatedExternalWallet({ approves: false });
+  check(await cancelled.connect().then(() => false, () => true), 'Si el comprador cancela, no se conecta ni firma');
+  const wrongNetwork = new SimulatedExternalWallet({ networkPassphrase: 'Public Global Stellar Network ; September 2015' });
+  await wrongNetwork.connect();
+  check(await wrongNetwork.sign(tx).then(() => false, () => true), 'Se rechaza firmar si la billetera está en otra red');
 
   const escrow = new SimulatedEscrow();
   const order = (orderId: string, percents: number[]) => ({

@@ -29,13 +29,21 @@ export interface UnsignedTransaction {
   summary: string;
 }
 
-// ─────────────────────────────── Billetera (en el teléfono) ───────────────────────────────
+// ─────────────────────────────── Billeteras ───────────────────────────────
 
 /**
+ * Tipo de billetera. La UI elige sus textos según esto: la artesana nunca ve "billetera",
+ * direcciones ni llaves (ADR-004, D1); el comprador sí usa su propia billetera (D7).
+ */
+export type WalletKind = 'device' | 'card' | 'external';
+
+/**
+ * Billetera del teléfono (#91): la de la artesana, la promotora o el certificador.
  * La llave privada vive SOLO en el dispositivo, cifrada con el PIN de la persona.
  * Ningún método devuelve ni envía la llave secreta.
  */
-export interface WalletPort {
+export interface DeviceWalletPort {
+  readonly kind: 'device';
   /** ¿Ya hay una cuenta creada en este dispositivo? */
   hasAccount(): Promise<boolean>;
   /** Crea la cuenta en el dispositivo y devuelve su dirección pública (G...). */
@@ -55,18 +63,54 @@ export interface WalletPort {
   restoreAccount(recoveryCard: string, newPin: string): Promise<{ address: string }>;
 }
 
+/**
+ * Tarjeta QR (#117), para la artesana sin celular propio (ADR-004, D4). Su llave va en su tarjeta,
+ * cifrada con un PIN de 6 dígitos. El celular de la promotora escanea la tarjeta, descifra la llave
+ * en memoria, firma y la borra. Nada de la tarjeta ni de la llave queda guardado en ese celular.
+ */
+export interface CardWalletPort {
+  readonly kind: 'card';
+  /** Crea la cuenta y devuelve el contenido del QR de la tarjeta. La tarjeta impresa no lleva nombre. */
+  createCard(pin: string): Promise<{ address: string; cardData: string }>;
+  /** Dirección pública de la tarjeta, sin descifrar la llave (para preparar la transacción). */
+  getAddress(cardData: string): Promise<string>;
+  /** Descifra en memoria con el PIN, firma y descarta la llave. Falla con un PIN o una tarjeta inválidos. */
+  sign(tx: UnsignedTransaction, pin: string, cardData: string): Promise<string>;
+}
+
+/**
+ * Billetera propia del comprador (#115), por ejemplo Freighter (ADR-004, D7).
+ * Yucu nunca ve su llave: la billetera muestra su propia pantalla de confirmación.
+ */
+export interface ExternalWalletPort {
+  readonly kind: 'external';
+  /** ¿Está instalada la billetera? */
+  isAvailable(): Promise<boolean>;
+  /** Pide permiso a la persona y devuelve su dirección pública. */
+  connect(): Promise<{ address: string }>;
+  getAddress(): Promise<string | null>;
+  /** Falla si la persona cancela o si la billetera está en otra red que `tx.networkPassphrase`. */
+  sign(tx: UnsignedTransaction): Promise<string>;
+}
+
+export type WalletPort = DeviceWalletPort | CardWalletPort | ExternalWalletPort;
+
 // ─────────────────────────────── Registro de lotes (lot_passport) ───────────────────────────────
 
+/** Lo mínimo en la cadena (ADR-004, D5): sin nombres, sin comunidad exacta y sin montos. */
 export interface RegisterLotRequest {
   code: string;
-  /** Dirección pública del productor (de su WalletPort), nunca su nombre. */
+  /** Dirección pública de la productora (de su billetera), nunca su nombre. */
   producerAddress: string;
-  /** Comunidad o región, nunca un domicilio. */
+  /** Municipio o región, nunca la comunidad exacta ni un domicilio. */
   location: string;
+  /** De la lista cerrada que define el contrato (#110), no texto libre. */
   category: string;
+  /** De la lista cerrada que define el contrato (#110), no texto libre. */
   variety: string;
-  volumeUnits: number;
-  /** SHA-256 en hexadecimal de la evidencia (CryptoEngine). */
+  /** Código del rango de volumen (por ejemplo, 1 = menos de 10 kg). Los rangos los define #110. */
+  volumeRange: number;
+  /** SHA-256 en hexadecimal de la foto del producto (CryptoEngine). */
   photoHashHex: string;
 }
 
@@ -75,6 +119,11 @@ export interface LotRecord {
   producerAddress: string;
   location: string;
   category: string;
+  variety: string;
+  volumeRange: number;
+  /** Permite comprobar que la foto que muestra la tienda es la que se registró. */
+  photoHashHex: string;
+  /** `false` si nunca se certificó o si se revocó la certificación (#110). */
   certified: boolean;
   registeredAt: number;
 }
