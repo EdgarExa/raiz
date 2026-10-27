@@ -5,8 +5,10 @@
 //! - No se guardan datos personales en la cadena: el productor se identifica por su dirección
 //!   (`producer: Address`), no por su nombre. El nombre vive fuera de la cadena, con consentimiento.
 //! - `location` debe ser la comunidad o región, nunca un domicilio.
-//! - Un lote nace SIN certificar. Solo el nodo certificador (admin) lo certifica con `certify_lot`,
+//! - Un lote nace SIN certificar. Solo el nodo certificador lo certifica con `certify_lot`,
 //!   anclando el hash del dictamen de laboratorio o inspección.
+//! - El nodo certificador (`certifier`) es una cuenta distinta del `admin` (ADR-003, D6). Su llave
+//!   vive en el servidor; si se filtra, el admin la cambia con `set_certifier` sin redesplegar.
 use soroban_sdk::{
     contract, contracterror, contractimpl, contracttype, symbol_short, Address, BytesN, Env,
     String, Symbol,
@@ -44,11 +46,13 @@ pub struct LotPassport {
 #[contracttype]
 pub enum DataKey {
     Admin,
+    Certifier,
     Lot(String),
 }
 
 const LOT_TAG: Symbol = symbol_short!("LOT_REG");
 const CERT_TAG: Symbol = symbol_short!("LOT_CERT");
+const CERTIFIER_TAG: Symbol = symbol_short!("CERTIFIER");
 const TTL_THRESHOLD: u32 = 100_000;
 const TTL_EXTEND_TO: u32 = 500_000;
 
@@ -56,6 +60,13 @@ fn admin(env: &Env) -> Result<Address, Error> {
     env.storage()
         .instance()
         .get(&DataKey::Admin)
+        .ok_or(Error::NotInitialized)
+}
+
+fn certifier(env: &Env) -> Result<Address, Error> {
+    env.storage()
+        .instance()
+        .get(&DataKey::Certifier)
         .ok_or(Error::NotInitialized)
 }
 
@@ -74,8 +85,9 @@ pub struct LotPassportContract;
 
 #[contractimpl]
 impl LotPassportContract {
-    /// Inicializa con el nodo certificador (p. ej. la institución o la cooperativa).
-    pub fn initialize(env: Env, admin: Address) -> Result<(), Error> {
+    /// Inicializa con el admin (administra el contrato) y el nodo certificador (registra y certifica
+    /// lotes; p. ej. la institución o la cooperativa).
+    pub fn initialize(env: Env, admin: Address, certifier: Address) -> Result<(), Error> {
         if env.storage().instance().has(&DataKey::Admin) {
             return Err(Error::AlreadyInitialized);
         }
@@ -83,8 +95,32 @@ impl LotPassportContract {
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage()
             .instance()
+            .set(&DataKey::Certifier, &certifier);
+        env.storage()
+            .instance()
             .extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
         Ok(())
+    }
+
+    /// Cambia el nodo certificador (p. ej. si su llave se filtró). Solo el admin.
+    pub fn set_certifier(env: Env, caller: Address, new_certifier: Address) -> Result<(), Error> {
+        caller.require_auth();
+        if caller != admin(&env)? {
+            return Err(Error::Unauthorized);
+        }
+        env.storage()
+            .instance()
+            .set(&DataKey::Certifier, &new_certifier);
+        env.storage()
+            .instance()
+            .extend_ttl(TTL_THRESHOLD, TTL_EXTEND_TO);
+        env.events().publish((CERTIFIER_TAG,), new_certifier);
+        Ok(())
+    }
+
+    /// Dirección del nodo certificador actual.
+    pub fn get_certifier(env: Env) -> Result<Address, Error> {
+        certifier(&env)
     }
 
     /// Registra un lote. Firman el nodo certificador y el propio productor.
@@ -100,7 +136,7 @@ impl LotPassportContract {
         photo_hash: BytesN<32>,
     ) -> Result<(), Error> {
         caller.require_auth();
-        if caller != admin(&env)? {
+        if caller != certifier(&env)? {
             return Err(Error::Unauthorized);
         }
         producer.require_auth();
@@ -140,7 +176,7 @@ impl LotPassportContract {
         certification_score: u32,
     ) -> Result<(), Error> {
         caller.require_auth();
-        if caller != admin(&env)? {
+        if caller != certifier(&env)? {
             return Err(Error::Unauthorized);
         }
 

@@ -4,9 +4,11 @@
 # Requisitos: stellar-cli >= 22 y `rustup target add wasm32v1-none`.
 # Uso (desde la raíz del repo):  bash contracts/scripts/deploy-testnet.sh
 #
-# Crea (si no existen) tres identidades locales de testnet, fondeadas con Friendbot:
-#   yucu-admin   -> administrador de los contratos: el nodo certificador del PROYECTO (su propia llave).
-#                   Nunca firma por productores: ellos firman en su teléfono (ADR-003, no custodial).
+# Crea (si no existen) cuatro identidades locales de testnet, fondeadas con Friendbot:
+#   yucu-admin     -> administrador de los contratos (despliega, inicializa y cambia el certificador).
+#   yucu-certifier -> nodo certificador de lot_passport: registra y certifica lotes (ADR-003, D6).
+#                     Su llave secreta va al servidor como STELLAR_CERTIFIER_SECRET.
+#                     Ninguna de las dos firma por productores: ellos firman en su teléfono.
 #   yucu-tequio  -> tesorería comunitaria (Tequio)
 #   yucu-micopay -> autoridad de pago en efectivo (solo para el contrato didáctico fair_escrow)
 # Las llaves secretas se quedan en ~/.config/stellar; NUNCA se suben al repo.
@@ -42,7 +44,9 @@ echo "==> Identidades"
 ADMIN=$(ensure_identity yucu-admin)
 TEQUIO=$(ensure_identity yucu-tequio)
 MICOPAY=$(ensure_identity yucu-micopay)
+CERTIFIER=$(ensure_identity yucu-certifier)
 echo "admin=$ADMIN"
+echo "certifier=$CERTIFIER"
 
 echo "==> Compilando contratos (wasm32v1-none)"
 (cd "$ROOT/contracts" && cargo build --locked --release --target wasm32v1-none)
@@ -55,7 +59,7 @@ ESCROW=$(deploy yucu_fair_escrow)
 
 echo "==> Inicializando"
 invoke "$REGISTRY"  initialize --admin "$ADMIN"
-invoke "$LOT"       initialize --admin "$ADMIN"
+invoke "$LOT"       initialize --admin "$ADMIN" --certifier "$CERTIFIER"
 invoke "$ROYALTIES" initialize --admin "$ADMIN" --communal_treasury "$TEQUIO"
 invoke "$ESCROW"    initialize --admin "$ADMIN" --attestation_registry "$REGISTRY" \
                                --micopay_authority "$MICOPAY" --communal_treasury "$TEQUIO"
@@ -70,6 +74,7 @@ cat > "$OUT" <<EOF
   "commit": "$(git -C "$ROOT" rev-parse --short HEAD)",
   "accounts": {
     "admin": "$ADMIN",
+    "certifier": "$CERTIFIER",
     "communalTreasury": "$TEQUIO",
     "micopayAuthority": "$MICOPAY"
   },
