@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppLanguage, DigitalPassportLot, NavigationTab, ProductItem, ScreenView } from './types';
+import { AppLanguage, DigitalPassportLot, NavigationTab, ProductItem, ScreenView, OrderReceipt } from './types';
 import { sanitizeProductName } from './utils/productUtils';
 import { INITIAL_PRODUCTS, INITIAL_VERIFIED_LOTS } from './data/mockData';
 import { TopAppBar } from './components/TopAppBar';
@@ -21,6 +21,9 @@ import { ExplainerVideoModal } from './components/ExplainerVideoModal';
 import { RaizAuthModal } from './components/RaizAuthModal';
 import { HybridArchitectureModal } from './components/HybridArchitectureModal';
 import { ProtocolInfrastructureModal } from './components/ProtocolInfrastructureModal';
+import { ResearchPresentationModal } from './components/ResearchPresentationModal';
+import { BuyerResearchIssueModal } from './components/BuyerResearchIssueModal';
+import { RaizLandingPage } from './components/RaizLandingPage';
 import { RaizAuthEngine, UserProfile } from './core/auth/RaizAuthEngine';
 import { RaizCore } from './core';
 
@@ -53,8 +56,12 @@ export default function App() {
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [isMicDiagnosticModalOpen, setIsMicDiagnosticModalOpen] = useState(false);
   const [isExplainerVideoOpen, setIsExplainerVideoOpen] = useState(false);
+  const [isPresentationModalOpen, setIsPresentationModalOpen] = useState(false);
+  const [isBuyerIssueModalOpen, setIsBuyerIssueModalOpen] = useState(false);
+  const [passportViewMode, setPassportViewMode] = useState<'productor' | 'comprador'>('productor');
   const [targetChatProducer, setTargetChatProducer] = useState<string | null>(null);
   const [chatInitialMessage, setChatInitialMessage] = useState<string | null>(null);
+  const [lastOrderReceipt, setLastOrderReceipt] = useState<OrderReceipt | null>(null);
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
   // Monitor network status for Modo Parcela (Offline Mode) & Initialize RaizCore
@@ -91,10 +98,31 @@ export default function App() {
         );
         if (found) {
           setSelectedLot(found);
-          setIsDictamenModalOpen(true);
+          const showDictamen = urlParams.get('dictamen') === 'true' || urlParams.get('pdf') === 'true';
+          if (showDictamen) {
+            setIsDictamenModalOpen(true);
+          }
+          const roleParam = urlParams.get('role') || urlParams.get('modo');
+          const isProducer = roleParam === 'productor' || roleParam === 'campesino';
+          setPassportViewMode(isProducer ? 'productor' : 'comprador');
           setCurrentTab('productos');
           setCurrentScreen('pasaporte_digital');
         }
+      }
+
+      const viewParam = urlParams.get('view') || urlParams.get('screen');
+      if (viewParam === 'landing' || viewParam === 'landing_page') {
+        setCurrentScreen('landing_page');
+      }
+
+      const presParam = urlParams.get('presentacion') || urlParams.get('presentation') || urlParams.get('dossier');
+      if (presParam === 'true' || presParam === '1') {
+        setIsPresentationModalOpen(true);
+      }
+
+      const issueParam = urlParams.get('issue') || urlParams.get('comprador') || urlParams.get('ux');
+      if (issueParam === 'true' || issueParam === '1' || issueParam === 'buyer' || issueParam === 'comprador') {
+        setIsBuyerIssueModalOpen(true);
       }
     } catch (err) {
       console.error('Error procesando enlace de certificado:', err);
@@ -104,7 +132,9 @@ export default function App() {
   // Tab change handler
   const handleTabChange = (tab: NavigationTab) => {
     setCurrentTab(tab);
-    if (tab === 'menu') {
+    if (tab === 'landing') {
+      setCurrentScreen('landing_page');
+    } else if (tab === 'menu') {
       setCurrentScreen('menu_principal');
     } else if (tab === 'chat') {
       setCurrentScreen('registro_productor');
@@ -123,6 +153,8 @@ export default function App() {
       setCurrentTab('productos');
     } else if (screen === 'registro_productor') {
       setCurrentTab('chat');
+    } else if (screen === 'landing_page') {
+      setCurrentTab('landing');
     } else {
       setCurrentTab('menu');
     }
@@ -139,7 +171,7 @@ export default function App() {
   };
 
   // Cart operations
-  const handleAddToCart = (item: CartItem) => {
+  const handleAddToCart = (item: CartItem, openModal: boolean = false) => {
     setCartItems((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
@@ -149,7 +181,9 @@ export default function App() {
       }
       return [...prev, item];
     });
-    setIsCartModalOpen(true);
+    if (openModal) {
+      setIsCartModalOpen(true);
+    }
   };
 
   const handleRemoveFromCart = (id: string) => {
@@ -176,6 +210,22 @@ export default function App() {
     }
     setCurrentTab('chat');
     setCurrentScreen('registro_productor');
+  };
+
+  // Navigate from Vitrina product directly to its certified Digital Passport
+  const handleSelectProductPassport = (product: ProductItem) => {
+    const matchingLot =
+      lots.find(
+        (l) =>
+          l.productType.toLowerCase().includes(product.category.toLowerCase()) ||
+          product.title.toLowerCase().includes(l.productType.toLowerCase()) ||
+          l.title.toLowerCase().includes(product.title.toLowerCase())
+      ) || lots[0];
+
+    setSelectedLot(matchingLot);
+    setPassportViewMode('comprador');
+    setCurrentTab('productos');
+    setCurrentScreen('pasaporte_digital');
   };
 
   // New lot creation after Step 3
@@ -432,7 +482,7 @@ export default function App() {
         : 'Lote registrado con trazabilidad de origen y respaldo comunitario de la Mixteca Alta.',
       nomCompliance: {
         standard: isChapulines
-          ? 'Norma Sanitaria Tradicional Oaxaqueña / Sello Raíz'
+          ? 'Norma Sanitaria Tradicional Oaxaqueña / Sello Yucu'
           : isChocolate
           ? 'NOM-186-SSA1/SCFI-2013 / Sello Mixteca'
           : 'NOM-255-SCFI / Sello Mixteca',
@@ -469,6 +519,52 @@ export default function App() {
     setSelectedLot(newLot);
   };
 
+  const handleToggleLotVisibility = (lotId: string, visible: boolean) => {
+    setLots((prevLots) =>
+      prevLots.map((lot) => {
+        if (lot.id === lotId) {
+          const updatedConsent = lot.informedConsent
+            ? {
+                ...lot.informedConsent,
+                isPubliclyVisible: visible,
+                revocationTimestamp: visible ? undefined : new Date().toISOString()
+              }
+            : {
+                granted: true,
+                visibilityLevel: 'nombre_completo' as const,
+                consentTimestamp: new Date().toISOString(),
+                isPubliclyVisible: visible,
+                revocationTimestamp: visible ? undefined : new Date().toISOString()
+              };
+          const updatedLot: DigitalPassportLot = {
+            ...lot,
+            informedConsent: updatedConsent
+          };
+          return updatedLot;
+        }
+        return lot;
+      })
+    );
+
+    setSelectedLot((prev) => {
+      if (prev.id === lotId) {
+        return {
+          ...prev,
+          informedConsent: {
+            ...(prev.informedConsent || {
+              granted: true,
+              visibilityLevel: 'nombre_completo',
+              consentTimestamp: new Date().toISOString()
+            }),
+            isPubliclyVisible: visible,
+            revocationTimestamp: visible ? undefined : new Date().toISOString()
+          }
+        };
+      }
+      return prev;
+    });
+  };
+
   const totalCartCount = cartItems.reduce((acc, i) => acc + i.quantity, 0);
 
   return (
@@ -486,6 +582,7 @@ export default function App() {
         onOpenMicDiagnostic={() => setIsMicDiagnosticModalOpen(true)}
         onOpenExplainerVideo={() => setIsExplainerVideoOpen(true)}
         onOpenProtocolModal={() => setIsProtocolModalOpen(true)}
+        onOpenPresentation={() => setIsPresentationModalOpen(true)}
         cartCount={totalCartCount}
         appLanguage={appLanguage}
         onToggleLanguage={() => setAppLanguage((prev) => (prev === 'es' ? 'mix' : 'es'))}
@@ -519,6 +616,7 @@ export default function App() {
           onOpenMicDiagnostic={() => setIsMicDiagnosticModalOpen(true)}
           onOpenExplainerVideo={() => setIsExplainerVideoOpen(true)}
           onOpenProtocolModal={() => setIsProtocolModalOpen(true)}
+          onOpenPresentation={() => setIsPresentationModalOpen(true)}
           currentUser={currentUser}
           appLanguage={appLanguage}
           elderMode={elderMode}
@@ -562,8 +660,10 @@ export default function App() {
           onOpenLotsModal={() => setIsLotsModalOpen(true)}
           onDirectMessageProducer={handleDirectContact}
           onAddToCart={handleAddToCart}
+          onToggleVisibility={handleToggleLotVisibility}
           elderMode={elderMode}
           appLanguage={appLanguage}
+          initialViewMode={passportViewMode}
         />
       )}
 
@@ -580,6 +680,8 @@ export default function App() {
           onOpenMicDiagnosticModal={() => setIsMicDiagnosticModalOpen(true)}
           onAddToCart={handleAddToCart}
           selectedLot={selectedLot}
+          lastOrderReceipt={lastOrderReceipt}
+          onClearOrderReceipt={() => setLastOrderReceipt(null)}
         />
       )}
 
@@ -589,6 +691,19 @@ export default function App() {
           onNavigateScreen={handleNavigateScreen}
           onAddToCart={handleAddToCart}
           onDirectContact={handleDirectContact}
+          onOpenBuyerIssueModal={() => setIsBuyerIssueModalOpen(true)}
+          onViewPassport={handleSelectProductPassport}
+        />
+      )}
+
+      {currentScreen === 'landing_page' && (
+        <RaizLandingPage
+          onNavigateScreen={handleNavigateScreen}
+          onOpenExplainerVideo={() => setIsExplainerVideoOpen(true)}
+          onOpenProtocolModal={() => setIsProtocolModalOpen(true)}
+          onOpenPresentation={() => setIsPresentationModalOpen(true)}
+          onSelectLot={(lot) => setSelectedLot(lot)}
+          lots={lots}
         />
       )}
 
@@ -596,6 +711,10 @@ export default function App() {
       <BottomNavBar currentTab={currentTab} onSelectTab={handleTabChange} />
 
       {/* Modals */}
+      <ResearchPresentationModal
+        isOpen={isPresentationModalOpen}
+        onClose={() => setIsPresentationModalOpen(false)}
+      />
       <MyLotsModal
         isOpen={isLotsModalOpen}
         onClose={() => setIsLotsModalOpen(false)}
@@ -614,7 +733,7 @@ export default function App() {
         onClose={() => setIsPaymentsModalOpen(false)}
         initialCountry={currentUser.country}
         onRequestWithdrawal={(amount) => {
-          setTargetChatProducer('Raíz - Tesorería');
+          setTargetChatProducer('Yucu - Tesorería');
           setChatInitialMessage(
             `Hola, solicito formalmente el retiro de mis $${amount.toLocaleString('es-MX', {
               minimumFractionDigits: 2
@@ -631,7 +750,7 @@ export default function App() {
         lot={selectedLot}
         onClose={() => setIsDictamenModalOpen(false)}
         onShareInChat={(lot) => {
-          setTargetChatProducer('Asesoría Técnica Raíz');
+          setTargetChatProducer('Asesoría Técnica Yucu');
           setChatInitialMessage(
             `Hola equipo técnico, tengo una consulta sobre el Dictamen Normativo del lote ${lot.title} (Folio #${lot.code}).`
           );
@@ -654,11 +773,10 @@ export default function App() {
         onRemoveItem={handleRemoveFromCart}
         onUpdateQuantity={handleUpdateCartQuantity}
         onClearCart={handleClearCart}
-        onOrderConfirmed={(summary) => {
-          setTargetChatProducer('Raíz - Pedidos');
-          setChatInitialMessage(
-            `Confirmación de pedido directo: ${summary}. Deseo coordinar la entrega comunitaria desde la Mixteca.`
-          );
+        onOrderConfirmed={(receipt) => {
+          setLastOrderReceipt(receipt);
+          setTargetChatProducer(receipt.artisanName);
+          setChatInitialMessage(null);
           setCurrentTab('chat');
           setCurrentScreen('registro_productor');
         }}
@@ -684,7 +802,7 @@ export default function App() {
         onNavigateScreen={handleNavigateScreen}
       />
 
-      {/* Identidad Raíz Modal (Acceso Soberano sin Contraseñas) */}
+      {/* Identidad Yucu Modal (Acceso Soberano sin Contraseñas) */}
       <RaizAuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
@@ -701,10 +819,16 @@ export default function App() {
         onOpenPayments={() => setIsPaymentsModalOpen(true)}
       />
 
-      {/* Consola de Infraestructura Raíz & 4 Oráculos de IA Modal */}
+      {/* Consola de Infraestructura Yucu & 4 Oráculos de IA Modal */}
       <ProtocolInfrastructureModal
         isOpen={isProtocolModalOpen}
         onClose={() => setIsProtocolModalOpen(false)}
+      />
+
+      {/* Modal de Plantilla de Issue GitHub para Entrevistas a Compradores y Usabilidad UX (TecNM) */}
+      <BuyerResearchIssueModal
+        isOpen={isBuyerIssueModalOpen}
+        onClose={() => setIsBuyerIssueModalOpen(false)}
       />
     </div>
   );

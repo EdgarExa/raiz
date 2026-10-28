@@ -11,7 +11,7 @@ export const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({
   onClose,
   onOpenCard
 }) => {
-  const [activeTab, setActiveTab] = useState<'vision' | 'logistica' | 'regalias' | 'micopay' | 'drips' | 'markdown'>('vision');
+  const [activeTab, setActiveTab] = useState<'vision' | 'logistica' | 'regalias' | 'micopay' | 'becas' | 'markdown'>('vision');
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
@@ -22,23 +22,23 @@ export const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({
 ---
 
 ## 1. RESUMEN EJECUTIVO Y VISIÓN
-**Raíz** es una infraestructura socio-tecnológica diseñada para eliminar la asimetría de información y el despojo económico en las comunidades de la Mixteca Alta. 
+**Yucu** es una infraestructura socio-tecnológica diseñada para eliminar la asimetría de información y el despojo económico en las comunidades de la Mixteca Alta. 
 Combina:
 1. **Módulo Único de Registro Universal**: Registro ágil de café, miel, telar de cintura, barro y palma mediante interfaces ultraligeras y notas de voz en Tu'un Savi / Español.
 2. **Dictamen Agroecológico TecNM**: Verificación científica de calidad (humedad, libre de plaguicidas, altitud) anclada criptográficamente en Stellar Testnet.
-3. **Logística Rural Inclusiva**: Transformación del intermediario ("coyote") en Agente Logístico Comunitario y cajero móvil en parcela con tarifas de flete transparentes.
+3. **Trato y Entrega Directa (Deslinde Logístico)**: Yucu no opera paqueterías ni fletes. La entrega física se acuerda directamente entre comprador y artesano en taller o parcela, eliminando al intermediario especulador.
 4. **Regalías Perpetuas On-Chain**: Smart contracts en Soroban que garantizan un 10% perpetuo a las artesanas y creadores sobre cualquier reventa secundaria en galerías o el extranjero.
 5. **MicoPay & Billetera Comunitaria**: Custodia en Escrow con USDC, cobros con código QR y red de liquidación en efectivo sin intermediación bancaria tradicional.
-6. **Sostenibilidad Académica con Drips**: Micro-becas automáticas en USDC para estudiantes de ingeniería del Tec de Tlaxiaco por resolver Issues en GitHub.
+6. **Sostenibilidad Académica**: Micro-becas y residencias para estudiantes de ingeniería del Tec de Tlaxiaco por resolver Issues en GitHub.
 
 ---
 
-## 2. EL EX-COYOTE COMO ALIADO LOGÍSTICO
-- **Problema Histórico**: El intermediario acaparaba márgenes de hasta el 400% y manipulaba básculas.
-- **Solución Raíz**: 
-  - El transportista local registra su vehículo en la plataforma.
-  - Recibe órdenes de recolección en parcela con tarifa de flete garantizada ($1.50 - $2.50 MXN/kg) mediante contrato Soroban.
-  - Opera como **Cajero Móvil en Parcela**: Entrega efectivo al productor al momento de recoger la cosecha y recibe instantáneamente los USDC correspondientes mediante escaneo QR.
+## 2. TRATO DIRECTO Y DESLINDE LOGÍSTICO
+- **Principio Fundamental**: Yucu **no gestiona logística, no opera transporte ni cobra fletes de entrega**.
+- **Solución Yucu**: 
+  - La entrega o recolección física se acuerda libre y directamente entre el comprador y el productor/artesano (en taller, parcela o punto convenido).
+  - Yucu se enfoca 100% en la **trazabilidad de origen, certificación de calidad del TecNM y sellado inmutable en Stellar**.
+  - El pago condicionado (Escrow) protege a ambas partes sin que la plataforma asuma pasivos de transporte o paquetería.
 
 ---
 
@@ -57,9 +57,9 @@ Combina:
 
 ---
 
-## 5. DRIPS Y PARTICIPACIÓN ESTUDIANTIL
-- El fondo de financiamiento del grant se canaliza mediante el protocolo Drips.
-- Cada estudiante del TecNM Tlaxiaco que programa módulos, valida sensores o asiste a productores recibe pagos programables automáticos en su wallet.
+## 5. VINCULACIÓN ACADÉMICA Y PARTICIPACIÓN ESTUDIANTIL
+- El fondo de desarrollo del proyecto Open Hub vincula a estudiantes de ingeniería con tareas reales de software.
+- Cada estudiante del TecNM Tlaxiaco que programa módulos, valida sensores o asiste a productores recibe micro-becas y créditos de residencia profesional al resolver issues en GitHub.
 `;
 
   const handleCopyMarkdown = () => {
@@ -82,7 +82,7 @@ Combina:
                 Expediente Técnico &amp; Base de Conocimiento
               </h3>
               <p className="text-[11px] text-emerald-200/90">
-                Raíz • Arquitectura de Innovación Rural Stellar &amp; Soroban
+                Yucu • Arquitectura de Innovación Rural Stellar &amp; Soroban
               </p>
             </div>
           </div>
@@ -126,11 +126,11 @@ Combina:
             onClick={() => setActiveTab('logistica')}
             className={`px-3 py-1.5 rounded-xl text-[12px] font-bold shrink-0 transition-all cursor-pointer ${
               activeTab === 'logistica'
-                ? 'bg-cyan-900 text-white shadow-xs'
+                ? 'bg-[#032517] text-white shadow-xs'
                 : 'text-[#424843] hover:bg-[#e4e1d9]'
             }`}
           >
-            🚚 Coyote Aliado
+            🤝 Trato Directo (Sin Logística)
           </button>
           <button
             type="button"
@@ -156,14 +156,14 @@ Combina:
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('drips')}
+            onClick={() => setActiveTab('becas')}
             className={`px-3 py-1.5 rounded-xl text-[12px] font-bold shrink-0 transition-all cursor-pointer ${
-              activeTab === 'drips'
+              activeTab === 'becas'
                 ? 'bg-purple-900 text-white shadow-xs'
                 : 'text-[#424843] hover:bg-[#e4e1d9]'
             }`}
           >
-            🎓 Drips &amp; TecNM
+            🎓 Becas &amp; TecNM
           </button>
           <button
             type="button"
@@ -187,7 +187,7 @@ Combina:
                   🌟 El Salto Cuántico Tecnológico de la Mixteca
                 </h4>
                 <p className="text-emerald-900 text-[12.5px]">
-                  Raíz trasciende un simple catálogo digital. Es un ecosistema vivo donde la ciencia agronómica del Instituto Tecnológico de Tlaxiaco se une a la solidez de los contratos inteligentes en Stellar para blindar el valor creado por los pueblos originarios.
+                  Yucu trasciende un simple catálogo digital. Es un ecosistema vivo donde la ciencia agronómica del Instituto Tecnológico de Tlaxiaco se une a la solidez de los contratos inteligentes en Stellar para blindar el valor creado por los pueblos originarios.
                 </p>
               </div>
 
@@ -212,29 +212,29 @@ Combina:
 
           {activeTab === 'logistica' && (
             <div className="space-y-3">
-              <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-3.5">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[20px]">🚚</span>
-                  <h4 className="font-extrabold text-cyan-950 text-[14px]">
-                    El Ex-Coyote como Aliado: De Especulador a Agente Logístico
+                  <span className="text-[20px]">🤝</span>
+                  <h4 className="font-extrabold text-amber-950 text-[14px]">
+                    Trato Directo y Deslinde Logístico de Entrega
                   </h4>
                 </div>
-                <p className="text-cyan-900 text-[12.5px]">
-                  En lugar de pelear contra el transportista local que posee las camionetas 4x4 indispensables en caminos de terracería, Raíz lo incorpora al sistema de gobernanza con incentivos alineados.
+                <p className="text-amber-900 text-[12.5px] leading-relaxed">
+                  <strong>Yucu no se mete con la logística ni con los fletes de entrega.</strong> La entrega o retiro de la pieza física o cosecha se acuerda de forma 100% directa y libre entre el comprador y el artesano (en el taller, parcela o punto acordado).
                 </p>
               </div>
 
               <div className="bg-white p-3.5 rounded-xl border border-[#c1c8c2]/60 shadow-2xs space-y-2">
-                <h5 className="font-bold text-[#032517]">¿Cómo opera el modelo?</h5>
+                <h5 className="font-bold text-[#032517]">¿Por qué Yucu no opera paqueterías ni fletes?</h5>
                 <ul className="list-disc pl-4 space-y-1.5 text-[12px] text-[#424843]">
                   <li>
-                    <strong>Flete transparente en Soroban:</strong> El transportista ya no gana especulando con el precio del grano, sino con una tarifa fija y atractiva por recolección ($1.50 - $2.50 MXN/kg) respaldada en custodia Escrow.
+                    <strong>Enfoque en Bien Público:</strong> Yucu es un protocolo descentralizado de trazabilidad, certificación de calidad del TecNM y atestación en Stellar, no una empresa de mensajería ni una fletera.
                   </li>
                   <li>
-                    <strong>Cajero Móvil en Parcela:</strong> Muchos campesinos no tienen cuentas bancarias. El transportista lleva efectivo seguro a la parcela, liquida el pago al productor en mano y recibe los USDC inmediatamente mediante escaneo de QR.
+                    <strong>Cero Pasivos de Transporte:</strong> No cobra comisiones de envío, no fija tarifas de fletes ni opera vehículos. Las partes pactan libremente el retiro o entrega.
                   </li>
                   <li>
-                    <strong>Trazabilidad de pesaje:</strong> Báscula calibrada y vinculada por foto en el chat para evitar robo de peso en campo.
+                    <strong>Custodia de Pago Segura (Escrow):</strong> El dinero se resguarda en contrato inteligente y se libera cuando el comprador confirma la recepción de la pieza auténtica en mano.
                   </li>
                 </ul>
               </div>
@@ -246,9 +246,9 @@ Combina:
                     onClose();
                     onOpenCard('logistica_coyote');
                   }}
-                  className="w-full py-2 px-3 rounded-xl bg-cyan-700 hover:bg-cyan-600 text-white font-bold text-[12px] transition-all cursor-pointer"
+                  className="w-full py-2 px-3 rounded-xl bg-[#032517] hover:bg-[#1b3b2b] text-white font-bold text-[12px] transition-all cursor-pointer"
                 >
-                  Ver Tarjeta de Transporte y Cajero Móvil en el Chat
+                  Ver Tarjeta de Trato Directo en el Chat
                 </button>
               )}
             </div>
@@ -329,17 +329,17 @@ Combina:
             </div>
           )}
 
-          {activeTab === 'drips' && (
+          {activeTab === 'becas' && (
             <div className="space-y-3">
               <div className="bg-purple-50 border border-purple-200 rounded-2xl p-3.5">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[20px]">🎓</span>
                   <h4 className="font-extrabold text-purple-950 text-[14px]">
-                    Sostenibilidad Académica con Drips &amp; GitHub
+                    Sostenibilidad Académica &amp; GitHub Open Hub
                   </h4>
                 </div>
                 <p className="text-purple-900 text-[12.5px]">
-                  Para garantizar que el software viva por décadas en la comunidad, el fondo del grant se conecta al protocolo Drips.
+                  Para garantizar que el software viva por décadas en la comunidad, los estudiantes de ingeniería reciben micro-becas y residencias por contribución directa.
                 </p>
               </div>
 
@@ -349,7 +349,7 @@ Combina:
                 </p>
                 <div className="p-2.5 bg-[#f0eee8] rounded-xl flex items-center justify-between font-mono text-[11px]">
                   <span>GitHub Issue Resuelto #42</span>
-                  <span className="text-emerald-700 font-bold font-sans">Beca: 120 USDC vía Drips</span>
+                  <span className="text-emerald-700 font-bold font-sans">Beca: 120 USDC · Residencia</span>
                 </div>
               </div>
             </div>

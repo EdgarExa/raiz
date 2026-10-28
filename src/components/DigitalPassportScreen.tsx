@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AppLanguage, DigitalPassportLot, ScreenView } from '../types';
+import { PROTOCOL_FEES } from '../config/protocolFees';
+import { DemoBadge } from './DemoBadge';
 
 interface DigitalPassportScreenProps {
   lot: DigitalPassportLot;
@@ -18,8 +20,10 @@ interface DigitalPassportScreenProps {
     quantity: number;
     unit: string;
   }) => void;
+  onToggleVisibility?: (lotId: string, visible: boolean) => void;
   elderMode?: boolean;
   appLanguage?: AppLanguage;
+  initialViewMode?: 'productor' | 'comprador';
 }
 
 // Smart Terminology Resolver so products like Mole, Textiles, Mezcal or Chapulines aren't called "cosechas"
@@ -214,23 +218,49 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
   onOpenLotsModal,
   onDirectMessageProducer,
   onAddToCart,
+  onToggleVisibility,
   elderMode = false,
-  appLanguage = 'es'
+  appLanguage = 'es',
+  initialViewMode = 'productor'
 }) => {
   const isMixteco = appLanguage === 'mix';
 
   // Toggle between Campesino/Producer Mode and Buyer View
-  const [viewMode, setViewMode] = useState<'productor' | 'comprador'>('productor');
+  const [viewMode, setViewMode] = useState<'productor' | 'comprador'>(initialViewMode);
   // Collapsible for technical data (NMX, NOM, Humedad, Soroban) - closed by default to avoid cognitive overload
   const [showTechnicalDetails, setShowTechnicalDetails] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [isComparisonModalOpen, setIsComparisonModalOpen] = useState<boolean>(false);
+  const [visibilityToast, setVisibilityToast] = useState<string | null>(null);
 
   const term = getProductTerminology(lot.title, lot.productType);
   const totalEstimatedValue = lot.volumeKg * lot.pricePerKg;
 
+  // Soberanía y Visibilidad Informada
+  const isPubliclyVisible = lot.informedConsent ? lot.informedConsent.isPubliclyVisible !== false : true;
+  const visibilityLevel = lot.informedConsent?.visibilityLevel || 'nombre_completo';
+
+  const effectiveProducerName = !isPubliclyVisible
+    ? 'Identidad en Resguardo Privado (A petición del artesano)'
+    : visibilityLevel === 'cooperativa'
+    ? lot.informedConsent?.cooperativeName || lot.producerName
+    : visibilityLevel === 'nombre_comunidad'
+    ? lot.informedConsent?.customDisplayName || `${lot.producerName.split(' ')[0]} · ${lot.location.split(',')[0]}`
+    : lot.producerName;
+
+  const visibilityBadge =
+    visibilityLevel === 'cooperativa'
+      ? { label: 'Resguardo Colectivo', icon: 'groups', color: 'bg-indigo-100 text-indigo-900 border-indigo-300' }
+      : visibilityLevel === 'nombre_comunidad'
+      ? { label: 'Identidad Comunitaria Protegida', icon: 'location_on', color: 'bg-emerald-100 text-emerald-900 border-emerald-300' }
+      : { label: 'Artesano(a) Autor(a)', icon: 'badge', color: 'bg-amber-100 text-amber-900 border-amber-300' };
+
   const shareMessage = `Hola, le comparto la ficha oficial de ${term.noun} "${lot.title}" (Lote #${lot.code}) con Sello de Calidad respaldado por el TecNM Tlaxiaco. Cantidad: ${lot.volumeKg} kg a $${lot.pricePerKg.toFixed(2)} MXN/kg.`;
   const shareUrl = `${window.location.origin}/#pasaporte-${lot.code}`;
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareMessage} Ver ficha completa aquí: ${shareUrl}`)}`;
+
+  const buyerLotWhatsappOrderMsg = `¡Hola ${effectiveProducerName}! Vi su lote verificado #${lot.code} "${lot.title}" en el Pasaporte Digital Yucu ($${lot.pricePerKg.toFixed(2)} MXN/kg). Me gustaría adquirirlo directamente y acordar el punto de entrega en la Mixteca o el envío por paquetería.`;
+  const buyerLotWhatsappOrderUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(buyerLotWhatsappOrderMsg)}`;
 
   const handleCopyShareLink = () => {
     navigator.clipboard.writeText(`${shareMessage}\n${shareUrl}`);
@@ -333,6 +363,98 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
             </div>
           </div>
 
+          {/* Panel Soberano de Visibilidad y Consentimiento (LFPDPPP & Ley 2022) */}
+          <div className="flex flex-col gap-2">
+            {!isPubliclyVisible ? (
+              <div className="bg-amber-50 border-2 border-amber-400 rounded-2xl p-3.5 shadow-xs flex flex-col gap-2 text-[#3b0900]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-amber-700 text-[20px]">visibility_off</span>
+                    <span className="font-black text-[13px] text-amber-950">Visibilidad Pública Pausada por Ti</span>
+                  </div>
+                  <span className="text-[10px] bg-amber-200 text-amber-950 px-2 py-0.5 rounded-full font-extrabold">
+                    Derecho al Retiro Activo
+                  </span>
+                </div>
+                <p className="text-[12px] text-amber-900 leading-snug">
+                  Tus datos personales están en resguardo privado conforme a tu soberanía.
+                  <strong> El sello criptográfico en Stellar (#{lot.nomCompliance?.stellarTxLedger || '52,491,802'}) continúa 100% verificado</strong>, respaldando que tu pieza es auténtica y de origen legítimo.
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onToggleVisibility?.(lot.id, true);
+                      setVisibilityToast('Visibilidad pública reactivada con tu consentimiento.');
+                    }}
+                    className="bg-[#032517] hover:bg-[#1b3b2b] text-white text-[11px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                  >
+                    <span className="material-symbols-outlined text-[15px] text-emerald-300">visibility</span>
+                    <span>Reactivar visibilidad pública</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsComparisonModalOpen(true)}
+                    className="text-stone-700 bg-white hover:bg-stone-50 border border-stone-300 text-[11px] font-bold px-2.5 py-1.5 rounded-xl cursor-pointer"
+                  >
+                    Ver Marco Legal
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-3 border border-[#c1c8c2]/50 shadow-2xs flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border ${visibilityBadge.color}`}>
+                    <span className="material-symbols-outlined text-[14px]">{visibilityBadge.icon}</span>
+                    <span>{visibilityBadge.label}</span>
+                  </span>
+                  <span className="text-[11px] text-[#424843] hidden sm:inline font-medium">
+                    Consentimiento libre otorgado
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onToggleVisibility?.(lot.id, false);
+                      setVisibilityToast('Has pausado tu visibilidad pública ("Dejar de mostrarme"). El sello en Stellar sigue protegiendo tu pieza.');
+                    }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-stone-100 hover:bg-amber-100 text-stone-800 hover:text-amber-950 rounded-xl text-[11px] font-bold cursor-pointer transition-all active:scale-95 border border-stone-300"
+                    title="Pausar o retirar tu nombre de la vitrina pública"
+                  >
+                    <span className="material-symbols-outlined text-[15px] text-amber-800">visibility_off</span>
+                    <span>Dejar de mostrarme</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsComparisonModalOpen(true)}
+                    className="w-8 h-8 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 flex items-center justify-center cursor-pointer border border-emerald-200"
+                    title="Entender la diferencia entre investigación en bóveda y ficha pública"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">balance</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Toast Notification */}
+          {visibilityToast && (
+            <div className="text-[12px] font-bold text-[#032517] bg-[#e7f3ec] border border-[#a1d1b5] px-3.5 py-2 rounded-xl flex items-center justify-between shadow-xs animate-fadeIn">
+              <div className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-emerald-800">info</span>
+                <span>{visibilityToast}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setVisibilityToast(null)}
+                className="text-[#424843] hover:text-black text-[14px] font-bold ml-2 cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           {/* Tarjeta Visual del Producto */}
           <div className="bg-white rounded-2xl overflow-hidden border border-[#c1c8c2]/50 shadow-xs">
             <div className="relative w-full h-48 overflow-hidden bg-[#f0eee8]">
@@ -351,8 +473,10 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
                   {lot.title}
                 </h1>
                 <p className="text-[12px] text-white/90 flex items-center gap-1 mt-0.5">
-                  <span className="material-symbols-outlined text-[14px] text-amber-300">pin_drop</span>
-                  <span>{lot.producerName} · {lot.location}</span>
+                  <span className="material-symbols-outlined text-[14px] text-amber-300">
+                    {!isPubliclyVisible ? 'lock' : 'pin_drop'}
+                  </span>
+                  <span>{effectiveProducerName} · {isPubliclyVisible ? lot.location : 'Mixteca Oaxaqueña'}</span>
                 </p>
               </div>
             </div>
@@ -581,12 +705,12 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
                     <div className="bg-purple-50 p-2.5 rounded-xl border border-purple-200 text-purple-950 text-[11px] space-y-1">
                       <div className="flex items-center gap-1.5 font-black text-purple-900">
                         <span>💎</span>
-                        <span>Garantía de Ganancia por Reventa (8%)</span>
+                        <span>Garantía de Ganancia por Reventa ({PROTOCOL_FEES.artisanResaleRoyaltyPct}%)</span>
                       </div>
                       <p className="text-purple-900/90 leading-relaxed text-[11px]">
                         Si una tienda, restaurante o distribuidor revende este lote con mayor margen en la ciudad,
-                        un <strong>8% de cada reventa secundaria</strong> te corresponde a ti como productor
-                        y 2% al Fondo Comunal de la Mixteca.
+                        un <strong>{PROTOCOL_FEES.artisanResaleRoyaltyPct}% de cada reventa secundaria</strong> te corresponde a ti como productor
+                        y {PROTOCOL_FEES.resaleTequioPct}% al Fondo Comunal de la Mixteca.
                       </p>
                     </div>
 
@@ -652,7 +776,7 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
                 <span className="text-[13px] text-[#032517] font-bold">
                   Vitrina Directa · Sin Intermediarios
                 </span>
-                <span className="text-[11px] text-[#424843]">Garantía Raíz</span>
+                <span className="text-[11px] text-[#424843]">Garantía Yucu</span>
               </div>
               <p className="text-[13px] text-[#424843] leading-relaxed">
                 {term.buyerBubble}
@@ -692,27 +816,48 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
 
             <div className="p-4 flex flex-col gap-4">
               {/* Producer Profile */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#f0eee8]">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-[#ffdbd1] text-[#3b0900] flex items-center justify-center font-bold text-[16px] border-2 border-[#fe7952]">
-                    {lot.producerInitials}
+              <div className="flex flex-col gap-2 pb-3 border-b border-[#f0eee8]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-[#ffdbd1] text-[#3b0900] flex items-center justify-center font-bold text-[16px] border-2 border-[#fe7952]">
+                      {lot.producerInitials}
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-[#424843] font-medium block">
+                        {term.producerRole}
+                      </span>
+                      <p className="text-[16px] text-[#1c1c18] font-bold leading-tight flex items-center gap-2">
+                        <span>{effectiveProducerName}</span>
+                      </p>
+                      <p className="text-[13px] text-[#424843] flex items-center gap-1 mt-0.5">
+                        <span className="material-symbols-outlined text-[15px] text-[#a73918]">
+                          {!isPubliclyVisible ? 'lock' : 'pin_drop'}
+                        </span>
+                        <span>{isPubliclyVisible ? lot.location : 'Mixteca Oaxaqueña'}</span>
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-[11px] text-[#424843] font-medium block">
-                      {term.producerRole}
-                    </span>
-                    <p className="text-[16px] text-[#1c1c18] font-bold leading-tight">
-                      {lot.producerName}
-                    </p>
-                    <p className="text-[13px] text-[#424843] flex items-center gap-1 mt-0.5">
-                      <span className="material-symbols-outlined text-[15px] text-[#a73918]">pin_drop</span>
-                      {lot.location}
-                    </p>
+                  <div className="text-right">
+                    <span className="text-[11px] text-[#424843] block font-medium">Volumen</span>
+                    <span className="text-[18px] text-[#032517] font-bold">{lot.volumeKg} kg</span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-[11px] text-[#424843] block font-medium">Volumen</span>
-                  <span className="text-[18px] text-[#032517] font-bold">{lot.volumeKg} kg</span>
+
+                {/* Badge de Soberanía y Consentimiento */}
+                <div className="flex items-center justify-between pt-1">
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${visibilityBadge.color}`}>
+                    <span className="material-symbols-outlined text-[13px]">{visibilityBadge.icon}</span>
+                    <span>{visibilityBadge.label}</span>
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsComparisonModalOpen(true)}
+                    className="text-[#a73918] hover:text-[#6c1900] text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">balance</span>
+                    <span>Ver Modelo de Consentimiento</span>
+                  </button>
                 </div>
               </div>
 
@@ -732,9 +877,12 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
                       <p className="text-[14px] font-bold text-[#032517]">
                         Estado: {lot.verifiedStatus}
                       </p>
-                      <span className="px-2 py-0.5 rounded-full bg-[#abcfb8] text-[#002113] text-[11px] font-bold">
-                        {lot.nomCompliance?.immutableSealStatus || 'Con Evidencia'}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-full bg-[#abcfb8] text-[#002113] text-[11px] font-bold">
+                          {lot.nomCompliance?.immutableSealStatus || 'Con Evidencia'}
+                        </span>
+                        <DemoBadge detail="La certificación y el sello en Stellar son de demostración hasta conectar un validador humano y la red." />
+                      </div>
                     </div>
                     <p className="text-[12px] text-[#424843] mt-0.5">
                       Evaluador: <strong className="text-[#1c1c18]">{lot.evaluatorOrg}</strong>
@@ -760,28 +908,56 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
                   </span>
                 </div>
 
+                {/* Botón 1: WhatsApp Directo con el Productor (30 segundos) */}
+                <a
+                  href={buyerLotWhatsappOrderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[50px] w-full bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.98] transition-all text-white rounded-full text-[15px] flex items-center justify-center gap-2 shadow-sm font-black cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[22px]">chat</span>
+                  <span>Pactar por WhatsApp con {effectiveProducerName.split(' ')[0]} (30 seg)</span>
+                </a>
+
+                {/* Botón 2: Añadir a la Bolsa de Compra Directa */}
                 <button
                   type="button"
                   onClick={handleBuyLot}
-                  className="min-h-[50px] w-full bg-[#a73918] hover:bg-[#6c1900] active:scale-[0.98] transition-all text-white rounded-full text-[16px] flex items-center justify-center gap-2 shadow-sm font-bold cursor-pointer"
+                  className="min-h-[48px] w-full bg-[#a73918] hover:bg-[#6c1900] active:scale-[0.98] transition-all text-white rounded-full text-[15px] flex items-center justify-center gap-2 shadow-sm font-bold cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
-                  Comprar este Lote Verificado
+                  Comprar este Lote Verificado (Bolsa)
                 </button>
 
+                {/* Botón 3: Mensaje directo interno */}
                 <button
                   type="button"
                   onClick={() => onDirectMessageProducer(lot.producerName, lot.title)}
-                  className="min-h-[48px] w-full border-2 border-[#032517] text-[#032517] hover:bg-[#c7ebd4]/20 active:scale-[0.98] transition-all rounded-full text-[15px] flex items-center justify-center gap-2 font-bold cursor-pointer"
+                  className="min-h-[44px] w-full border-2 border-[#032517] text-[#032517] hover:bg-[#c7ebd4]/20 active:scale-[0.98] transition-all rounded-full text-[14px] flex items-center justify-center gap-2 font-bold cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[20px]">chat</span>
-                  Enviar mensaje directo a {lot.producerName.split(' ')[0]}
+                  <span className="material-symbols-outlined text-[18px]">support_agent</span>
+                  Coordinar por Chat Interno con {lot.producerName.split(' ')[0]}
                 </button>
+
+                {/* Deslinde Logístico Directo */}
+                <div className="p-3 bg-amber-50/80 rounded-2xl border border-amber-300/80 text-[11.5px] text-amber-950 flex items-start gap-2">
+                  <span className="material-symbols-outlined text-[17px] text-amber-800 shrink-0 mt-0.5">
+                    handshake
+                  </span>
+                  <div className="space-y-0.5 leading-snug">
+                    <strong className="block font-bold text-amber-900">
+                      Entrega y Pago 100% Directos:
+                    </strong>
+                    <span>
+                      Yucu no cobra fletes ni comisiones de intermediario. Acuerdas la entrega en persona en la Mixteca o el envío comercial directamente con el productor.
+                    </span>
+                  </div>
+                </div>
 
                 <button
                   type="button"
                   onClick={() => onNavigateScreen('vitrina_productos')}
-                  className="min-h-[44px] w-full bg-[#f6f3ed] hover:bg-[#ebe8e2] text-[#032517] active:scale-[0.98] transition-all rounded-full text-[14px] flex items-center justify-center gap-2 font-semibold cursor-pointer border border-[#c1c8c2]/50"
+                  className="min-h-[42px] w-full bg-[#f6f3ed] hover:bg-[#ebe8e2] text-[#032517] active:scale-[0.98] transition-all rounded-full text-[13px] flex items-center justify-center gap-2 font-semibold cursor-pointer border border-[#c1c8c2]/50"
                 >
                   <span className="material-symbols-outlined text-[18px]">storefront</span>
                   Explorar otros productos en la Vitrina
@@ -789,6 +965,146 @@ export const DigitalPassportScreen: React.FC<DigitalPassportScreenProps> = ({
               </div>
             </div>
           </section>
+        </div>
+      )}
+
+      {/* Modal Comparativo y Marco Legal: Investigación vs Ficha de Venta con Consentimiento */}
+      {isComparisonModalOpen && (
+        <div
+          onClick={() => setIsComparisonModalOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs animate-fadeIn"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-[#fcf9f3] rounded-3xl overflow-hidden shadow-2xl border border-[#c1c8c2]/60 flex flex-col max-h-[92vh]"
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-4 bg-[#032517] text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="material-symbols-outlined text-amber-300 text-[24px]">
+                  balance
+                </span>
+                <div>
+                  <h3 className="text-[15px] font-extrabold leading-tight">
+                    Modelo de Consentimiento y Soberanía Yucu
+                  </h3>
+                  <p className="text-[11px] text-[#c7ebd4] font-medium">
+                    Cumplimiento con la Ley de Salvaguarda 2022 y LFPDPPP
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsComparisonModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer transition-all"
+                aria-label="Cerrar modal"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-5 overflow-y-auto space-y-4 text-[#1c1c18] text-[12.5px] leading-relaxed">
+              <div className="bg-[#fff8f0] p-3.5 rounded-2xl border border-[#fe7952]/40 text-[#3b0900]">
+                <strong className="block text-[13px] font-black text-[#a73918] mb-1">
+                  💡 La ley no prohíbe vender en línea; exige que el artesano decida qué se publica.
+                </strong>
+                <span>
+                  Existe una diferencia fundamental entre la <em>investigación académica de campo</em> (con testimonios personales reservados) y la <em>ficha pública comercial de venta</em> con consentimiento previo, libre e informado.
+                </span>
+              </div>
+
+              {/* Tabla Comparativa Esclarecedora */}
+              <div className="overflow-hidden rounded-2xl border border-[#c1c8c2]/60 shadow-2xs">
+                <table className="w-full text-left text-[11.5px] border-collapse">
+                  <thead>
+                    <tr className="bg-[#f0eee8] text-[#032517] font-black border-b border-[#c1c8c2]/60">
+                      <th className="p-2.5 w-1/3">Criterio</th>
+                      <th className="p-2.5 w-1/3 bg-amber-50/70 border-x border-[#c1c8c2]/50">
+                        📁 Entrevistas de Investigación (.vault_privado)
+                      </th>
+                      <th className="p-2.5 w-1/3 bg-emerald-50/70">
+                        🏷️ Ficha del Producto en Yucu
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#c1c8c2]/40">
+                    <tr>
+                      <td className="p-2.5 font-bold text-[#032517]">¿Para qué se recogieron los datos?</td>
+                      <td className="p-2.5 bg-amber-50/40 border-x border-[#c1c8c2]/30 text-stone-700">Para estudiar el problema, intermediación y costos.</td>
+                      <td className="p-2.5 bg-emerald-50/40 font-semibold text-emerald-950">Para vender y generar ingresos justos.</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-bold text-[#032517]">¿El artesano autorizó publicarlos?</td>
+                      <td className="p-2.5 bg-amber-50/40 border-x border-[#c1c8c2]/30 text-stone-700">No hay registro de autorización pública masiva.</td>
+                      <td className="p-2.5 bg-emerald-50/40 font-semibold text-emerald-950">Sí, se le pregunta y registra al registrar su pieza.</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-bold text-[#032517]">¿Qué se expone?</td>
+                      <td className="p-2.5 bg-amber-50/40 border-x border-[#c1c8c2]/30 text-stone-700">Nombre, edad, lengua, voz y opiniones personales.</td>
+                      <td className="p-2.5 bg-emerald-50/40 font-semibold text-emerald-950">Lo que el artesano elija: nombre completo, pila o cooperativa.</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2.5 font-bold text-[#032517]">¿Es un problema legal?</td>
+                      <td className="p-2.5 bg-amber-50/40 border-x border-[#c1c8c2]/30 text-amber-900 font-bold">Sí, si no hay consentimiento expreso.</td>
+                      <td className="p-2.5 bg-emerald-50/40 font-bold text-emerald-900">No, con consentimiento informado y revocable.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Arquitectura Técnica: Zero-PII en Blockchain Stellar */}
+              <div className="bg-[#f6f3ed] p-3.5 rounded-2xl border border-[#c1c8c2]/50 space-y-2">
+                <div className="flex items-center gap-2 text-[#032517] font-black text-[13px]">
+                  <span className="material-symbols-outlined text-emerald-800 text-[18px]">verified</span>
+                  <span>Por qué Stellar solo guarda el Hash SHA-256</span>
+                </div>
+                <p className="text-[#424843]">
+                  La blockchain no se puede borrar, mientras que la ley mexicana (LFPDPPP) otorga el <strong>derecho a retirar o modificar datos personales</strong>.
+                </p>
+                <ul className="space-y-1.5 list-disc pl-4 text-[#1c1c18]">
+                  <li>
+                    <strong>En Stellar solo va la huella digital criptográfica (hash SHA-256):</strong> nunca el nombre real ni la fotografía.
+                  </li>
+                  <li>
+                    <strong>El código QR apunta a una ficha pública viva:</strong> que el artesano puede editar, pausar o quitar cuando lo decida.
+                  </li>
+                  <li>
+                    <strong>El sello en Stellar sigue probando la autenticidad:</strong> de la pieza física sin atrapar indeleblemente los datos de la persona.
+                  </li>
+                  <li>
+                    <strong>Botón "Dejar de mostrarme":</strong> el artesano o cooperativa puede retirarse de la vitrina en cualquier momento.
+                  </li>
+                  <li>
+                    <strong>Deslinde Logístico Total:</strong> Yucu no gestiona fletes, paqueterías ni transporte físico. La entrega o retiro de la pieza es un acuerdo 100% directo y libre entre el comprador y el artesano en taller o parcela.
+                  </li>
+                </ul>
+              </div>
+
+              {/* El Caso de 2022 y la Ley */}
+              <div className="bg-emerald-50/60 p-3.5 rounded-2xl border border-emerald-200 text-[#002113] space-y-1">
+                <span className="block font-black text-[12px] text-emerald-900">
+                  🛡️ Protección comunitaria frente a plagios (Caso 2022)
+                </span>
+                <p className="text-[11.5px] leading-relaxed text-[#1b3b2b]">
+                  El caso de 2022, cuando marcas extranjeras copiaron huipiles y bordados mixtecos, ocurrió precisamente porque se utilizaron diseños y nombres de comunidades sin su consentimiento ni retribución. La Ley Federal de Protección del Patrimonio Cultural de los Pueblos Indígenas protege a los artesanos de esa explotación. <strong>Yucu es el modelo de cómo dar visibilidad con permiso soberano.</strong>
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-[#f0eee8] border-t border-[#c1c8c2]/50 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsComparisonModalOpen(false)}
+                className="w-full sm:w-auto px-6 py-2.5 bg-[#032517] hover:bg-[#1b3b2b] text-white font-bold text-[13px] rounded-xl cursor-pointer transition-all shadow-xs"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </main>

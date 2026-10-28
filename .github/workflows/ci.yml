@@ -1,8 +1,8 @@
-name: Raíz CI Quality & Integrity Gate
+name: Yucu Protocol CI Quality & Integrity Gate
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -19,10 +19,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
+          cache: npm
 
+      # npm ci instala exactamente lo que dice package-lock.json (igual para todos)
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Typecheck and Lint
         run: npm run lint
@@ -33,6 +35,30 @@ jobs:
       - name: Build Production Bundle (Vite)
         run: npm run build
 
+  privacy-guard:
+    name: Privacy Guard (no field media in public repo)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Ver docs/research/PRIVACIDAD.md: audios, videos, fotos y PDF de campo van en la carpeta privada.
+      - name: Reject audio, video, images or PDF in research folders
+        run: |
+          added=$(git diff --name-only --diff-filter=AR "origin/${{ github.base_ref }}...HEAD" \
+            | grep -iE '^(docs/research|docs/ux-testing|public/videos)/.*\.(pdf|ogg|m4a|mp3|mp4|wav|mov|webm|jpe?g|png|heic)$' || true)
+          if [ -n "$added" ]; then
+            echo "::error::Este PR agrega evidencias de campo al repositorio público. Guárdalas en .investigacion_privada/ (ver docs/research/PRIVACIDAD.md):"
+            echo "$added"
+            exit 1
+          fi
+          echo "OK: no se agregan archivos de campo."
+
   validate-soroban-contracts:
     name: Soroban Smart Contracts (Rust) Check
     runs-on: ubuntu-latest
@@ -42,12 +68,31 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      # Versión fija: un Rust nuevo puede traer lints de clippy que rompan el CI sin cambios en el código.
       - name: Setup Rust Toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.94.0
         with:
-          targets: wasm32-unknown-unknown
+          targets: wasm32v1-none
+          components: rustfmt, clippy
 
-      - name: Verify Contracts Syntax & Workspace
-        run: |
-          cd contracts
-          cargo check
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts
+
+      - name: Check formatting (cargo fmt)
+        working-directory: contracts
+        run: cargo fmt --all -- --check
+
+      - name: Lint (cargo clippy)
+        working-directory: contracts
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Run Contract Tests (Soroban)
+        working-directory: contracts
+        run: cargo test --locked
+
+      # Compila lo que realmente se despliega en Stellar
+      - name: Build WASM (wasm32v1-none)
+        working-directory: contracts
+        run: cargo build --locked --release --target wasm32v1-none

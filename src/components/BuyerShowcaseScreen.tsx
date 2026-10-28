@@ -1,22 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ProductItem, ScreenView } from '../types';
 import { ProductDetailModal } from './ProductDetailModal';
+import { startAudioRecording, LiveRecorderSession } from '../utils/audioRecorder';
 
 interface BuyerShowcaseScreenProps {
   products: ProductItem[];
   onNavigateScreen: (screen: ScreenView) => void;
   onSelectProductDetails?: (product: ProductItem) => void;
-  onAddToCart: (item: {
-    id: string;
-    title: string;
-    price: number;
-    artisanName: string;
-    location: string;
-    imageUrl: string;
-    quantity: number;
-    unit: string;
-  }) => void;
+  onAddToCart: (
+    item: {
+      id: string;
+      title: string;
+      price: number;
+      artisanName: string;
+      location: string;
+      imageUrl: string;
+      quantity: number;
+      unit: string;
+    },
+    openModal?: boolean
+  ) => void;
   onDirectContact: (artisanName: string, productTitle: string) => void;
+  onOpenBuyerIssueModal?: () => void;
+  onViewPassport?: (product: ProductItem) => void;
 }
 
 export const BuyerShowcaseScreen: React.FC<BuyerShowcaseScreenProps> = ({
@@ -24,12 +30,203 @@ export const BuyerShowcaseScreen: React.FC<BuyerShowcaseScreenProps> = ({
   onNavigateScreen,
   onSelectProductDetails,
   onAddToCart,
-  onDirectContact
+  onDirectContact,
+  onOpenBuyerIssueModal,
+  onViewPassport
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos los ramos');
   const [selectedLocation, setSelectedLocation] = useState('Toda la Mixteca');
   const [modalProduct, setModalProduct] = useState<ProductItem | null>(null);
+
+  // Estados para Compra Asistida por Voz (Voice Commerce)
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [audioVolume, setAudioVolume] = useState(0);
+  const [liveVoiceTranscript, setLiveVoiceTranscript] = useState('');
+  const [voiceToast, setVoiceToast] = useState<string | null>(null);
+  const [micError, setMicError] = useState<string | null>(null);
+
+  const audioSessionRef = useRef<LiveRecorderSession | null>(null);
+  const timerRef = useRef<any>(null);
+
+  // Limpiar timer y sesión de audio al desmontar
+  useEffect(() => {
+    return () => {
+      if (audioSessionRef.current) {
+        audioSessionRef.current.cancel();
+      }
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
+  const handleVoiceCommand = (spokenText: string) => {
+    const clean = spokenText
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+
+    if (!clean) return;
+
+    const isBuyIntent =
+      clean.includes('comprar') ||
+      clean.includes('quiero') ||
+      clean.includes('adquirir') ||
+      clean.includes('encargar') ||
+      clean.includes('ordenar') ||
+      clean.includes('llevo') ||
+      clean.includes('compro') ||
+      clean.includes('pactar') ||
+      clean.includes('pedir');
+
+    // Matching products by keywords
+    const matchedProduct = products.find((p) => {
+      const pTitle = p.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const pCat = p.category.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+      if (clean.includes(pTitle)) return true;
+      if (clean.includes('cafe') && pCat.includes('cafe')) return true;
+      if (
+        (clean.includes('sombrero') || clean.includes('palma')) &&
+        (pTitle.includes('sombrero') || pCat.includes('palma'))
+      )
+        return true;
+      if (clean.includes('tenate') && pTitle.includes('tenate')) return true;
+      if (
+        (clean.includes('barro') || clean.includes('mezcalero') || clean.includes('cantaro')) &&
+        pCat.includes('barro')
+      )
+        return true;
+      if (
+        (clean.includes('huipil') ||
+          clean.includes('textil') ||
+          clean.includes('rebozo') ||
+          clean.includes('telar')) &&
+        (pCat.includes('textil') || pTitle.includes('huipil') || pTitle.includes('rebozo'))
+      )
+        return true;
+      if (clean.includes('miel') && pCat.includes('miel')) return true;
+      return false;
+    });
+
+    if (isBuyIntent && matchedProduct) {
+      setVoiceToast(
+        `🎉 ¡Comando de compra por voz reconocido! Abriendo orden para "${matchedProduct.title}" ($${matchedProduct.price} MXN)...`
+      );
+      setTimeout(() => {
+        onAddToCart(
+          {
+            id: matchedProduct.id,
+            title: matchedProduct.title,
+            price: matchedProduct.price,
+            artisanName: matchedProduct.artisanName,
+            location: matchedProduct.location,
+            imageUrl: matchedProduct.imageUrl,
+            quantity: 1,
+            unit: 'pieza'
+          },
+          true
+        );
+      }, 700);
+      return;
+    }
+
+    // Filtrados rápidos por categoría
+    if (clean.includes('cafe')) {
+      setSelectedCategory('Café de Altura');
+      setSearchQuery('');
+      setVoiceToast('Filtrado por voz: Categoría Café de Altura');
+      return;
+    }
+    if (clean.includes('palma') || clean.includes('sombrero') || clean.includes('tenate')) {
+      setSelectedCategory('Tejido de Palma');
+      setSearchQuery('');
+      setVoiceToast('Filtrado por voz: Categoría Tejido de Palma');
+      return;
+    }
+    if (clean.includes('barro') || clean.includes('mezcalero')) {
+      setSelectedCategory('Barro Rojo y Bruñido');
+      setSearchQuery('');
+      setVoiceToast('Filtrado por voz: Categoría Barro Rojo y Bruñido');
+      return;
+    }
+    if (
+      clean.includes('textil') ||
+      clean.includes('huipil') ||
+      clean.includes('rebozo') ||
+      clean.includes('telar')
+    ) {
+      setSelectedCategory('Textiles & Telar');
+      setSearchQuery('');
+      setVoiceToast('Filtrado por voz: Categoría Textiles & Telar');
+      return;
+    }
+    if (clean.includes('miel')) {
+      setSelectedCategory('Miel y Derivados');
+      setSearchQuery('');
+      setVoiceToast('Filtrado por voz: Categoría Miel y Derivados');
+      return;
+    }
+
+    // Búsqueda textual por voz
+    setSearchQuery(spokenText);
+    setVoiceToast(`Búsqueda por voz ejecutada: "${spokenText}"`);
+  };
+
+  const toggleVoiceRecording = async () => {
+    if (isRecording) {
+      // STOP recording
+      setIsRecording(false);
+      setAudioVolume(0);
+      if (timerRef.current) clearInterval(timerRef.current);
+
+      if (audioSessionRef.current) {
+        try {
+          const result = await audioSessionRef.current.stop();
+          audioSessionRef.current = null;
+          const finalTranscript = (result.transcript || liveVoiceTranscript || '').trim();
+          if (finalTranscript) {
+            handleVoiceCommand(finalTranscript);
+          } else {
+            setVoiceToast('No se escuchó ningún comando. Intenta de nuevo.');
+            setTimeout(() => setVoiceToast(null), 3000);
+          }
+        } catch (err) {
+          console.error('Error deteniendo grabación:', err);
+        }
+      }
+    } else {
+      // START recording
+      setMicError(null);
+      setVoiceToast(null);
+      setLiveVoiceTranscript('');
+      setRecordingSeconds(0);
+
+      timerRef.current = setInterval(() => {
+        setRecordingSeconds((sec) => sec + 1);
+      }, 1000);
+
+      try {
+        const session = await startAudioRecording({
+          onVolumeChange: (vol) => setAudioVolume(vol),
+          onInterimTranscript: (text) => {
+            setLiveVoiceTranscript(text);
+          },
+          lang: 'es-MX'
+        });
+        audioSessionRef.current = session;
+        setIsRecording(true);
+      } catch (err: any) {
+        console.warn('Permiso de micrófono denegado:', err);
+        setIsRecording(false);
+        if (timerRef.current) clearInterval(timerRef.current);
+        setMicError('Permiso de micrófono no otorgado. Por favor permite el acceso en tu navegador.');
+      }
+    }
+  };
 
   const categories = [
     { id: 'Todos los ramos', label: 'Todos los ramos', icon: 'auto_awesome' },
@@ -93,39 +290,138 @@ export const BuyerShowcaseScreen: React.FC<BuyerShowcaseScreenProps> = ({
           </div>
         </div>
 
-        <div className="shrink-0 flex items-center gap-2 bg-white px-3 py-2 rounded-xl shadow-xs border border-[#c1c8c2]/40 self-start md:self-auto">
-          <span className="material-symbols-outlined text-[#a73918]">verified_user</span>
-          <div className="text-left">
-            <p className="text-[13px] font-bold text-[#032517] leading-tight">Comercio Justo</p>
-            <p className="text-[11px] text-[#424843]">Pago directo a artesano</p>
+        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+          <div className="shrink-0 flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl shadow-xs border border-[#c1c8c2]/40">
+            <span className="material-symbols-outlined text-[#a73918]">verified_user</span>
+            <div className="text-left">
+              <p className="text-[13px] font-bold text-[#032517] leading-tight">100% Directo</p>
+              <p className="text-[11px] text-[#424843]">Sin comisiones</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Filter and Search Bar */}
-      <section className="mb-5 space-y-3">
-        {/* Search Input */}
-        <div className="relative w-full">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#727973]">
-            <span className="material-symbols-outlined text-[22px]">search</span>
+      {/* Filter and Search Bar with Voice Shopping */}
+      <section className="mb-5 space-y-2.5">
+        <div className="flex items-center gap-2">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-[#727973]">
+              <span className="material-symbols-outlined text-[22px]">search</span>
+            </div>
+            <input
+              className="w-full h-12 pl-12 pr-12 rounded-full bg-white text-[#1c1c18] placeholder:text-[#424843]/60 border border-[#c1c8c2]/60 focus:border-[#032517] focus:ring-1 focus:ring-[#032517] text-[15px] shadow-xs transition-all outline-none"
+              placeholder="Buscar pieza o decir 'Quiero comprar café'..."
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute inset-y-1.5 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[#727973] hover:bg-[#f0eee8]"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            )}
           </div>
-          <input
-            className="w-full h-12 pl-12 pr-12 rounded-full bg-white text-[#1c1c18] placeholder:text-[#424843]/60 border border-[#c1c8c2]/60 focus:border-[#032517] focus:ring-1 focus:ring-[#032517] text-[15px] shadow-xs transition-all outline-none"
-            placeholder="Buscar por pieza, palma, barro o comunidad..."
-            type="search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
+
+          {/* Botón de Micrófono: Compra por Voz */}
+          <button
+            type="button"
+            onClick={toggleVoiceRecording}
+            className={`h-12 px-4 rounded-full font-bold text-[13px] flex items-center gap-2 shadow-xs transition-all active:scale-95 cursor-pointer shrink-0 ${
+              isRecording
+                ? 'bg-rose-600 text-white animate-pulse border-2 border-rose-300'
+                : 'bg-[#032517] hover:bg-[#073824] text-white border border-emerald-500/40'
+            }`}
+            title="Comprar o buscar usando tu voz (ej: 'Quiero comprar café')"
+          >
+            <span className="material-symbols-outlined text-[20px] text-amber-300">
+              {isRecording ? 'graphic_eq' : 'mic'}
+            </span>
+            <span className="hidden sm:inline">
+              {isRecording ? 'Escuchando...' : 'Comprar por Voz'}
+            </span>
+          </button>
+        </div>
+
+        {/* Panel de Grabación de Voz en Vivo */}
+        {isRecording && (
+          <div className="p-3 bg-[#032517] text-white rounded-2xl border-2 border-emerald-400 shadow-md flex items-center justify-between gap-3 animate-fade-in">
+            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+              <span className="relative flex h-3 w-3 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-[12px] font-black text-emerald-300">
+                    Micrófono Activo {recordingSeconds > 0 ? `(${recordingSeconds}s)` : ''}
+                  </p>
+                  <div className="flex items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((bar) => (
+                      <span
+                        key={bar}
+                        className="w-1 bg-emerald-400 rounded-full transition-all duration-75"
+                        style={{
+                          height: `${Math.max(4, Math.min(16, (audioVolume / 255) * 16 * (bar / 2)))}px`
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-[12px] text-emerald-100 font-medium truncate mt-0.5">
+                  {liveVoiceTranscript ? `"${liveVoiceTranscript}"` : 'Habla ahora: Di "Quiero comprar un sombrero" o "Café de altura"...'}
+                </p>
+              </div>
+            </div>
             <button
               type="button"
-              onClick={() => setSearchQuery('')}
-              className="absolute inset-y-1.5 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[#727973] hover:bg-[#f0eee8]"
+              onClick={toggleVoiceRecording}
+              className="px-3 py-1.5 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-xl text-xs font-black shrink-0 cursor-pointer shadow-xs active:scale-95"
             >
-              <span className="material-symbols-outlined text-[18px]">close</span>
+              Listo / Procesar
             </button>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* Notificación de Comando por Voz Reconocido */}
+        {voiceToast && (
+          <div className="p-2.5 bg-emerald-950 text-emerald-100 rounded-2xl border border-emerald-500/60 text-[12px] flex items-center justify-between shadow-xs animate-fade-in">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px] text-emerald-400">
+                record_voice_over
+              </span>
+              <span className="font-medium">{voiceToast}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setVoiceToast(null)}
+              className="text-emerald-400 hover:text-white p-1"
+            >
+              <span className="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+        )}
+
+        {/* Error de Micrófono */}
+        {micError && (
+          <div className="p-2.5 bg-rose-950 text-rose-100 rounded-2xl border border-rose-500/60 text-[12px] flex items-center justify-between shadow-xs">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px] text-rose-400">mic_off</span>
+              <span>{micError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMicError(null)}
+              className="text-rose-400 hover:text-white p-1"
+            >
+              <span className="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+        )}
 
         {/* Category Pills */}
         <div>
@@ -261,36 +557,57 @@ export const BuyerShowcaseScreen: React.FC<BuyerShowcaseScreenProps> = ({
                   </span>
                 </div>
 
-                {/* Direct Action Buttons */}
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onDirectContact(prod.artisanName, prod.title)}
-                    className="flex-1 h-11 rounded-full bg-[#1b3b2b] hover:bg-[#032517] text-white text-[13px] font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[17px]">chat</span>
-                    <span>Contactar</span>
-                  </button>
-
+                {/* Action Buttons: 1 Clic Directo a Comprar */}
+                <div className="space-y-2 pt-1">
+                  {/* Botón Principal: Comprar Directo en la App (Abre pago en 1 clic) */}
                   <button
                     type="button"
                     onClick={() =>
-                      onAddToCart({
-                        id: prod.id,
-                        title: prod.title,
-                        price: prod.price,
-                        artisanName: prod.artisanName,
-                        location: prod.location,
-                        imageUrl: prod.imageUrl,
-                        quantity: 1,
-                        unit: 'pieza'
-                      })
+                      onAddToCart(
+                        {
+                          id: prod.id,
+                          title: prod.title,
+                          price: prod.price,
+                          artisanName: prod.artisanName,
+                          location: prod.location,
+                          imageUrl: prod.imageUrl,
+                          quantity: 1,
+                          unit: 'pieza'
+                        },
+                        true
+                      )
                     }
-                    className="w-11 h-11 rounded-full bg-[#fe7952] hover:bg-[#a73918] text-[#6c1900] hover:text-white flex items-center justify-center shadow-2xs transition-all active:scale-95 cursor-pointer"
-                    title="Añadir a la bolsa"
+                    className="w-full h-11 rounded-full bg-[#a73918] hover:bg-[#8c2d12] active:scale-98 text-white text-[13.5px] font-black flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
                   >
-                    <span className="material-symbols-outlined text-[19px]">add_shopping_cart</span>
+                    <span className="material-symbols-outlined text-[19px]">payments</span>
+                    <span>Comprar Directo (${prod.price} MXN)</span>
                   </button>
+
+                  <div className="flex items-center gap-2">
+                    {/* Botón 2: Pactar por WhatsApp Directo */}
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                        `¡Hola ${prod.artisanName}! Vi su producto "${prod.title}" ($${prod.price} MXN) en Yucu y me interesa comprarlo directamente con usted. ¿Cómo acordamos el pago y la entrega?`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 h-10 rounded-full bg-[#25D366] hover:bg-[#20ba59] active:scale-95 text-white text-[12.5px] font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[17px]">chat</span>
+                      <span>O por WhatsApp</span>
+                    </a>
+
+                    {/* Botón 3: Ver Detalles */}
+                    <button
+                      type="button"
+                      onClick={() => setModalProduct(prod)}
+                      className="h-10 px-3.5 rounded-full bg-[#f0eee8] hover:bg-[#ebe8e2] text-[#032517] text-[12px] font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0"
+                      title="Ver detalles completos del producto"
+                    >
+                      <span className="material-symbols-outlined text-[17px]">visibility</span>
+                      <span>Detalles</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -328,6 +645,7 @@ export const BuyerShowcaseScreen: React.FC<BuyerShowcaseScreenProps> = ({
         onClose={() => setModalProduct(null)}
         onAddToCart={onAddToCart}
         onDirectContact={onDirectContact}
+        onViewPassport={onViewPassport}
       />
     </main>
   );

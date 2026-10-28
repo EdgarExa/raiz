@@ -14,9 +14,9 @@ export default defineConfig(() => {
         includeAssets: ['icon.svg', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
         manifest: {
           id: '/',
-          name: 'Raíz Mixteca - Plataforma Rural',
-          short_name: 'Raíz',
-          description: 'Plataforma comunitaria de comercio justo, registro de cosechas, trazabilidad y pagos de la Mixteca Oaxaqueña.',
+          name: 'Yucu Protocol - Plataforma Rural',
+          short_name: 'Yucu',
+          description: 'Yucu Protocol: Plataforma comunitaria de atestaciones físicas, trazabilidad RWA y comercio justo en Stellar (Mixteca Oaxaqueña).',
           theme_color: '#032517',
           background_color: '#fcf9f3',
           display: 'standalone',

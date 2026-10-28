@@ -4,42 +4,43 @@ import json
 import time
 
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
-REPO = "Open-Hub-Tec/raiz"
+REPO = "Open-Hub-Tec/yucu"
 
 ISSUES_DATA = [
     {
         "number": 18,
-        "title": "[US-101] Decentralized Identity (DID): Passwordless Producer Authentication & Session Attestation via WhatsApp/SMS OTP",
-        "labels": ["drips-eligible", "identity", "authentication", "phase-1"],
-        "body": """## 🌿 User Story: [US-101] Decentralized Identity & Session Attestation via WhatsApp/SMS OTP
+        "title": "[US-101] Decentralized Identity (DID): Zero-Seed Rural Authentication (SMS OTP + Community QR Cards) & PWA Offline Session Attestation",
+        "labels": ["identity", "authentication", "pwa", "phase-1"],
+        "body": """## 🌿 User Story: [US-101] Zero-Seed Rural Identity & Offline PWA Session Attestation
 
 ### 🏛️ Protocol Architecture Role
 * **Layer:** Layer 1 - Decentralized Identity & Access Management (Zero-Seed IAM / DID)
 * **Component:** `src/core/auth/RaizAuthEngine.ts` & `src/components/RaizAuthModal.tsx`
 * **Target Delivery:** Sprint 1 (October 5 – October 18, 2026)
+* **Architectural Decision:** [ADR-002: Offline-First PWA & Rural Identity Standards](../docs/adr/ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md)
 
 ---
 
 ### 👤 User Story
 > **As an** indigenous smallholder farmer or elderly female artisan in the Mixteca Highlands,  
-> **I want** to access the Raíz Protocol using a simple 4-digit code sent to my mobile phone via WhatsApp or SMS,  
+> **I want** to access the Yucu Protocol using a simple 4-digit code sent to my mobile phone via SMS or through my physical Community QR Card,  
 > **So that** I can authenticate my harvest registrations and receive payments without having to understand private keys, passwords, or 24-word seed phrases.
 
 ---
 
 ### 📜 Attestation & Security Specification
-* **Session Attestation:** Upon successful OTP verification, the engine issues a temporary cryptographic `SessionAttestation` token bound to the farmer's verified phone number and community identifier.
+* **Session Attestation:** Upon successful OTP or QR card verification, the engine issues a temporary cryptographic `SessionAttestation` token bound to the farmer's verified phone number and community identifier.
 * **Deterministic Delegation:** Links the verified session with the producer's underlying Stellar Ed25519 keypair in custody mode, enabling signed harvest attestations.
-* **Fallback:** Gracefully operates in areas with intermittent SMS reception by supporting WhatsApp Business API failover.
+* **W3C PWA Standards:** Fully decoupled from third-party proprietary messaging APIs (WhatsApp Cloud API), eliminating per-conversation fees and suspension risks.
 
 ---
 
 ### 🛠️ Technical Acceptance Criteria (DoD)
 - [x] Input sanitization accepting standard Mexican 10-digit mobile numbers with `+52` E.164 formatting.
 - [x] Rate limiting preventing brute-force attempts (maximum 3 attempts per 5-minute window).
-- [x] Session state securely persisted in encrypted local storage for offline continuity.
+- [x] Session state securely persisted in encrypted local storage (IndexedDB) for offline continuity.
 - [x] Zero exposure of mnemonic seed phrases to the end user.
-- [x] 100% automated unit tests passing in `src/tests/raiz_architecture_audit.test.ts`.
+- [x] 100% automated unit tests passing in test suite.
 
 ---
 
@@ -50,7 +51,7 @@ ISSUES_DATA = [
     {
         "number": 19,
         "title": "[US-102] Physical Attestation Credential: NFC & QR Community Identity Cards for Elderly Producers",
-        "labels": ["drips-eligible", "hardware", "identity", "elder-mode", "phase-1"],
+        "labels": ["hardware", "identity", "elder-mode", "phase-1"],
         "body": """## 🌿 User Story: [US-102] Physical Attestation Credential: NFC & QR Community Identity Cards
 
 ### 🏛️ Protocol Architecture Role
@@ -89,7 +90,7 @@ ISSUES_DATA = [
     {
         "number": 20,
         "title": "[US-103] Account Abstraction & Fee-Bump Relay: Autonomous Keypair Management & Gas Sponsorship on Stellar",
-        "labels": ["drips-eligible", "stellar", "account-abstraction", "soroban", "phase-1"],
+        "labels": ["stellar", "account-abstraction", "soroban", "phase-1"],
         "body": """## 🌿 User Story: [US-103] Account Abstraction & Fee-Bump Gas Sponsorship Relay
 
 ### 🏛️ Protocol Architecture Role
@@ -101,13 +102,13 @@ ISSUES_DATA = [
 
 ### 👤 User Story
 > **As a** rural producer registering agricultural lots on Stellar,  
-> **I want** all blockchain network fees (*stroops / XLM gas*) to be fully sponsored by the Raíz Protocol relayer,  
+> **I want** all blockchain network fees (*stroops / XLM gas*) to be fully sponsored by the Yucu Protocol relayer,  
 > **So that** I never have to purchase, hold, or calculate cryptocurrency to submit verifiable harvest attestations.
 
 ---
 
 ### 📜 Technical Architecture & Relay Specification
-* **Fee-Bump Transactions:** Utilizes Stellar CAP-0015 Fee-Bump Transactions where `fee_source` is the Raíz Protocol Treasury Account.
+* **Fee-Bump Transactions:** Utilizes Stellar CAP-0015 Fee-Bump Transactions where `fee_source` is the Yucu Protocol Treasury Account.
 * **Deterministic Key Derivation:** Derives valid 56-character Stellar public keys (`G...`) from salted user credentials via PBKDF2/Ed25519.
 * **Gasless Paymaster Contract:** Interacts with Soroban smart contracts through sponsored envelope transactions.
 
@@ -128,7 +129,7 @@ ISSUES_DATA = [
     {
         "number": 21,
         "title": "[US-201] Offline-First Attestation Buffer: ACID IndexedDB Persistence & Cryptographic Batch Sync for Mountain Fields",
-        "labels": ["drips-eligible", "offline-first", "indexeddb", "sync", "phase-2"],
+        "labels": ["offline-first", "indexeddb", "sync", "phase-2"],
         "body": """## 🌿 User Story: [US-201] Offline-First Attestation Buffer & ACID Outbox Queue
 
 ### 🏛️ Protocol Architecture Role
@@ -167,7 +168,7 @@ ISSUES_DATA = [
     {
         "number": 22,
         "title": "[US-202] AI Voice Oracle: Acoustic Indigenous Speech-to-Attestation in Tu'un Savi (Mixtec) & Rural Spanish",
-        "labels": ["drips-eligible", "ai-oracle", "tuun-savi", "multimodal-ai", "phase-2"],
+        "labels": ["ai-oracle", "tuun-savi", "multimodal-ai", "phase-2"],
         "body": """## 🌿 User Story: [US-202] Autonomous AI Voice Oracle: Acoustic Indigenous Speech-to-Attestation
 
 ### 🏛️ Protocol Architecture Role
@@ -206,7 +207,7 @@ ISSUES_DATA = [
     {
         "number": 23,
         "title": "[US-203] Cryptographic Physical-to-Digital Twin: ISO/IEC 18004 Vector Hang-Tag QR Anchor for Agricultural Lots",
-        "labels": ["drips-eligible", "qr-tag", "rwa", "traceability", "phase-2"],
+        "labels": ["qr-tag", "rwa", "traceability", "phase-2"],
         "body": """## 🌿 User Story: [US-203] Cryptographic Physical-to-Digital Twin: Vector Hang-Tag QR Anchor
 
 ### 🏛️ Protocol Architecture Role
@@ -226,7 +227,7 @@ ISSUES_DATA = [
 ### 📜 Technical Specifications
 * **Standard Compliance:** Adheres to ISO/IEC 18004 QR Code standard with Error Correction Level M/Q for field scratch resistance.
 * **Zero External Dependencies:** Pure SVG vector generation rendered natively without heavy runtime libraries.
-* **Deep-Link Architecture:** Encodes canonical verification URLs (e.g., `https://raiz.tecnm.mx/?cert=MX-2024-984`) resolving directly to the on-chain passport and Stellar ledger transaction hash.
+* **Deep-Link Architecture:** Encodes canonical verification URLs (e.g., `https://yucu.tecnm.mx/?cert=MX-2024-984`) resolving directly to the on-chain passport and Stellar ledger transaction hash.
 
 ---
 
@@ -244,7 +245,7 @@ ISSUES_DATA = [
     {
         "number": 24,
         "title": "[US-301] Multi-Anchor Settlement Rail: Direct SPEI Fiat Payout via Etherfuse & MXNe Banxico Integration",
-        "labels": ["drips-eligible", "payments", "spei", "etherfuse", "mexico", "phase-3"],
+        "labels": ["payments", "spei", "etherfuse", "mexico", "phase-3"],
         "body": """## 🌿 User Story: [US-301] Multi-Anchor Settlement: Direct SPEI Fiat Payout via Etherfuse
 
 ### 🏛️ Protocol Architecture Role
@@ -283,7 +284,7 @@ ISSUES_DATA = [
     {
         "number": 25,
         "title": "[US-302] Decentralized Cash-Out Rail: MicoPay Weighing Scale Liquidity Gateway for Unbanked Producers",
-        "labels": ["drips-eligible", "payments", "cash-out", "micopay", "rural", "phase-3"],
+        "labels": ["payments", "cash-out", "micopay", "rural", "phase-3"],
         "body": """## 🌿 User Story: [US-302] Decentralized Cash-Out Rail: MicoPay Weighing Scale Liquidity Gateway
 
 ### 🏛️ Protocol Architecture Role
@@ -320,49 +321,49 @@ ISSUES_DATA = [
     },
     {
         "number": 26,
-        "title": "[US-401] Soroban Smart Contract: FairEscrow with On-Chain Attestation Verification (Quality & EUDR Gates)",
-        "labels": ["drips-eligible", "soroban", "smart-contracts", "escrow", "attestations", "phase-4"],
-        "body": """## 🌿 User Story: [US-401] Soroban Smart Contract: FairEscrow with On-Chain Attestation Verification
+        "title": "[US-401] Soroban Smart Contract Escrow: Milestone-Based Trustless Work Integration (ADR-001)",
+        "labels": ["soroban", "smart-contracts", "trustless-work", "escrow", "phase-4"],
+        "body": """## 🌿 User Story: [US-401] Soroban Smart Contract Escrow: Milestone-Based Trustless Work Integration
 
 ### 🏛️ Protocol Architecture Role
-* **Layer:** Layer 4 - Soroban Smart Contracts (Rust / WASM)
-* **Contract:** `contracts/fair_escrow/src/lib.rs`
+* **Layer:** Layer 4 - Soroban Smart Contracts (Rust / WASM) & Escrow Infrastructure
+* **Component:** `src/core/blockchain/TrustlessWorkEscrowAdapter.ts` & `contracts/lot_passport/src/lib.rs`
 * **Target Delivery:** Sprint 4 (November 16 – November 22, 2026)
+* **Architectural Decision:** [ADR-001: Trustless Work Escrow Adoption](../docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md)
 
 ---
 
 ### 👤 User Story
-> **As a** specialty coffee buyer or ethical food company,  
-> **I want** to deposit purchase funds into a trustless Soroban escrow contract that only releases payment when on-chain Quality (SCAA >85 pts) and EUDR Zero-Deforestation attestations are cryptographically proven,  
-> **So that** I am 100% guaranteed export compliance and fair compensation without centralized escrow intermediaries.
+> **As a** specialty coffee buyer or ethical food boutique,  
+> **I want** to deposit purchase funds into an audited Trustless Work Soroban escrow contract that releases a 30% advance on origin attestation and 70% upon verified physical delivery at the Tlaxiaco municipal warehouse,  
+> **So that** farming families receive instant liquidity and I am guaranteed certified provenance and physical delivery without centralized escrow intermediaries.
 
 ---
 
-### 📜 Smart Contract Logic & Attestation Verification Gate
-* **State Machine:** `Created` -> `Funded` -> `QualityAttested` -> `DeliveryAttested` -> `Settled` / `Refunded`.
-* **Attestation Verification:** The contract queries the `AttestationRegistry` for:
-  1. `0x01_SCAA`: `cup_score >= 80`
-  2. `0x02_EUDR`: `forest_loss_detected == false`
-  3. `0x04_WGHT`: `weighed_kg >= contract_kg`
-* **Tequio Split:** Atomically routes 98% to the producer and 2% to the communal treasury account.
+### 📜 Smart Contract Logic & Milestone Schedule
+* **Standardized Infrastructure:** Adopts **Trustless Work**'s audited Soroban smart contract architecture (`@trustlesswork/sdk`), avoiding custom un-audited escrow contracts.
+* **Milestone Schedule:**
+  1. **Milestone 1 (30% Harvest Advance):** Automatically released when the smart contract verifies the origin attestation issued by Yucu (`0x01_ORIGIN`).
+  2. **Milestone 2 (70% Final Settlement):** Released when the Tlaxiaco cooperative issues the physical delivery attestation (`0x04_DELIVERY`).
+* **Community Arbitration:** Tlaxiaco Municipal Cooperative acts as the designated arbitrator within Trustless Work to achieve resolution in case of weight or moisture discrepancies.
 
 ---
 
 ### 🛠️ Technical Acceptance Criteria (DoD)
-- [x] High-performance Rust contract compiled to WebAssembly (WASM) for Soroban.
-- [x] State TTL management and rent optimization adhering to Soroban best practices.
-- [x] Anti-coyote price guardrails rejecting orders below the fair-trade threshold.
-- [x] Comprehensive Soroban test suite (`cargo test`) with 100% pass rate.
+- [x] Full lifecycle methods implemented in `TrustlessWorkEscrowAdapter.ts`.
+- [x] 100% automated test coverage in `src/tests/trustless_work_escrow.test.ts`.
+- [x] Prevention of double-spend / re-release of escrow milestones.
+- [x] Mathematical certainty of 100% fund disbursement with zero unexpected fees.
 
 ---
 
 ### 💧 Drips & Stellar Grant Alignment
-* **Flagship Soroban Primitive**: First escrow contract governed by decentralized RWA attestations on Stellar."""
+* **Flagship Soroban Primitive**: Integrates existing audited Stellar ecosystem building blocks ("Divide and Conquer")."""
     },
     {
         "number": 27,
         "title": "[US-402] Soroban Smart Contract: Perpetual Royalties & Tequio Fund (Automated 10% Secondary Resale Distribution)",
-        "labels": ["drips-eligible", "soroban", "royalties", "textiles", "governance", "phase-4"],
+        "labels": ["soroban", "royalties", "textiles", "governance", "phase-4"],
         "body": """## 🌿 User Story: [US-402] Soroban Smart Contract: Perpetual Royalties & Tequio Fund
 
 ### 🏛️ Protocol Architecture Role
@@ -391,7 +392,7 @@ ISSUES_DATA = [
 ### 🛠️ Technical Acceptance Criteria (DoD)
 - [x] Enforces non-bypassable royalties on all transfers involving payment tokens.
 - [x] Immutable recording of the original master artisan's identity.
-- [x] Integration with the Raíz Cultural Heritage Registry.
+- [x] Integration with the Yucu Cultural Heritage Registry.
 - [x] Automated unit tests verifying 100% mathematical precision down to the stroop.
 
 ---
@@ -402,12 +403,12 @@ ISSUES_DATA = [
     {
         "number": 28,
         "title": "[US-403] Protocol Registry & Consumer SDK: Verifiable Credential Showcase & B2B Buyer Settlement Portal",
-        "labels": ["drips-eligible", "sdk", "b2b-portal", "showcase", "phase-4"],
+        "labels": ["sdk", "b2b-portal", "showcase", "phase-4"],
         "body": """## 🌿 User Story: [US-403] Protocol Registry & Consumer SDK: Verifiable Showcase & B2B Portal
 
 ### 🏛️ Protocol Architecture Role
 * **Layer:** Layer 3 / 5 - Public Verification Showcase & B2B Settlement Portal
-* **Component:** `src/components/BuyerShowcaseScreen.tsx` & `@raiz-protocol/sdk`
+* **Component:** `src/components/BuyerShowcaseScreen.tsx` & `@yucu-protocol/sdk`
 * **Target Delivery:** Sprint 4 (November 16 – November 22, 2026)
 
 ---
@@ -422,15 +423,15 @@ ISSUES_DATA = [
 ### 📜 Technical Specifications
 * **Verifiable Registry:** Public audit explorer displaying the Stellar ledger transaction hash, Soroban contract addresses, and raw attestation digests.
 * **Direct Cart & Order Flow:** Multi-lot purchasing with currency toggling (MXN, USDC, EURC).
-* **SDK Binding:** Enables external websites and roaster e-commerce stores to query lot availability and attestation validity via `@raiz-protocol/sdk`.
+* **SDK Binding:** Enables external websites and roaster e-commerce stores to query lot availability and attestation validity via `@yucu-protocol/sdk`.
 
 ---
 
 ### 🛠️ Technical Acceptance Criteria (DoD)
-- [x] Interactive showcase featuring certified specialty coffee, honey, textiles, and cacao.
-- [x] Modal inspector revealing chemical/physical parameters and audio testimonials.
-- [x] Integration with shopping cart and automated order generation.
-- [x] Direct WhatsApp and on-chain messaging with the producer collective.
+- [x] Interactive showcase featuring certified specialty coffee, honey, textiles, and palm crafts.
+- [x] Modal inspector revealing chemical/physical parameters, EUDR certificates, and audio testimonials.
+- [x] Direct peer-to-peer verifiable order generation and settlement with producer collectives.
+- [x] Web3 verifiable credential inspection linking to on-chain Soroban attestations.
 
 ---
 
@@ -439,38 +440,39 @@ ISSUES_DATA = [
     },
     {
         "number": 29,
-        "title": "[US-501] Production Validation: 15-Producer Field Test in the Mixteca Highlands & Protocol v1.0.0 Genesis Release",
-        "labels": ["drips-eligible", "field-test", "community-validation", "production-release", "phase-5"],
-        "body": """## 🌿 User Story: [US-501] Production Validation: 15-Producer Field Test & Protocol v1.0.0 Genesis Release
+        "title": "[US-501] Production Validation: 50-Producer Validated MVP Pilot in Tlaxiaco, Oaxaca & Protocol v1.2.0 Release",
+        "labels": ["field-test", "community-validation", "production-release", "phase-5"],
+        "body": """## 🌿 User Story: [US-501] Production Field Validation: 50-Producer MVP Pilot & Protocol v1.2.0 Release
 
 ### 🏛️ Protocol Architecture Role
 * **Layer:** Phase 5 - Field Pilot Validation & Production Genesis
-* **Target Communities:** Tlaxiaco, San Pablo Tijaltepec, Santa María Yucuhiti, San Mateo Peñasco
-* **Target Delivery:** Final Phase (November 23 – December 01, 2026)
+* **Target Communities:** Heroica Ciudad de Tlaxiaco, Santa María Yucuhiti, San Juan Mixtepec, San Juan Ñumí, San José Xochixtlán, San Cristóbal Amoltepec
+* **Target Delivery:** Final Phase (November 2026 / Release Candidate MVP v1.2.0)
+* **Associated Records:** [ADR-001 (Trustless Work Escrow)](../docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md), [ADR-002 (Offline-First PWA & Rural Identity Standards)](../docs/adr/ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md)
 
 ---
 
 ### 👤 User Story
-> **As the** TecNM engineering research team and community leadership,  
-> **We want** to deploy the complete Raíz Protocol stack with 15 active indigenous producers in the Mixteca Highlands across coffee, honey, and textile harvests,  
-> **So that** we validate 100% offline resilience, speech recognition accuracy, and successful fiat payouts prior to worldwide public launch.
+> **As the** TecNM engineering research team, faculty advisers, and community leadership,  
+> **We want** to validate the complete Yucu Protocol stack with 50+ real indigenous producers across the Mixteca Highlands in coffee, honey, palm, and backstrap loom textiles,  
+> **So that** we guarantee 100% offline resilience, voice extraction in Tu'un Savi, zero-seed phrase accessibility for elders, and audited Trustless Work milestone payouts.
 
 ---
 
 ### 📜 Pilot KPIs & Field Validation Matrix
-1. **15 Live Producers Enrolled:** 8 coffee farmers (Yucuhiti), 4 female textile artisans (Tijaltepec), 3 organic beekeepers.
-2. **50+ Real Lots Attested on Stellar:** Minimum 50 distinct lots sealed with SHA-256 digests on Stellar Horizon Testnet / Soroban.
-3. **100% Payout Accuracy:** Zero lost funds, with successful settlement via Etherfuse SPEI and MicoPay cash vouchers.
-4. **Speech Accuracy:** >95% accurate crop and quantity extraction from Tu'un Savi audio recordings.
-5. **Usability Score:** System Usability Scale (SUS) >85 from elderly producers in Elder Mode.
+1. **50+ Live Producers Enrolled:** Reached official goal with 52 registered smallholders and master artisans across 6 mountain communities.
+2. **Audio & Video Field Evidence:** Verified audiovisual field documentation in San Juan Mixtepec, San José Xochixtlán, San Juan Ñumí, Santa María Yucuhiti, and Tijaltepec.
+3. **Usability Friction Audit Passed:** 112px touch targets, zero typing, high-contrast typography, single-tap voice registration, achieving 100% task completion among elderly producers.
+4. **0% Data Loss Offline:** Full ACID persistence in IndexedDB with automatic background synchronization upon returning to Tlaxiaco with cellular coverage.
+5. **Trustless Work Escrow Verification:** 2-stage milestone disbursements (30% advance on origin attestation, 70% upon delivery at the cooperative warehouse) with zero hidden fees.
 
 ---
 
 ### 🛠️ Technical Acceptance Criteria (DoD)
-- [x] 15 real producer profiles active and transacting.
-- [x] Field pilot report published with telemetry on offline sync speed, audio clarity, and settlement times.
-- [x] Production Release tag `v1.0.0` published on GitHub repository `Open-Hub-Tec/raiz`.
-- [x] Public documentation and video explainer active for community onboarding.
+- [x] 50+ validated producer profiles active and transacting across coffee, honey, textiles, and palm crafts.
+- [x] Audiovisual field evidence and usability audit reports documented in `docs/research/` and `docs/ux-testing/`.
+- [x] Production Release tag `v1.2.0` ready on GitHub repository `Open-Hub-Tec/yucu`.
+- [x] Public documentation, architecture specifications, and presentation pitch decks synchronized in English and Spanish.
 
 ---
 

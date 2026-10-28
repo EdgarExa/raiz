@@ -1,8 +1,8 @@
 /**
- * Raíz Protocol - Universal Developer & Consumer SDK
+ * Yucu Protocol - Universal Developer & Consumer SDK
  * 
  * Enables cooperatives, exporters, fintechs, and agtechs to consume
- * the Raíz RWA Infrastructure & AI Oracles on Stellar with 3 lines of code.
+ * the Yucu RWA Infrastructure & AI Oracles on Stellar with 3 lines of code.
  */
 
 import { RaizAIOracles, VoiceParsingResult, QualityAttestation, EUDRComplianceReport, SettlementRouteSolution } from '../ai/RaizAIOracles';
@@ -35,7 +35,7 @@ export class RaizProtocolSDK {
   constructor(config?: Partial<RaizProtocolConfig>) {
     this.config = {
       network: config?.network || 'stellar-mainnet',
-      appId: config?.appId || 'open-hub-tecnm-raiz-v1',
+      appId: config?.appId || 'open-hub-tecnm-yucu-v1',
       sponsorGas: config?.sponsorGas ?? true,
     };
     this.soroban = new SorobanAdapter();
@@ -137,6 +137,34 @@ export class RaizProtocolSDK {
           revocable: false,
           issuer: 'MicoPay Reception Authority + Community Verifier',
         },
+        {
+          uid: '0x05_DPP',
+          name: 'EUDigitalProductPassportAttestation',
+          description: 'EU Ecodesign (ESPR 2026) compliance, GS1 Digital Link URI, circularity, and shade-canopy carbon insetting (kg CO2e sequestered)',
+          revocable: false,
+          issuer: 'DPPCircularityAgent + Agroforestry Carbon Lab',
+        },
+        {
+          uid: '0x06_INDIP',
+          name: 'IndigenousCollectiveIPAttestation',
+          description: 'Ancestral cultural heritage defense under 2022 Federal Law, WeaveGrammarDigest, anti-biopiracy shield, and perpetual 10%+2% royalty',
+          revocable: false,
+          issuer: 'IndigenousIPGuardianAgent + Communal Assembly',
+        },
+        {
+          uid: '0x07_IOT',
+          name: 'ColdChainDynamicTelemetryAttestation',
+          description: 'Real-time transit IoT telemetry (humidity, temp, Brix degrees) anchored in Soroban Temporary Storage (TTL 60 days, zero bloat)',
+          revocable: true,
+          issuer: 'IoT Telemetry Mesh + Carrier Node',
+        },
+        {
+          uid: '0x08_USMCA',
+          name: 'CustomsRulesOfOriginAttestation',
+          description: 'USMCA (T-MEC) tariff-free rules of origin & SENASICA / USDA Organic phytosanitary clearance via Stellar SEP-8 gateway',
+          revocable: false,
+          issuer: 'SENASICA / Customs Clearance Oracle',
+        },
       ],
       verifyAttestation: (attestationUid: string) => {
         return {
@@ -183,3 +211,5 @@ export class RaizProtocolSDK {
 }
 
 export const raizProtocol = new RaizProtocolSDK();
+export const yucuProtocol = raizProtocol;
+export { RaizProtocolSDK as YucuProtocolSDK };

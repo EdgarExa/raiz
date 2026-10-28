@@ -1,5 +1,5 @@
 /**
- * Raíz Core - Motor Criptográfico de Integridad
+ * Yucu Core - Motor Criptográfico de Integridad
  * Calcula identificadores únicos y hashes SHA-256 inmutables
  * para fotos, audios testimoniales y dictámenes técnicos.
  */

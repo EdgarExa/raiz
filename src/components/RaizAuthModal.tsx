@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PRESET_USERS, RaizAuthEngine, UserProfile, UserRole } from '../core/auth/RaizAuthEngine';
 import { SupportedCountry } from '../core/settlement/HybridSettlementOrchestrator';
+import { DemoBadge } from './DemoBadge';
 
 interface RaizAuthModalProps {
   isOpen: boolean;
@@ -118,7 +119,8 @@ export const RaizAuthModal: React.FC<RaizAuthModalProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h3 className="text-[17px] font-black tracking-tight text-white">Identidad Raíz</h3>
+                <h3 className="text-[17px] font-black tracking-tight text-white">Identidad Yucu</h3>
+                <DemoBadge detail="Inicio de sesión de prueba: el código OTP es fijo y las cuentas Stellar no son reales." />
                 <span className="text-[10px] bg-amber-400 text-neutral-950 font-black px-1.5 py-0.5 rounded-md uppercase">
                   Sin Contraseñas
                 </span>
@@ -257,7 +259,7 @@ export const RaizAuthModal: React.FC<RaizAuthModalProps> = ({
                         : 'bg-[#f0eee8] text-[#424843] hover:bg-[#ebe8e2]'
                     }`}
                   >
-                    💬 WhatsApp / SMS
+                    💬 SMS Móvil
                   </button>
                   <button
                     type="button"
@@ -284,7 +286,7 @@ export const RaizAuthModal: React.FC<RaizAuthModalProps> = ({
                 </div>
               </div>
 
-              {/* Tab 1: WhatsApp / SMS OTP */}
+              {/* Tab 1: SMS OTP */}
               {loginTab === 'phone' && (
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-2">
@@ -331,7 +333,7 @@ export const RaizAuthModal: React.FC<RaizAuthModalProps> = ({
                       className="w-full py-2.5 rounded-xl bg-[#032517] hover:bg-[#1b3b2b] text-white font-bold text-[13px] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-98"
                     >
                       <span className="material-symbols-outlined text-[18px]">send</span>
-                      <span>Enviar Código por WhatsApp / SMS</span>
+                      <span>Enviar Código SMS</span>
                     </button>
                   ) : (
                     <div className="bg-emerald-50 border border-emerald-300 p-3 rounded-xl flex flex-col gap-2.5 animate-fadeIn">
@@ -455,7 +457,7 @@ export const RaizAuthModal: React.FC<RaizAuthModalProps> = ({
                     Acreditación Institucional TecNM · Campus Tlaxiaco
                   </h4>
                   <p className="text-[11px] text-cyan-800">
-                    Nodo Open Hub: Estudiantes de ingeniería con fe pública comunitaria y micro-becas Drips.
+                    Nodo Open Hub: Estudiantes de ingeniería con fe pública comunitaria y residencias profesionales.
                   </p>
                 </div>
               </div>

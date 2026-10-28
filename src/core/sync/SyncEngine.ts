@@ -1,5 +1,5 @@
 /**
- * Raíz Core - Motor de Sincronización Diferida (Offline Sync Queue)
+ * Yucu Core - Motor de Sincronización Diferida (Offline Sync Queue)
  * Administra la cola de salida (Outbox) cuando el productor trabaja
  * en la parcela o taller sin señal, y sincroniza automáticamente
  * al recuperar cobertura en la cabecera municipal.

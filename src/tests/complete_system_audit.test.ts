@@ -1,6 +1,7 @@
+import { FairTradeEngine } from '../core/policy/FairTradeEngine';
 /**
  * SUITE INTEGRAL DE PRUEBAS DE PUNTA A PUNTA (E2E)
- * Sistema Raíz: UI, Usabilidad Rural, Flujos de Negocio, Criptografía y Stellar
+ * Sistema Yucu: UI, Usabilidad Rural, Flujos de Negocio, Criptografía y Stellar
  */
 
 import { INITIAL_VERIFIED_LOTS } from '../data/mockData';
@@ -25,7 +26,7 @@ function check(assertion: boolean, name: string, detail?: string) {
 async function runCompleteSystemAudit() {
   console.log('================================================================================');
   console.log('      AUDITORÍA INTEGRAL DE SISTEMA: UI, USABILIDAD, FLUJOS Y BLOCKCHAIN        ');
-  console.log('                 Proyecto Raíz - Open Hub TecNM Campus Tlaxiaco                 ');
+  console.log('                 Proyecto Yucu - Open Hub TecNM Campus Tlaxiaco                 ');
   console.log('================================================================================\n');
 
   // -------------------------------------------------------------------------
@@ -141,11 +142,12 @@ async function runCompleteSystemAudit() {
 
   // Simulación de reventa en una boutique o cafetería de especialidad en EE.UU. o Europa
   const montoVentaMxn = 12000; // $12,000 MXN por un huipil ceremonial
-  const regaliaCampesina = montoVentaMxn * 0.08; // 8%
-  const fondoTequio = montoVentaMxn * 0.02;      // 2%
-  const liquidezVendedor = montoVentaMxn * 0.90; // 90%
+  const reparto = FairTradeEngine.calculateSecondaryRoyalty(montoVentaMxn); // porcentajes oficiales
+  const regaliaCampesina = reparto.artisanRoyaltyMxn; // 10%
+  const fondoTequio = reparto.cooperativeFundMxn;     // 2%
+  const liquidezVendedor = reparto.sellerNetMxn;      // 88%
 
-  check(regaliaCampesina === 960, `Regalía campesina del 8% liquidada con exactitud ($960 MXN de $12,000 MXN)`);
+  check(regaliaCampesina === 1200, `Regalía de la artesana del 10% liquidada con exactitud ($1,200 MXN de $12,000 MXN)`);
   check(fondoTequio === 240, `Aporte al Tequio Comunal del 2% acreditado ($240 MXN para obras del pueblo)`);
   check(regaliaCampesina + fondoTequio + liquidezVendedor === montoVentaMxn, 'Conservación estricta del 100% del dinero sin comisiones ocultas');
 
@@ -158,7 +160,7 @@ async function runCompleteSystemAudit() {
   const formattedCode = lotePrueba.code.startsWith('MX-') ? lotePrueba.code : `MX-${lotePrueba.code}`;
   check(formattedCode.startsWith('MX-') && !formattedCode.startsWith('MX-MX-'), `Normalización de folio sin duplicados: ${formattedCode}`);
 
-  const urlCertificado = `https://raiz.tecnm.mx/?cert=${encodeURIComponent(formattedCode)}`;
+  const urlCertificado = `https://yucu.tecnm.mx/?cert=${encodeURIComponent(formattedCode)}`;
   const svgGenerado = generateQrSvg(urlCertificado, { size: 240, color: '#032517' });
   const dataUriGenerado = generateQrDataUri(urlCertificado, { size: 240 });
 

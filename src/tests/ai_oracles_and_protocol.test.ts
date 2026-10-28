@@ -1,6 +1,6 @@
 /**
  * Automated Tests:
- * Raíz Infrastructure Protocol & AI Oracles
+ * Yucu Infrastructure Protocol & AI Oracles
  * 
  * 1. AIVoiceOracle (Tu'un Savi / Spanish normalization)
  * 2. AIQualityOracle (SCAA Specialty Coffee & Artisan Textiles)
@@ -81,7 +81,7 @@ const routeMexicoCash = RaizAIOracles.solveOptimalSettlement({
 assert(routeMexicoCash.targetRail === 'MICOPAY_CASH', 'Rutea a efectivo MicoPay en parcela con transportistas locales');
 
 // 5. Universal SDK Test
-console.log('\n📍 5. SDK UNIVERSAL DEL PROTOCOLO RAÍZ (@raiz-protocol/sdk)');
+console.log('\n📍 5. SDK UNIVERSAL DEL YUCU PROTOCOL (@yucu-protocol/sdk)');
 const sdk = new RaizProtocolSDK({ network: 'stellar-mainnet' });
 const metrics = sdk.getMetrics();
 assert(metrics.aiOraclesOnline === 4, '4 oráculos de IA activos en la infraestructura');

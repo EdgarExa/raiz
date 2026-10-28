@@ -22,7 +22,7 @@ console.log('====================================================\n');
 console.log('--- 1. Generación de Código QR y Validación de Folios ---');
 for (const lot of INITIAL_VERIFIED_LOTS) {
   const formattedCode = lot.code.startsWith('MX-') ? lot.code : `MX-${lot.code}`;
-  const url = `https://raiz.tecnm.mx/?cert=${encodeURIComponent(formattedCode)}`;
+  const url = `https://yucu.tecnm.mx/?cert=${encodeURIComponent(formattedCode)}`;
 
   // Validar que no haya doble prefijo MX-MX-
   assert(!formattedCode.startsWith('MX-MX-'), `Folio normalizado sin duplicación: ${formattedCode}`);
@@ -77,7 +77,7 @@ for (const s of scenarios) {
 // 3. Verificación de cumplimiento ISO/IEC 18004
 console.log('\n--- 3. Conformidad Técnica ISO/IEC 18004 y Niveles ECC ---');
 const qr = new QRCode(0, QRErrorCorrectLevel.M);
-qr.addData('https://raiz.tecnm.mx/?cert=MX-2024-912');
+qr.addData('https://yucu.tecnm.mx/?cert=MX-2024-912');
 qr.make();
 
 assert(qr.getModuleCount() === 29, `Matriz de 29x29 módulos calculada para Versión 3`);

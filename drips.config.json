@@ -1,9 +1,9 @@
 {
-  "name": "Raiz - Open Hub TecNM Tlaxiaco",
+  "name": "Yucu Protocol - Open Hub TecNM Tlaxiaco",
   "description": "Configuración de Splits en Drips Network para el financiamiento público transparente y por mérito de 60 estudiantes del TecNM Campus Tlaxiaco",
   "version": "1.0.0",
   "project": {
-    "repository": "https://github.com/Open-Hub-Tec/raiz",
+    "repository": "https://github.com/Open-Hub-Tec/yucu",
     "program": "Stellar Wave Program",
     "funder": "Drips Network",
     "academicInstitution": "Tecnológico Nacional de México - Campus Tlaxiaco",
@@ -56,7 +56,7 @@
       },
       {
         "issueNumber": 3,
-        "title": "Smart Contract Perpetual Secondary Royalties Engine (8% Direct to Producer / 2% Community Tequio Pool)"
+        "title": "Smart Contract Perpetual Secondary Royalties Engine (10% Direct to Producer / 2% Community Tequio Pool)"
       }
     ]
   },
@@ -67,8 +67,8 @@
     "description": "Regalías perpetuas por reventas secundarias y comercialización con valor agregado (café tostado de especialidad, textiles exhibidos en galerías). Garantiza que los productores reciban ingresos residuales cada vez que su lote o artesanía genere plusvalía aguas abajo.",
     "secondaryResaleSplit": {
       "producerDirectWallet": {
-        "percentage": 8,
-        "description": "8% de cada reventa secundaria o venta en boutiques/tostadurías transferido directamente a la cuenta/billetera del productor o artesano original."
+        "percentage": 10,
+        "description": "10% de cada reventa secundaria o venta en boutiques/tostadurías transferido directamente a la cuenta/billetera del productor o artesano original."
       },
       "communityTequioFund": {
         "percentage": 2,

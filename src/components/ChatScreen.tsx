@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ScreenView, BotCardData, BotCardType, DigitalPassportLot } from '../types';
+import { ScreenView, BotCardData, BotCardType, DigitalPassportLot, OrderReceipt } from '../types';
 import { BotCardView } from './BotCardView';
 import { KnowledgeBaseModal } from './KnowledgeBaseModal';
 import { startAudioRecording, LiveRecorderSession } from '../utils/audioRecorder';
@@ -16,6 +16,8 @@ interface ChatScreenProps {
   onOpenMicDiagnosticModal?: () => void;
   onAddToCart?: (item: any) => void;
   selectedLot?: DigitalPassportLot;
+  lastOrderReceipt?: OrderReceipt | null;
+  onClearOrderReceipt?: () => void;
 }
 
 interface MessageItem {
@@ -44,15 +46,20 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
   onOpenMapModal,
   onOpenMicDiagnosticModal,
   onAddToCart,
-  selectedLot
+  selectedLot,
+  lastOrderReceipt,
+  onClearOrderReceipt
 }) => {
   const [activeChannel, setActiveChannel] = useState<'asistente' | 'registro' | 'soporte'>(
-    targetProducer || initialCustomMessage ? 'soporte' : 'asistente'
+    targetProducer || initialCustomMessage || lastOrderReceipt ? 'soporte' : 'asistente'
   );
 
   const [inputMessage, setInputMessage] = useState<string>(
-    initialCustomMessage ||
-      (targetProducer ? `Hola ${targetProducer}, me interesa conocer más sobre su lote.` : '')
+    initialCustomMessage && !initialCustomMessage.startsWith('Confirmación de pedido')
+      ? initialCustomMessage
+      : targetProducer && !initialCustomMessage
+      ? `Hola ${targetProducer}, me interesa conocer más sobre su lote.`
+      : ''
   );
 
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -70,7 +77,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
   // Realistic Bot Typing simulation state
   const [isBotTyping, setIsBotTyping] = useState<boolean>(false);
-  const [typingAgent, setTypingAgent] = useState<string>('🌱 Guía Raíz');
+  const [typingAgent, setTypingAgent] = useState<string>('🌱 Guía Yucu');
   const [speakingMsgText, setSpeakingMsgText] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -119,8 +126,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     {
       id: 'ast-1',
       sender: 'bot',
-      agentTag: '🌱 Compañero Raíz • TecNM Tlaxiaco',
-      text: '¡Buenos días paisano, bienvenido a Raíz!\n\nSoy tu compañero del Instituto Tecnológico de Tlaxiaco. Estoy aquí para acompañarte paso a paso con tus cosechas y artesanías de la Mixteca.\n\n¿En qué te podemos apoyar hoy? Toca una opción o platícame por nota de voz:',
+      agentTag: '🌱 Compañero Yucu • TecNM Tlaxiaco',
+      text: '¡Buenos días paisano, bienvenido a Yucu!\n\nSoy tu compañero del Instituto Tecnológico de Tlaxiaco. Estoy aquí para acompañarte paso a paso con tus cosechas y artesanías de la Mixteca.\n\n¿En qué te podemos apoyar hoy? Toca una opción o platícame por nota de voz:',
       time: 'Ahora',
       options: [
         { id: 1, title: '🌾 Registrar Cosecha o Artesanía', subtitle: 'Café, textil, miel, palma, etc.', icon: 'add_circle', action: 'registrar_lote' },
@@ -159,6 +166,120 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       time: '10:45 a. m.'
     }
   ]);
+
+  // Manejador del ÚLTIMO EVENTO DEL FLUJO: Renderiza automáticamente el pedido y comprobante si el usuario acaba de pagar
+  useEffect(() => {
+    if (lastOrderReceipt) {
+      setActiveChannel('soporte');
+      userInteractedRef.current = true;
+      const orderUserMsg: MessageItem = {
+        id: `usr-ord-${lastOrderReceipt.id}`,
+        sender: 'user',
+        text: `📦 He realizado el pedido #${lastOrderReceipt.id} por un total de $${lastOrderReceipt.total.toLocaleString('es-MX')} MXN (${lastOrderReceipt.paymentMethod}). Me pongo en contacto para acordar la entrega directa contigo.`,
+        time: 'Ahora',
+        isCheck: true
+      };
+
+      const orderBotMsg: MessageItem = {
+        id: `bot-ord-${lastOrderReceipt.id}`,
+        sender: 'bot',
+        agentTag: `👩‍🎨 ${lastOrderReceipt.artisanName}`,
+        text: `¡Hola paisano! 🎉 Muchísimas gracias por tu compra directa y por valorar el arte y la cosecha de la Mixteca. He recibido la confirmación de tu pedido #${lastOrderReceipt.id}.\n\nTu pago está registrado al 100% (cero coyotes). Ya comencé a preparar tus piezas en mi taller.\n\n¿En qué punto te gustaría que acordemos la entrega (en nuestro taller en Tlaxiaco/Oaxaca o prefieres que lo enviemos por paquetería comercial)?`,
+        time: 'Ahora',
+        card: {
+          type: 'recibo_ticket',
+          title: `Comprobante Oficial #${lastOrderReceipt.id}`,
+          data: {
+            ...lastOrderReceipt,
+            summary: lastOrderReceipt.items.map((it) => `${it.quantity}x ${it.title}`).join(', ')
+          }
+        },
+        options: [
+          {
+            id: 1,
+            title: '🤝 Acordar entrega en taller en Tlaxiaco',
+            subtitle: 'Retiro en persona en territorio',
+            icon: 'storefront'
+          },
+          {
+            id: 2,
+            title: '📦 Coordinar envío por paquetería',
+            subtitle: 'Estafeta / DHL / Correos de México',
+            icon: 'local_shipping'
+          },
+          {
+            id: 3,
+            title: '📜 Ver Pasaporte y Certificado Stellar',
+            subtitle: 'Sello notarial inmutable',
+            icon: 'verified',
+            action: 'ver_pasaporte'
+          }
+        ]
+      };
+
+      setSupportMessages((prev) => {
+        if (prev.some((m) => m.id === orderUserMsg.id)) return prev;
+        return [...prev, orderUserMsg, orderBotMsg];
+      });
+
+      setInputMessage('');
+      if (onClearOrderReceipt) {
+        onClearOrderReceipt();
+      }
+    }
+  }, [lastOrderReceipt]);
+
+  // Si llega un mensaje de confirmación de pedido vía URL o props sin objeto de recibo, registrarlo en el chat
+  useEffect(() => {
+    if (initialCustomMessage && initialCustomMessage.startsWith('Confirmación de pedido')) {
+      setActiveChannel('soporte');
+      userInteractedRef.current = true;
+      const orderUserMsg: MessageItem = {
+        id: `usr-cust-${Date.now()}`,
+        sender: 'user',
+        text: initialCustomMessage,
+        time: 'Ahora',
+        isCheck: true
+      };
+
+      const orderBotMsg: MessageItem = {
+        id: `bot-cust-${Date.now()}`,
+        sender: 'bot',
+        agentTag: targetProducer ? `👩‍🎨 ${targetProducer}` : '🛍️ Enlace Comercial Yucu',
+        text: `🎉 ¡Pedido recibido con éxito! Tu orden directa ha sido confirmada. La artesana ha recibido el aviso y comenzará a preparar tus piezas.\n\n¿En qué punto te gustaría acordar la entrega?`,
+        time: 'Ahora',
+        card: {
+          type: 'recibo_ticket',
+          data: {
+            id: `REC-MIX-2024-${Math.floor(1000 + Math.random() * 9000)}`,
+            artisanName: targetProducer || 'Artesanas de la Mixteca',
+            location: 'Tlaxiaco, Oaxaca',
+            summary: initialCustomMessage.replace('Confirmación de pedido directo: ', ''),
+            total: 480,
+            paymentMethod: 'Trato Directo (0% Comisión)',
+            stellarTxLedger: 52499210
+          }
+        },
+        options: [
+          {
+            id: 1,
+            title: '🤝 Acordar entrega en taller en Tlaxiaco',
+            subtitle: 'Retiro en persona',
+            icon: 'storefront'
+          },
+          {
+            id: 2,
+            title: '📦 Coordinar envío por paquetería',
+            subtitle: 'Estafeta / DHL / Correos',
+            icon: 'local_shipping'
+          }
+        ]
+      };
+
+      setSupportMessages((prev) => [...prev, orderUserMsg, orderBotMsg]);
+      setInputMessage('');
+    }
+  }, [initialCustomMessage]);
 
   // Auto scroll to bottom ONLY when user interacts or new messages are appended after initial mount (WhatsApp behavior)
   useEffect(() => {
@@ -234,7 +355,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
   // Función para garantizar nombres 100% humanos, comunitarios y respetuosos (sin la palabra robótica "Agente" ni "Bot")
   const humanizeAgentTag = (rawName?: string | null): string => {
-    if (!rawName) return '🌱 Compañero Raíz (TecNM)';
+    if (!rawName) return '🌱 Compañero Yucu (TecNM)';
     const clean = rawName.toLowerCase();
     if (clean.includes('tesorero') || clean.includes('pago') || clean.includes('billetera')) {
       return '💰 Tesorería y Fondos Comunitarios';
@@ -245,8 +366,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     if (clean.includes('notario') || clean.includes('stellar')) {
       return '⛓️ Certificación Notarial Stellar';
     }
-    if (clean.includes('logistico') || clean.includes('logístico') || clean.includes('coyote') || clean.includes('flete')) {
-      return '🚚 Transporte y Fletes Comunitarios';
+    if (clean.includes('logistico') || clean.includes('logístico') || clean.includes('coyote') || clean.includes('flete') || clean.includes('envio') || clean.includes('envío')) {
+      return '🤝 Trato Directo (Sin Logística)';
     }
     if (clean.includes('comercial') || clean.includes('vitrina')) {
       return '🛍️ Vitrina y Enlace Comercial';
@@ -270,13 +391,13 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       return '👒 Creación Artesanal de Palma';
     }
     if (clean.includes('multiproducto')) {
-      return '🌾 Catálogo Rural Raíz';
+      return '🌾 Catálogo Rural Yucu';
     }
     if (clean.includes('orquestador') || clean.includes('bot') || clean.includes('asistente comunitario')) {
-      return '🌱 Compañero Raíz (TecNM)';
+      return '🌱 Compañero Yucu (TecNM)';
     }
     // Si contiene la palabra "Agente", la limpiamos amigablemente
-    return rawName.replace(/agente\s*/gi, '').trim() || '🌱 Compañero Raíz (TecNM)';
+    return rawName.replace(/agente\s*/gi, '').trim() || '🌱 Compañero Yucu (TecNM)';
   };
 
   // Helper to dispatch simulated Bot responses with realistic typing delay
@@ -368,7 +489,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       clean.includes('maguey')
     ) {
       const reply =
-        '¡Con mucho gusto, paisano! En Raíz apoyamos con orgullo a los tlachiqueros y familias productoras de Pulque Tradicional de la Mixteca Alta sin intermediarios ("coyotes").\n\nEl registro se realiza en 3 pasos sencillos y rápidos:\n\n1. 🏺 Indique los litros o garrafas preparadas en su tinacal.\n2. 📸 Tómale una foto a su muestra en jícara o garrafa para avalar con IA que es 100% aguamiel natural sin azúcar añadida.\n3. 💰 Su lote queda registrado a precio comunal justo para venta directa.\n\nToque abajo para registrar su pulque de inmediato:';
+        '¡Con mucho gusto, paisano! En Yucu apoyamos con orgullo a los tlachiqueros y familias productoras de Pulque Tradicional de la Mixteca Alta sin intermediarios ("coyotes").\n\nEl registro se realiza en 3 pasos sencillos y rápidos:\n\n1. 🏺 Indique los litros o garrafas preparadas en su tinacal.\n2. 📸 Tómale una foto a su muestra en jícara o garrafa para avalar con IA que es 100% aguamiel natural sin azúcar añadida.\n3. 💰 Su lote queda registrado a precio comunal justo para venta directa.\n\nToque abajo para registrar su pulque de inmediato:';
       dispatchSimulatedBotReply(
         '🏺 Agente Tradicional Comunitario',
         reply,
@@ -404,7 +525,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     // 3.2 MIEL DE ABEJA
     if (clean.includes('miel') || clean.includes('abeja') || clean.includes('colmena')) {
       const reply =
-        '¡Con mucho gusto, paisano! En Raíz apoyamos a los apicultores de la Mixteca Alta para comercializar su Miel Pura de Abeja a precio justo sin intermediarios.\n\nToque abajo para registrar su lote de miel de inmediato:';
+        '¡Con mucho gusto, paisano! En Yucu apoyamos a los apicultores de la Mixteca Alta para comercializar su Miel Pura de Abeja a precio justo sin intermediarios.\n\nToque abajo para registrar su lote de miel de inmediato:';
       dispatchSimulatedBotReply(
         '🍯 Agente Apícola Comunitario',
         reply,
@@ -444,9 +565,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       clean.includes('no sea cafe')
     ) {
       const reply =
-        '¡Entendido, paisano! En Raíz apoyamos a todas las cosechas y creaciones de la Mixteca: Pulque tradicional, Miel de abeja, Maíz criollo, Jitomate, Sombreros de palma y Textiles artesanales.\n\nToque abajo para abrir el catálogo y registrar su producto:';
+        '¡Entendido, paisano! En Yucu apoyamos a todas las cosechas y creaciones de la Mixteca: Pulque tradicional, Miel de abeja, Maíz criollo, Jitomate, Sombreros de palma y Textiles artesanales.\n\nToque abajo para abrir el catálogo y registrar su producto:';
       dispatchSimulatedBotReply(
-        '🌾 Agente Multiproducto Raíz',
+        '🌾 Agente Multiproducto Yucu',
         reply,
         { type: 'producto_vitrina' },
         [
@@ -480,7 +601,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     // 3.4 SOMBRERO DE PALMA
     if (clean.includes('sombrero') || clean.includes('palma') || clean.includes('tenate')) {
       const reply =
-        '¡Con mucho gusto, artesano! En Raíz protegemos el trabajo de los tejedores de Palma de la Mixteca con regalías y precio justo sin intermediarios.\n\nToque abajo para registrar sus piezas de palma:';
+        '¡Con mucho gusto, artesano! En Yucu protegemos el trabajo de los tejedores de Palma de la Mixteca con regalías y precio justo sin intermediarios.\n\nToque abajo para registrar sus piezas de palma:';
       dispatchSimulatedBotReply(
         '👒 Agente Artesanal Comunitario',
         reply,
@@ -509,7 +630,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     // 3.5 MAÍZ CRIOLLO O GRANOS
     if (clean.includes('maiz') || clean.includes('maíz') || clean.includes('frijol') || clean.includes('milpa')) {
       const reply =
-        '¡Con mucho gusto, campesino! En Raíz apoyamos a los guardianes del Maíz Criollo y Frijol nativo de la Mixteca sin intermediarios.\n\nToque abajo para registrar su cosecha de granos:';
+        '¡Con mucho gusto, campesino! En Yucu apoyamos a los guardianes del Maíz Criollo y Frijol nativo de la Mixteca sin intermediarios.\n\nToque abajo para registrar su cosecha de granos:';
       dispatchSimulatedBotReply(
         '🌽 Agente de Granos Nativos',
         reply,
@@ -538,7 +659,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     // 3.6 TEXTIL ARTESANAL
     if (clean.includes('textil') || clean.includes('huipil') || clean.includes('telar') || clean.includes('rebozo')) {
       const reply =
-        '¡Con mucho gusto, artesana! En Raíz protegemos los telares y bordados tradicionales de la Mixteca con regalías garantizadas y precio justo directo.\n\nToque abajo para registrar su pieza textil:';
+        '¡Con mucho gusto, artesana! En Yucu protegemos los telares y bordados tradicionales de la Mixteca con regalías garantizadas y precio justo directo.\n\nToque abajo para registrar su pieza textil:';
       dispatchSimulatedBotReply(
         '🧵 Agente Textil y Regalías',
         reply,
@@ -581,7 +702,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       clean.includes('entregar cafe')
     ) {
       const reply =
-        '¡Con mucho gusto, paisano! En Raíz registrar tu cosecha o artesanía es muy fácil y rápido, sin trámites complicados ni intermediarios.\n\nPuedes registrar Pulque tradicional, Café pergamino, Miel pura, Granos criollos o Artesanías.\n\nToca abajo para elegir lo que deseas registrar:';
+        '¡Con mucho gusto, paisano! En Yucu registrar tu cosecha o artesanía es muy fácil y rápido, sin trámites complicados ni intermediarios.\n\nPuedes registrar Pulque tradicional, Café pergamino, Miel pura, Granos criollos o Artesanías.\n\nToca abajo para elegir lo que deseas registrar:';
       dispatchSimulatedBotReply(
         '🌱 TecNM Tlaxiaco • Guía de Campo',
         reply,
@@ -694,7 +815,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     ) {
       const reply =
         '🎤 Instrucción de voz ejecutada: Abriendo el Diagnóstico y Calibrador Físico de Micrófono...';
-      dispatchSimulatedBotReply('🌱 Compañero Raíz (TecNM)', reply, undefined, undefined, 300);
+      dispatchSimulatedBotReply('🌱 Compañero Yucu (TecNM)', reply, undefined, undefined, 300);
       if (onOpenMicDiagnosticModal) setTimeout(() => onOpenMicDiagnosticModal(), 650);
       return true;
     }
@@ -706,22 +827,26 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       clean.includes('ir al inicio')
     ) {
       const reply = '🎤 Instrucción de voz ejecutada: Regresando a la pantalla de Menú Principal...';
-      dispatchSimulatedBotReply('🌱 Compañero Raíz (TecNM)', reply, undefined, undefined, 300);
+      dispatchSimulatedBotReply('🌱 Compañero Yucu (TecNM)', reply, undefined, undefined, 300);
       setTimeout(() => onNavigateScreen('menu_principal'), 700);
       return true;
     }
 
-    // 10. Flete / Transportista
+    // 10. Trato Directo / Deslinde Logístico
     if (
       clean.includes('flete') ||
       clean.includes('transporte') ||
       clean.includes('coyote') ||
-      clean.includes('camioneta')
+      clean.includes('camioneta') ||
+      clean.includes('envio') ||
+      clean.includes('envío') ||
+      clean.includes('logistica') ||
+      clean.includes('logística')
     ) {
       const reply =
-        '🎤 Instrucción de voz ejecutada: Consultando el estado del flete transportista y cajero móvil en parcela...';
+        '🎤 Instrucción de voz ejecutada: Consultando la política de trato directo y deslinde logístico de Yucu...';
       dispatchSimulatedBotReply(
-        '🚚 Agente Logístico',
+        '🤝 Trato Directo',
         reply,
         { type: 'logistica_coyote' },
         undefined,
@@ -1041,7 +1166,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
       // 2. Otherwise, analyze the voice query with Gemini AI!
       setIsBotTyping(true);
-      setTypingAgent('🌱 Compañero Raíz (Escuchando tu voz...)');
+      setTypingAgent('🌱 Compañero Yucu (Escuchando tu voz...)');
 
       try {
         const res = await fetch('/api/chat', {
@@ -1063,7 +1188,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           const botMsg: MessageItem = {
             id: newBotId,
             sender: 'bot',
-            agentTag: data.agent || '🌱 Compañero Raíz (TecNM)',
+            agentTag: data.agent || '🌱 Compañero Yucu (TecNM)',
             text: data.reply || `Entendido, paisano: "${spokenText}". Tu mensaje fue procesado correctamente.`,
             time: 'Ahora',
             card: data.cardType ? { type: data.cardType } : undefined,
@@ -1078,7 +1203,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       // Intelligent fallback if Gemini response fails
       setIsBotTyping(false);
       dispatchSimulatedBotReply(
-        '🌱 Compañero Raíz (TecNM)',
+        '🌱 Compañero Yucu (TecNM)',
         `Recibí tu nota de voz: "${spokenText}". Los compañeros del centro de acopio y apoyo técnico en Tlaxiaco tienen registrada tu consulta.`,
         undefined,
         undefined,
@@ -1140,7 +1265,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
 
     setAssistantMessages((prev) => [...prev, userMsg]);
 
-    let agentTag = '🌱 Compañero Raíz (TecNM)';
+    let agentTag = '🌱 Compañero Yucu (TecNM)';
     let botText = '';
 
     if (type === 'dictamen_stellar') {
@@ -1164,9 +1289,9 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       botText =
         'Pasaporte Digital con trazabilidad completa de origen desde San Mateo Peñasco hasta el punto de venta:';
     } else if (type === 'logistica_coyote') {
-      agentTag = '🚚 Agente Logístico';
+      agentTag = '🤝 Trato Directo (Deslinde Logístico)';
       botText =
-        'Red de logística comunitaria y transporte: El transportista local cuenta con contrato de flete garantizado y actúa como cajero móvil en parcela:';
+        'Política de Trato Directo: Yucu no opera paqueterías ni fletes. La entrega o retiro de la pieza se acuerda de forma 100% directa y libre entre comprador y artesano en taller o territorio:';
     } else if (type === 'regalias_mercado') {
       agentTag = '💎 Agente de Regalías';
       botText =
@@ -1216,7 +1341,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
         ? (targetProducer ? `💬 ${targetProducer}` : '💬 Asesoría Técnica del Tec')
         : activeChannel === 'registro'
         ? '📝 Padrón Comunitario'
-        : '🌱 Compañero Raíz (TecNM)';
+        : '🌱 Compañero Yucu (TecNM)';
 
     setIsBotTyping(true);
     setTypingAgent(defaultAgentLabel);
@@ -1250,7 +1375,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
           id: newBotId,
           sender: 'bot',
           agentTag: humanizeAgentTag(data.agent) || defaultAgentLabel,
-          text: data.reply || 'Consulta atendida por el sistema Raíz.',
+          text: data.reply || 'Consulta atendida por el sistema Yucu.',
           time: 'Ahora',
           card: data.cardType ? { type: data.cardType as BotCardType } : undefined,
           options: data.options || undefined
@@ -1286,7 +1411,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     if (isOutOfDomain) {
       dispatchSimulatedBotReply(
         defaultAgentLabel,
-        'Disculpe paisano, como asistente oficial de Raíz en la Mixteca, únicamente puedo orientarle sobre temas de la plataforma: registro de cosechas, evaluación con foto, trazabilidad en Stellar, pagos comunitarios y asesoría técnica para la región. ¿En qué podemos apoyarle respecto a su café o producción agrícola?',
+        'Disculpe paisano, como asistente oficial de Yucu en la Mixteca, únicamente puedo orientarle sobre temas de la plataforma: registro de cosechas, evaluación con foto, trazabilidad en Stellar, pagos comunitarios y asesoría técnica para la región. ¿En qué podemos apoyarle respecto a su café o producción agrícola?',
         undefined,
         [
           { id: 1, title: '📸 Evaluar Cosecha con Foto', subtitle: 'Revisar café o muestra', icon: 'photo_camera', action: 'evaluar_foto' },
@@ -1309,7 +1434,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
     ) {
       dispatchSimulatedBotReply(
         '☕ Agente Agrónomo IA',
-        '¡Con mucho gusto, paisano! En Raíz registrar su cosecha o producto es muy fácil y rápido, sin papeleos ni intermediarios ("coyotes").\n\nPara que reciba su pago directo a precio justo, el proceso tiene 3 pasos sencillos:\n\n1. 🌾 Seleccione qué producto tiene listo (Café pergamino, Miel, Granos o Artesanías).\n2. ⚖️ Indique cuántos kilos o bultos tiene preparados.\n3. 📸 Tómale una foto a la muestra para avalar calidad y humedad con IA en 3 segundos.\n\nToque abajo la opción que desea para comenzar de inmediato:',
+        '¡Con mucho gusto, paisano! En Yucu registrar su cosecha o producto es muy fácil y rápido, sin papeleos ni intermediarios ("coyotes").\n\nPara que reciba su pago directo a precio justo, el proceso tiene 3 pasos sencillos:\n\n1. 🌾 Seleccione qué producto tiene listo (Café pergamino, Miel, Granos o Artesanías).\n2. ⚖️ Indique cuántos kilos o bultos tiene preparados.\n3. 📸 Tómale una foto a la muestra para avalar calidad y humedad con IA en 3 segundos.\n\nToque abajo la opción que desea para comenzar de inmediato:',
         { type: 'lote_registro' },
         [
           {
@@ -1347,8 +1472,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       lower.includes('ayuda')
     ) {
       dispatchSimulatedBotReply(
-        '🌱 Compañero Raíz (TecNM)',
-        '¡Con mucho gusto, paisano! La plataforma Raíz fue creada junto al Tec de Tlaxiaco para que las familias de la Mixteca reciban un trato y pago justo por su trabajo sin intermediarios ni abusos.\n\nAquí puedes realizar 4 tareas muy sencillas con un solo toque:\n\n1. 📸 Evaluar cosecha o artesanía con foto: Revisión de calidad y humedad en 3 segundos con apoyo técnico del Tec.\n2. 💰 Ver y cobrar tus pagos: El dinero de tus ventas se resguarda en tu billetera y puedes cobrarlo en efectivo en Tlaxiaco.\n3. 🏷️ Pasaporte y Sello Digital: Tu trabajo recibe un sello oficial verificado para vender a mejor precio a clientes directos.\n4. 🚚 Transporte seguro: Rutas acordadas con transportistas de la región para mover tu producto desde tu comunidad.',
+        '🌱 Compañero Yucu (TecNM)',
+        '¡Con mucho gusto, paisano! La plataforma Yucu fue creada junto al Tec de Tlaxiaco para que las familias de la Mixteca reciban un trato y pago justo por su trabajo sin intermediarios ni abusos.\n\nAquí puedes realizar 4 tareas muy sencillas con un solo toque:\n\n1. 📸 Evaluar cosecha o artesanía con foto: Revisión de calidad y humedad en 3 segundos con apoyo técnico del Tec.\n2. 💰 Ver y cobrar tus pagos: El dinero de tus ventas se resguarda en tu billetera y puedes cobrarlo en efectivo en Tlaxiaco.\n3. 🏷️ Pasaporte y Sello Digital: Tu trabajo recibe un sello oficial verificado para vender a mejor precio a clientes directos.\n4. 🚚 Transporte seguro: Rutas acordadas con transportistas de la región para mover tu producto desde tu comunidad.',
         undefined,
         [
           { id: 1, title: '📦 Registrar Cosecha o Producto', subtitle: 'Café, miel o artesanías', icon: 'add_box', action: 'registrar_cafe' },
@@ -1409,11 +1534,11 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       lower.includes('envío')
     ) {
       dispatchSimulatedBotReply(
-        '🚚 Agente Logístico Comunitario',
-        'En Raíz, el transportista local se integra formalmente como Agente Logístico Comunitario y Cajero Móvil en su parcela.\n\n• Flete garantizado con tarifa fija de $2.00 por kilogramo.\n• El chofer puede entregarle su pago en efectivo al subir los sacos a la camioneta escaneando su código QR.',
+        '🤝 Trato Directo (Deslinde Logístico)',
+        'En Yucu, el trato y la entrega se realizan de forma 100% directa entre el comprador y el artesano o productor.\n\n• Yucu NO opera paqueterías, fletes ni camiones de reparto.\n• La entrega física de la pieza o cosecha se acuerda libremente entre las partes (en taller, parcela o punto acordado).\n• Yucu se enfoca estrictamente en la trazabilidad de origen, certificación de calidad y custodia segura de pago (Escrow) en Stellar.',
         { type: 'logistica_coyote' },
         [
-          { id: 1, title: '🚚 Ver Red de Transporte', subtitle: 'Rutas Tlaxiaco - Huajuapan', icon: 'local_shipping', action: 'logistica_coyote' }
+          { id: 1, title: '🤝 Ver Política de Trato Directo', subtitle: 'Sin intermediarios ni fletes', icon: 'handshake', action: 'logistica_coyote' }
         ],
         800
       );
@@ -1476,8 +1601,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
       lower.includes('saludos')
     ) {
       dispatchSimulatedBotReply(
-        '🌱 Compañero Raíz (TecNM)',
-        '¡Hola paisano! Un gusto saludarte. Soy tu compañero del Tec de Tlaxiaco en la plataforma Raíz. ¿En qué te podemos apoyar hoy?',
+        '🌱 Compañero Yucu (TecNM)',
+        '¡Hola paisano! Un gusto saludarte. Soy tu compañero del Tec de Tlaxiaco en la plataforma Yucu. ¿En qué te podemos apoyar hoy?',
         undefined,
         [
           { id: 1, title: '📸 Evaluar Cosecha con Foto', subtitle: 'Revisar muestra con apoyo del Tec', icon: 'photo_camera', action: 'evaluar_foto' },
@@ -1671,7 +1796,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
               : 'text-[#424843] hover:text-[#032517]'
           }`}
         >
-          🌱 Guía Raíz
+          🌱 Guía Yucu
         </button>
         <button
           type="button"
@@ -2219,10 +2344,10 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({
               <button
                 type="button"
                 onClick={() => invokeBotCard('logistica_coyote')}
-                className="p-2 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-950 font-bold text-left border border-cyan-200 flex items-center gap-2 transition-colors cursor-pointer"
+                className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-left border border-amber-200 flex items-center gap-2 transition-colors cursor-pointer"
               >
-                <span className="text-[16px]">🚚</span>
-                <span>Flete Coyote Aliado</span>
+                <span className="text-[16px]">🤝</span>
+                <span>Trato Directo Sin Intermediarios</span>
               </button>
               <button
                 type="button"

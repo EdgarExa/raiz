@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AppLanguage, ScreenView, PendingOfflineLot } from '../types';
+import { AppLanguage, ScreenView, PendingOfflineLot, ArtisanVisibilityLevel, InformedConsentRecord } from '../types';
 import { startAudioRecording, LiveRecorderSession } from '../utils/audioRecorder';
 import { getProductProfile, ProductProfile, sanitizeProductName } from '../utils/productUtils';
 import { saveOfflineLot } from '../utils/offlineStorage';
@@ -74,6 +74,77 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
   const [altitud, setAltitud] = useState<string>(defaultField2);
   const [proceso, setProceso] = useState<string>(defaultField3);
   const [activeEditingField, setActiveEditingField] = useState<string | null>(null);
+
+  // Configuración Soberana de Visibilidad y Consentimiento Informado (LFPDPPP y Ley de Salvaguarda 2022)
+  const [visibilityOption, setVisibilityOption] = useState<ArtisanVisibilityLevel>('nombre_comunidad');
+  const [artisanFullName, setArtisanFullName] = useState<string>(
+    isHandicraft ? 'Doña Rosalía Santiago Méndez' : isSombrero ? 'Don Margarito Cruz Bautista' : 'Don Efraín Bautista Santiago'
+  );
+  const [artisanFirstName, setArtisanFirstName] = useState<string>(
+    isHandicraft ? 'Doña Rosalía' : isSombrero ? 'Don Margarito' : 'Don Efraín'
+  );
+  const [artisanCommunity, setArtisanCommunity] = useState<string>(
+    isHandicraft ? 'San Juan Mixtepec, Tlaxiaco' : isSombrero ? 'San Juan Mixtepec, Tlaxiaco' : 'Magdalena Peñasco, Tlaxiaco'
+  );
+  const [artisanCooperative, setArtisanCooperative] = useState<string>(
+    isHandicraft ? 'Colectivo de Tejedoras de Tijaltepec' : isHoney ? 'Unión de Apicultores de San Juan Ñumí' : 'Cooperativa de Productores Yuu Savi'
+  );
+  const [voiceConsentGiven, setVoiceConsentGiven] = useState<boolean>(true);
+  const [voiceConsentLang, setVoiceConsentLang] = useState<'mix' | 'es'>(isMixteco ? 'mix' : 'mix');
+  const [isPlayingConsentAudio, setIsPlayingConsentAudio] = useState<boolean>(false);
+
+  const togglePlayConsentAudio = () => {
+    if (isPlayingConsentAudio) {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setIsPlayingConsentAudio(false);
+      return;
+    }
+
+    setIsPlayingConsentAudio(true);
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      const textToSpeak =
+        voiceConsentLang === 'mix'
+          ? "Yu'u kaxi yu ja na koo sutu chi foto pieza yu nuu página Yucu, tasa na kuni na satá na. Soo kuati yu ja na kene yu kani ini yu."
+          : "Otorgo mi consentimiento previo, libre e informado para que la fotografía y datos de mi pieza se muestren para venta en Yucu, conservando mi derecho a retirarlos o pausarlos cuando lo decida.";
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'es-MX';
+      utterance.rate = 0.88;
+      utterance.onend = () => setIsPlayingConsentAudio(false);
+      utterance.onerror = () => setIsPlayingConsentAudio(false);
+      window.speechSynthesis.speak(utterance);
+    } else {
+      setTimeout(() => setIsPlayingConsentAudio(false), 3500);
+    }
+  };
+
+  const getResolvedDisplayName = () => {
+    if (visibilityOption === 'cooperativa') return artisanCooperative;
+    if (visibilityOption === 'nombre_comunidad') return `${artisanFirstName} · ${artisanCommunity.split(',')[0]}`;
+    return artisanFullName;
+  };
+
+  const createInformedConsentRecord = (): InformedConsentRecord => {
+    const resolvedName = getResolvedDisplayName();
+    return {
+      granted: voiceConsentGiven,
+      visibilityLevel: visibilityOption,
+      customDisplayName: resolvedName,
+      cooperativeName: artisanCooperative,
+      communityName: artisanCommunity,
+      voiceConsentRecorded: voiceConsentGiven,
+      voiceConsentLanguage: voiceConsentLang,
+      consentTimestamp: new Date().toISOString(),
+      isPubliclyVisible: true,
+      zeroPiiBlockchainProof: {
+        ledgerSequence: 52491802,
+        sha256Digest: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        verified: true,
+        note: 'Zero-PII On-Chain: La red Stellar solo contiene el hash criptográfico SHA-256. Ningún dato personal reside en el ledger permanente.'
+      }
+    };
+  };
 
   const [isAnalyzingAI, setIsAnalyzingAI] = useState<boolean>(false);
   const [aiDiagnosis, setAiDiagnosis] = useState<{
@@ -716,6 +787,10 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
     setTimeout(() => {
       setIsValidating(false);
       if (onLotCreated) {
+        const consentRecord = createInformedConsentRecord();
+        const finalProducerName = getResolvedDisplayName();
+        const finalLocation = visibilityOption === 'cooperativa' ? 'Comunidades Unidas de la Mixteca Alta' : artisanCommunity;
+
         if (isPulque) {
           onLotCreated({
             title: 'Pulque Tradicional de Maguey Mixteco',
@@ -724,6 +799,9 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
             altitude: altitud,
             process: proceso,
             imageUrl: photoOneUrl,
+            producerName: finalProducerName,
+            location: finalLocation,
+            informedConsent: consentRecord,
             tags: profile.lotTags,
             pricePerKg: profile.defaultPrice,
             volumeKg: profile.defaultVolume,
@@ -737,6 +815,9 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
             altitude: altitud,
             process: proceso,
             imageUrl: photoOneUrl,
+            producerName: finalProducerName,
+            location: finalLocation,
+            informedConsent: consentRecord,
             tags: ['Telar de cintura', 'Grana cochinilla', 'Artesanía Certificada', 'Mixteca Alta'],
             pricePerKg: 1850,
             volumeKg: 1,
@@ -755,6 +836,9 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
             altitude: altitud,
             process: proceso,
             imageUrl: photoOneUrl,
+            producerName: finalProducerName,
+            location: finalLocation,
+            informedConsent: consentRecord,
             tags: isTenateItem
               ? ['Tenate tradicional', 'Palma dulce', 'Doble nudo', 'Artesanía Certificada', 'Mixteca Alta']
               : ['Palma dulce', 'Hecho a mano', 'Artesanía Certificada'],
@@ -772,6 +856,9 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
             altitude: altitud,
             process: proceso,
             imageUrl: photoOneUrl,
+            producerName: finalProducerName,
+            location: finalLocation,
+            informedConsent: consentRecord,
             tags: ['Sin adulteración', 'Floración silvestre', 'Pura de abeja'],
             pricePerKg: 180,
             volumeKg: 25,
@@ -785,6 +872,9 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
             altitude: altitud,
             process: proceso,
             imageUrl: photoOneUrl,
+            producerName: finalProducerName,
+            location: finalLocation,
+            informedConsent: consentRecord,
             tags: ['Libre de OGM', 'Milpa comunitaria', 'Grano nativo'],
             pricePerKg: 22,
             volumeKg: 450,
@@ -798,6 +888,9 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
             altitude: altitud,
             process: proceso,
             imageUrl: photoOneUrl,
+            producerName: finalProducerName,
+            location: finalLocation,
+            informedConsent: consentRecord,
             tags: ['Libre de pesticidas', 'Cosecha fresca', 'Riego limpio', 'Mixteca Alta'],
             pricePerKg: 32,
             volumeKg: 180,
@@ -811,6 +904,9 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
             altitude: altitud,
             process: proceso,
             imageUrl: photoOneUrl,
+            producerName: finalProducerName,
+            location: finalLocation,
+            informedConsent: consentRecord,
             tags: profile.lotTags,
             pricePerKg: profile.defaultPrice,
             volumeKg: profile.defaultVolume,
@@ -824,6 +920,9 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
             altitude: altitud,
             process: proceso,
             imageUrl: photoOneUrl,
+            producerName: finalProducerName,
+            location: finalLocation,
+            informedConsent: consentRecord,
             tags: ['Cero broca', 'Grano parejo', 'Fermentación en frío', 'NMX-F-083']
           });
         }
@@ -1499,6 +1598,233 @@ export const RegisterCoffeeLotScreen: React.FC<RegisterCoffeeLotScreenProps> = (
           </div>
         </div>
       </div>
+
+      {/* SECCIÓN CRÍTICA: Nivel de Visibilidad y Consentimiento Informado (Autodeterminación Indígena) */}
+      <section className="bg-white rounded-2xl p-4.5 border-2 border-[#a73918]/30 shadow-xs flex flex-col gap-3">
+        <div className="flex items-center justify-between pb-2 border-b border-[#c1c8c2]/30">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#ffdbd1] text-[#a73918] flex items-center justify-center font-bold">
+              <span className="material-symbols-outlined text-[18px]">verified_user</span>
+            </div>
+            <div>
+              <h3 className="text-[14px] font-black text-[#032517]">
+                Nivel de Visibilidad y Consentimiento
+              </h3>
+              <p className="text-[11px] text-[#424843]">
+                Autodeterminación comunitaria · Ley de Salvaguarda 2022
+              </p>
+            </div>
+          </div>
+          <span className="text-[10px] font-bold bg-[#c7ebd4] text-[#002113] px-2 py-0.5 rounded-full">
+            Tú Decides
+          </span>
+        </div>
+
+        <p className="text-[12.5px] text-[#1c1c18] leading-relaxed">
+          La ley protege que <strong>tú decidas libremente qué datos se publican</strong> para vender.
+          Elige cómo deseas que aparezca tu autoría en la vitrina digital:
+        </p>
+
+        {/* 3 Opciones Claras de Visibilidad */}
+        <div className="space-y-2">
+          {/* Opción 1: Nombre Completo */}
+          <label
+            className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+              visibilityOption === 'nombre_completo'
+                ? 'bg-[#fcf9f3] border-[#a73918] ring-1 ring-[#a73918]'
+                : 'bg-white border-[#c1c8c2]/60 hover:bg-[#fcf9f3]/60'
+            }`}
+          >
+            <input
+              type="radio"
+              name="visibilityLevel"
+              value="nombre_completo"
+              checked={visibilityOption === 'nombre_completo'}
+              onChange={() => setVisibilityOption('nombre_completo')}
+              className="mt-1 text-[#a73918] focus:ring-[#a73918]"
+            />
+            <div className="flex-1 text-[12px]">
+              <span className="font-extrabold text-[#032517] block">
+                1. Mostrar mi nombre completo
+              </span>
+              <span className="text-[#424843] block text-[11px] leading-tight mt-0.5">
+                Para consolidar tu marca o firma artesanal personal ante compradores directos.
+              </span>
+              {visibilityOption === 'nombre_completo' && (
+                <input
+                  type="text"
+                  value={artisanFullName}
+                  onChange={(e) => setArtisanFullName(e.target.value)}
+                  placeholder="Tu nombre y apellidos completos"
+                  className="mt-2 w-full text-[13px] font-bold text-[#032517] bg-white border border-[#a73918] rounded-lg px-2.5 py-1.5 outline-none"
+                />
+              )}
+            </div>
+          </label>
+
+          {/* Opción 2: Solo Nombre de Pila y Comunidad */}
+          <label
+            className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+              visibilityOption === 'nombre_comunidad'
+                ? 'bg-[#fcf9f3] border-[#a73918] ring-1 ring-[#a73918]'
+                : 'bg-white border-[#c1c8c2]/60 hover:bg-[#fcf9f3]/60'
+            }`}
+          >
+            <input
+              type="radio"
+              name="visibilityLevel"
+              value="nombre_comunidad"
+              checked={visibilityOption === 'nombre_comunidad'}
+              onChange={() => setVisibilityOption('nombre_comunidad')}
+              className="mt-1 text-[#a73918] focus:ring-[#a73918]"
+            />
+            <div className="flex-1 text-[12px]">
+              <span className="font-extrabold text-[#032517] block">
+                2. Mostrar solo mi nombre de pila y mi comunidad
+              </span>
+              <span className="text-[#424843] block text-[11px] leading-tight mt-0.5">
+                Protege tu privacidad personal manteniendo el orgullo de tu identidad y pueblo (ej. "Doña Rosalía · San Juan Mixtepec").
+              </span>
+              {visibilityOption === 'nombre_comunidad' && (
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] text-[#727973] font-bold uppercase block">Nombre de pila</label>
+                    <input
+                      type="text"
+                      value={artisanFirstName}
+                      onChange={(e) => setArtisanFirstName(e.target.value)}
+                      placeholder="Ej. Doña Rosalía"
+                      className="w-full text-[12px] font-bold text-[#032517] bg-white border border-[#a73918] rounded-lg px-2 py-1 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-[#727973] font-bold uppercase block">Comunidad</label>
+                    <input
+                      type="text"
+                      value={artisanCommunity}
+                      onChange={(e) => setArtisanCommunity(e.target.value)}
+                      placeholder="Ej. San Juan Mixtepec"
+                      className="w-full text-[12px] font-bold text-[#032517] bg-white border border-[#a73918] rounded-lg px-2 py-1 outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </label>
+
+          {/* Opción 3: Solo Nombre de la Cooperativa */}
+          <label
+            className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+              visibilityOption === 'cooperativa'
+                ? 'bg-[#fcf9f3] border-[#a73918] ring-1 ring-[#a73918]'
+                : 'bg-white border-[#c1c8c2]/60 hover:bg-[#fcf9f3]/60'
+            }`}
+          >
+            <input
+              type="radio"
+              name="visibilityLevel"
+              value="cooperativa"
+              checked={visibilityOption === 'cooperativa'}
+              onChange={() => setVisibilityOption('cooperativa')}
+              className="mt-1 text-[#a73918] focus:ring-[#a73918]"
+            />
+            <div className="flex-1 text-[12px]">
+              <span className="font-extrabold text-[#032517] block">
+                3. Mostrar solo el nombre de mi cooperativa o colectivo
+              </span>
+              <span className="text-[#424843] block text-[11px] leading-tight mt-0.5">
+                Resguardo colectivo absoluto: tu nombre individual no aparece públicamente.
+              </span>
+              {visibilityOption === 'cooperativa' && (
+                <input
+                  type="text"
+                  value={artisanCooperative}
+                  onChange={(e) => setArtisanCooperative(e.target.value)}
+                  placeholder="Nombre de la cooperativa o colectivo"
+                  className="mt-2 w-full text-[13px] font-bold text-[#032517] bg-white border border-[#a73918] rounded-lg px-2.5 py-1.5 outline-none"
+                />
+              )}
+            </div>
+          </label>
+        </div>
+
+        {/* Consentimiento por Voz en Mixteco o Español */}
+        <div className="bg-[#f6f3ed] rounded-xl p-3 border border-[#c1c8c2]/40 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-[12px] font-black text-[#032517]">
+              <span className="material-symbols-outlined text-[17px] text-[#a73918]">record_voice_over</span>
+              <span>Consentimiento en Voz</span>
+            </div>
+            {/* Idioma Selector */}
+            <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-[#c1c8c2]/60 text-[10px] font-bold">
+              <button
+                type="button"
+                onClick={() => setVoiceConsentLang('mix')}
+                className={`px-2 py-0.5 rounded-md cursor-pointer ${
+                  voiceConsentLang === 'mix' ? 'bg-[#a73918] text-white' : 'text-[#424843]'
+                }`}
+              >
+                Tu'un Savi
+              </button>
+              <button
+                type="button"
+                onClick={() => setVoiceConsentLang('es')}
+                className={`px-2 py-0.5 rounded-md cursor-pointer ${
+                  voiceConsentLang === 'es' ? 'bg-[#a73918] text-white' : 'text-[#424843]'
+                }`}
+              >
+                Español
+              </button>
+            </div>
+          </div>
+
+          <p className="text-[11.5px] italic text-[#424843] bg-white p-2.5 rounded-lg border border-[#c1c8c2]/30 leading-snug">
+            {voiceConsentLang === 'mix'
+              ? '"Yu\'u kaxi yu ja na koo sutu chi foto pieza yu nuu página Yucu, tasa na kuni na satá na. Soo kuati yu ja na kene yu kani ini yu..."'
+              : '"Otorgo mi consentimiento libre para que la fotografía y datos seleccionados de mi pieza se muestren para venta en Yucu, conservando mi derecho a retirarlos o pausarlos cuando lo decida."'}
+          </p>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={togglePlayConsentAudio}
+              className="flex-1 bg-white hover:bg-stone-50 border border-[#a73918] text-[#a73918] font-bold text-[11px] py-1.5 px-2.5 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <span className="material-symbols-outlined text-[15px]">
+                {isPlayingConsentAudio ? 'stop' : 'volume_up'}
+              </span>
+              <span>{isPlayingConsentAudio ? 'Detener lectura' : 'Escuchar audio'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setVoiceConsentGiven((prev) => !prev)}
+              className={`flex-1 font-bold text-[11px] py-1.5 px-2.5 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs transition-all ${
+                voiceConsentGiven
+                  ? 'bg-[#032517] text-[#c7ebd4]'
+                  : 'bg-stone-200 text-stone-600'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[15px]">
+                {voiceConsentGiven ? 'check_circle' : 'radio_button_unchecked'}
+              </span>
+              <span>{voiceConsentGiven ? 'Consentimiento Otorgado' : 'No Otorgado'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Garantía Criptográfica Stellar Zero-PII */}
+        <div className="bg-[#e7f3ec] rounded-xl p-3 border border-[#a1d1b5] text-[11px] text-[#032517] space-y-1">
+          <div className="flex items-center gap-1.5 font-black text-[#002113]">
+            <span className="material-symbols-outlined text-[16px] text-emerald-800">lock</span>
+            <span>Garantía Técnica: Zero-PII en Blockchain Stellar</span>
+          </div>
+          <p className="leading-snug text-[#1b3b2b]">
+            En Stellar <strong>solo va la huella digital criptográfica (hash SHA-256)</strong>, nunca tu nombre ni tu foto.
+            Como la blockchain no se puede borrar, la ley exige que el QR apunte a una ficha web viva que <strong>sí se puede editar o pausar</strong> con el botón <em>"Dejar de mostrarme"</em>, manteniendo intacta la autenticidad de tu pieza.
+          </p>
+        </div>
+      </section>
 
       {/* Fixed Sticky Action Dock */}
       <div className="fixed bottom-14 left-0 right-0 max-w-md mx-auto z-40 bg-[#fcf9f3]/95 backdrop-blur-md px-4 py-3 border-t border-[#c1c8c2]/30">

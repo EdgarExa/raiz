@@ -10,6 +10,7 @@ interface TopAppBarProps {
   onOpenMicDiagnostic?: () => void;
   onOpenExplainerVideo?: () => void;
   onOpenProtocolModal?: () => void;
+  onOpenPresentation?: () => void;
   cartCount: number;
   appLanguage?: AppLanguage;
   onToggleLanguage?: () => void;
@@ -26,6 +27,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   onOpenMicDiagnostic,
   onOpenExplainerVideo,
   onOpenProtocolModal,
+  onOpenPresentation,
   cartCount,
   appLanguage = 'es',
   onToggleLanguage,
@@ -76,9 +78,15 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
 
         <div>
           <h1 className="text-[18px] font-extrabold text-[#032517] tracking-tight leading-tight flex items-center gap-1">
-            <span>Raíz</span>
+            <span>Yucu</span>
             <span className="text-[10px] bg-[#c7ebd4] text-[#002b18] px-1.5 py-0.2 rounded-md font-bold uppercase">
-              Mixteca
+              Protocol
+            </span>
+            <span
+              className="text-[10px] bg-[#ffdbd1] text-[#6e2410] px-1.5 py-0.2 rounded-md font-bold uppercase"
+              title="Prototipo: los pagos, el escrow y las certificaciones de calidad y EUDR son simulados. Ver la tabla de estado en el README."
+            >
+              Demostración
             </span>
           </h1>
           <div className="flex items-center gap-1 -mt-0.5">
@@ -87,6 +95,13 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
                 <span className="text-[11px] font-extrabold text-[#a73918]">
                   {appLanguage === 'mix' ? '🏕️ Ñu’u (Offline)' : '🏕️ Modo Parcela'}
+                </span>
+              </>
+            ) : currentTab === 'landing' ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                <span className="text-[11px] font-bold text-[#032517]">
+                  {appLanguage === 'mix' ? '🌐 Yucu Showcase' : '🌐 Tech Rebel Showcase'}
                 </span>
               </>
             ) : currentTab === 'menu' ? (
@@ -100,7 +115,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
               <>
                 <span className="w-2 h-2 rounded-full bg-[#fe7952] animate-pulse"></span>
                 <span className="text-[11px] text-[#424843] font-medium">
-                  {appLanguage === 'mix' ? 'Tu’un Raíz' : 'Compañero TecNM'}
+                  {appLanguage === 'mix' ? 'Tu’un Yucu' : 'Compañero TecNM'}
                 </span>
               </>
             ) : (
@@ -113,7 +128,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         {/* PWA In-App Install Button */}
         <PWAInstallButton />
 
@@ -122,7 +137,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           <button
             type="button"
             onClick={onToggleLanguage}
-            className={`px-2 py-1 rounded-xl text-[11px] font-black border transition-all cursor-pointer flex items-center gap-1 shadow-2xs ${
+            className={`px-2.5 py-1.5 rounded-xl text-[12px] font-black border transition-all cursor-pointer flex items-center gap-1 shadow-2xs ${
               appLanguage === 'mix'
                 ? 'bg-[#1b3b2b] text-amber-200 border-[#1b3b2b]'
                 : 'bg-white text-[#032517] border-[#c1c8c2] hover:bg-[#f0eee8]'
@@ -140,12 +155,12 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           <button
             type="button"
             onClick={onToggleElderMode}
-            className={`px-2 py-1 rounded-xl text-[11px] font-extrabold border transition-all cursor-pointer flex items-center gap-0.5 ${
+            className={`px-2.5 py-1.5 rounded-xl text-[12px] font-extrabold border transition-all cursor-pointer flex items-center gap-1 ${
               elderMode
                 ? 'bg-amber-100 text-amber-950 border-amber-400 font-black'
                 : 'bg-white text-[#424843] border-[#c1c8c2] hover:bg-[#f0eee8]'
             }`}
-            title="Modo Abuelo: Letras más grandes y asistencia por voz automática"
+            title="Modo Abuelo: Letras más grandes"
             aria-label="Alternar Modo Letra Grande"
           >
             <span className="text-[13px]">🧓🏽</span>
@@ -153,55 +168,14 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </button>
         )}
 
-        {/* Protocol & AI Oracles Infrastructure Button in Header */}
-        {onOpenProtocolModal && (
-          <button
-            type="button"
-            onClick={onOpenProtocolModal}
-            className="px-2.5 py-1 rounded-xl bg-[#032517] text-[#a3f6c6] font-extrabold text-[11px] hover:bg-[#153f2c] flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer border border-[#a3f6c6]/40 whitespace-nowrap"
-            title="Consola de Infraestructura Raíz: Smart Contracts Soroban y 4 Oráculos de IA"
-            aria-label="Abrir Consola de Infraestructura Raíz y Oráculos de IA"
-          >
-            <span className="text-[13px]">⚡</span>
-            <span>Infraestructura</span>
-          </button>
-        )}
-
-        {/* Video Explicativo Button */}
-        {onOpenExplainerVideo && (
-          <button
-            type="button"
-            onClick={onOpenExplainerVideo}
-            className="px-2.5 py-1 rounded-xl bg-linear-to-r from-red-700 to-amber-700 text-white font-extrabold text-[11px] hover:brightness-110 flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer border border-white/20"
-            title="Ver video explicativo interactivo: Open Hub, MicoPay y Raíz"
-            aria-label="Ver video explicativo: Open Hub, MicoPay y Raíz"
-          >
-            <span className="material-symbols-outlined text-[16px]">play_circle</span>
-            <span className="hidden sm:inline">Video</span>
-          </button>
-        )}
-
-        {/* Mic Test / Diagnostics button */}
-        {onOpenMicDiagnostic && (
-          <button
-            type="button"
-            onClick={onOpenMicDiagnostic}
-            className="w-9 h-9 rounded-full bg-[#f0eee8] text-[#032517] hover:bg-[#e0ded8] flex items-center justify-center transition-all active:scale-95 border border-[#c1c8c2]/40"
-            title="Probar y Diagnosticar Micrófono"
-            aria-label="Probar y Diagnosticar Micrófono"
-          >
-            <span className="material-symbols-outlined text-[18px]">mic</span>
-          </button>
-        )}
-
         {/* Shopping Cart button */}
         <button
           type="button"
           onClick={onOpenCart}
-          className="relative w-9 h-9 rounded-full bg-[#1b3b2b] text-white flex items-center justify-center shadow-sm hover:bg-[#032517] transition-all active:scale-95"
+          className="relative w-9 h-9 rounded-full bg-[#1b3b2b] text-white flex items-center justify-center shadow-sm hover:bg-[#032517] transition-all active:scale-95 cursor-pointer ml-0.5"
           aria-label="Ver bolsa de productos"
         >
-          <span className="material-symbols-outlined text-[18px]">local_mall</span>
+          <span className="material-symbols-outlined text-[20px]">local_mall</span>
           {cartCount > 0 && (
             <span className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-[#a73918] text-white text-[10px] font-bold flex items-center justify-center border-2 border-[#fcf9f3]">
               {cartCount}

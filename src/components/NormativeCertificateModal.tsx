@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DigitalPassportLot } from '../types';
 import { generateQrSvg } from '../utils/qrCode';
+import { DemoBadge } from './DemoBadge';
 
 interface NormativeCertificateModalProps {
   isOpen: boolean;
@@ -146,10 +147,10 @@ export const NormativeCertificateModal: React.FC<NormativeCertificateModalProps>
   <div class="header">
     <div>
       <h1 class="title">INSTITUTO TECNOLÓGICO DE TLAXIACO</h1>
-      <div class="subtitle">Laboratorio de Calidad del Café & Raíz · Tlaxiaco, Oaxaca</div>
+      <div class="subtitle">Laboratorio de Calidad del Café & Yucu · Tlaxiaco, Oaxaca</div>
       <div class="subtitle"><strong>CERTIFICADO DE CONFORMIDAD NORMATIVA (${lot.nomCompliance?.standard || 'CALIDAD TRADICIONAL Y COMUNITARIA'})</strong></div>
     </div>
-    <div class="badge">Sello Inmutable Stellar</div>
+    <div class="badge">DOCUMENTO DE DEMOSTRACIÓN · NO ES UN DICTAMEN OFICIAL</div>
   </div>
 
   <div class="section">
@@ -247,7 +248,7 @@ export const NormativeCertificateModal: React.FC<NormativeCertificateModalProps>
   </div>
 
   <div class="footer">
-    Certificado emitido y resguardado criptográficamente por la plataforma comunitaria Raíz.<br/>
+    Certificado emitido y resguardado criptográficamente por la plataforma comunitaria Yucu.<br/>
     Instituto Tecnológico de Tlaxiaco · Carretera a San Mateo Peñasco Km 2.5, Tlaxiaco, Oaxaca.
   </div>
 </body>
@@ -289,7 +290,10 @@ export const NormativeCertificateModal: React.FC<NormativeCertificateModalProps>
           <div className="flex items-center gap-2.5">
             <span className="material-symbols-outlined text-[24px] text-[#c7ebd4]">verified</span>
             <div>
-              <h3 id="dictamen-title" className="text-[17px] font-bold tracking-tight">Dictamen Normativo Oficial</h3>
+              <div className="flex items-center gap-1.5">
+                <h3 id="dictamen-title" className="text-[17px] font-bold tracking-tight">Dictamen Normativo</h3>
+                <DemoBadge detail="No es un dictamen oficial: ningún laboratorio ni validador humano ha firmado este documento." />
+              </div>
               <p className="text-[11px] text-[#abcfb8]">Certificación Agroecológica Mixteca</p>
             </div>
           </div>

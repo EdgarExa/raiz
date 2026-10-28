@@ -1,7 +1,7 @@
 /**
  * PRUEBAS AUTOMATIZADAS:
  * 1. Arquitectura Híbrida Trilateral (Etherfuse + Polar + PIX + MicoPay)
- * 2. Motor de Identidad Soberana y Login sin Contraseñas para Raíz
+ * 2. Motor de Identidad Soberana y Login sin Contraseñas para Yucu
  */
 
 import {

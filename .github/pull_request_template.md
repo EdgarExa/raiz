@@ -1,7 +1,7 @@
 ### 🌾 Descripción del Cambio
 <!-- Explica brevemente qué cambios realizaste y por qué son importantes -->
 
-### 📌 Issue Vinculada (Obligatorio para Drips & Roadmap)
+### 📌 Issue Vinculada (Obligatorio para Seguimiento en Roadmap)
 <!-- Reemplaza con el número de tu issue asignada -->
 Closes #
 

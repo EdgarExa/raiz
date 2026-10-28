@@ -1,134 +1,157 @@
-# 🎓 Guía del Desarrollador y Contribuidor TecNM (Campus Tlaxiaco)
+# 🎓 Developer & Contributor Guide: Yucu Protocol
+### *TecNM Campus Tlaxiaco • Stellar Community Fund • Drips Network*
 
-¡Bienvenido al equipo de ingeniería de **Raíz Protocol**! 🌿
+Welcome to the engineering team of **Yucu Protocol**! 🌿
 
-Este proyecto está siendo desarrollado por estudiantes y profesores de la carrera de **Ingeniería en Sistemas Computacionales** del **Instituto Tecnológico de Tlaxiaco (Oaxaca, México)**.
+This project is engineered by computer systems engineering student-researchers and faculty at **Instituto Tecnológico de Tlaxiaco (Oaxaca, Mexico)** in collaboration with the global open-source Web3 ecosystem.
 
-Tu trabajo aquí no es solo una tarea escolar: es código real que certifica cosechas, apoya a artesanas indígenas de nuestras comunidades y compite en financiamientos internacionales de **Drips Network** y **Stellar Community Fund (SCF)**.
+Contributions here deliver real-world impact: validating smallholder harvests, protecting indigenous artisans in the Mixteca Highlands, and contributing to public goods infrastructure funded by **Drips Network** and the **Stellar Community Fund (SCF)**.
 
 ---
 
-## 🚀 1. Configuración de tu Computadora (En 3 Pasos)
+## 🚀 1. Local Development Setup (In 3 Steps)
 
-### Requisitos Previos:
-- Tener instalado **Node.js** (versión 20 o superior).
-- Tener instalado **Git**.
+### Prerequisites:
+- **Node.js 22** (the exact version is in `.nvmrc`; with nvm run `nvm use`).
+- **Rust 1.94** with `rustup target add wasm32v1-none` (only if you work on `contracts/`).
+- **Git**.
 
-### Paso 1: Clonar el repositorio
-Abre tu terminal y ejecuta:
+### Step 1: Clone the repository
 ```bash
-git clone https://github.com/Open-Hub-Tec/raiz.git
-cd raiz
+git clone https://github.com/Open-Hub-Tec/yucu-protocol.git
+cd yucu-protocol
 ```
 
-### Paso 2: Instalar dependencias
+### Step 2: Install dependencies
 ```bash
-npm install
+npm ci
 ```
+`npm ci` installs exactly the versions in `package-lock.json`, the same ones CI uses. Only use `npm install <package>` when you intentionally add a dependency, and commit the updated `package-lock.json`.
 
-### Paso 3: Iniciar el servidor local
+### Step 3: Start the local development server
 ```bash
 npm run dev
 ```
-Abre tu navegador en `http://localhost:3000`. ¡Listo, ya tienes Raíz corriendo en tu máquina!
+
+Open your browser at `http://localhost:3000`. You now have Yucu Protocol running locally!
 
 ---
 
-## 🧭 2. ¿Cómo elegir tu tarea en GitHub?
+## 🧭 2. Finding & Claiming Tasks on GitHub
 
-1. Ve al **Tablero del Proyecto en GitHub**:  
+1. Visit our **GitHub Project Board**:  
    👉 **[https://github.com/orgs/Open-Hub-Tec/projects/1](https://github.com/orgs/Open-Hub-Tec/projects/1)**
-2. Revisa la columna **`Todo`** del Sprint actual.
-3. Elige una issue que te interese (por ejemplo: `#18`, `#19`, `#20`, `#22`, etc.).
-4. Deja un comentario en la issue diciendo: *"Hola, tomo esta tarea para el equipo TecNM"* y solicítale a @josealfredo79 que te asigne.
+2. Explore the **`Todo`** column for the current sprint.
+3. Select an issue aligned with your interest (e.g., `#18`, `#19`, `#20`, `#22`, etc.).
+4. Comment on the issue: *"Hi! I'm claiming this task for the TecNM research team"* and request assignment from `@josealfredo79`.
 
 ---
 
-## 🛠️ 3. ¿En qué parte del código debo trabajar?
+## 🛠️ 3. Codebase Structure & Areas of Interest
 
-El repositorio es un **Monorepo** dividido por áreas de interés:
+The repository is organized modularly by domain:
 
-| Tu Interés / Especialidad | Dónde trabajar en el código | Ejemplos de lo que harás |
+| Domain / Specialization | Directory Path | What You Will Work On |
 | :--- | :--- | :--- |
-| **🎨 Frontend & UI Móvil** | `src/components/` | Pantallas de la app, botones gigantes, Modo Abuelo, vitrina de productos, modales. |
-| **🗣️ Lengua Mixteca y Audio** | `src/utils/audioRecorder.ts`<br>`src/core/ai/RaizAIOracles.ts` | Grabación de voz en 24kbps Opus, reconocimiento de frases en Tu'un Savi, modales de voz. |
-| **🧠 Inteligencia Artificial y Oráculos** | `src/core/ai/RaizAIOracles.ts` | Clasificación de calidad SCAA, validación satelital EUDR contra deforestación, prompts de Gemini. |
-| **🔐 Criptografía e Identidad** | `src/core/crypto/`<br>`src/core/auth/` | Hashes SHA-256 canónicos, login por WhatsApp OTP, tarjetas físicas con código QR. |
-| **💳 Pagos y Finanzas Rurales** | `src/core/payments/` | Integración de pagos con MicoPay (efectivo en báscula) y Etherfuse (SPEI / Banco Bienestar). |
-| **🦀 Smart Contracts en Rust (Soroban)** | `contracts/` | Contratos inteligentes en Rust: `attestation_registry/`, `fair_escrow/`, `perpetual_royalties/`. |
+| **🎨 Frontend & Mobile UI** | `src/components/` | PWA user interface, tactile buttons, "Modo Abuelo" elder mode, public passport display, and modals. |
+| **🗣️ Mixteco Language & Audio** | `src/utils/audioRecorder.ts`<br>`src/core/ai/RaizAIOracles.ts` | 24kbps Opus recording, acoustic normalization, *Tu'un Savi* voice parsing. |
+| **🧠 AI Oracles & Verification** | `src/core/ai/RaizAIOracles.ts` | SCAA coffee cupping analysis, Sentinel-2 EUDR satellite anti-deforestation proofs, Gemini multimodal prompts. |
+| **🔐 Cryptography & Identity** | `src/core/crypto/`<br>`src/core/auth/` | Canonical SHA-256 Community Digest, Ed25519 signatures, zero-seed physical QR card authentication. |
+| **💳 Payments & Escrow** | `src/core/blockchain/TrustlessWorkEscrowAdapter.ts`<br>`src/core/settlement/` | Trustless Work Soroban escrow integration, Etherfuse SPEI off-ramps (Banco del Bienestar) and rural cash rails. |
+| **🦀 Smart Contracts in Rust (Soroban)** | `contracts/` | Soroban smart contracts: `attestation_registry/`, `fair_escrow/`, `lot_passport/`, `perpetual_royalties/`. |
 
 ---
 
-## 🌿 4. Flujo de Trabajo con Git (Paso a Paso)
+## 🌿 4. Git Workflow Guidelines
 
-### 1. Asegúrate de estar actualizado
+### 1. Synchronize your local main branch
 ```bash
 git checkout main
 git pull origin main
 ```
 
-### 2. Crea tu propia rama de trabajo
-Usa un nombre descriptivo con el número de issue:
+### 2. Create a feature branch
+Use clear, semantic branch naming including the issue number:
 ```bash
-git checkout -b feature/issue-18-whatsapp-login
+git checkout -b feature/issue-22-offline-qr-sync
 ```
 
-### 3. Haz tus cambios y pruébalos
-Cada vez que avances, prueba tu código:
+### 3. Implement and test your changes
+Verify changes as you code:
 ```bash
 npm run test
 ```
 
-### 4. Haz tus commits siguiendo el estándar
-Usa mensajes claros en minúsculas:
-- `feat: agregar validación de teléfono celular mexicano para OTP`
-- `fix: corregir tamaño de botón de micrófono en modo abuelo`
-- `docs: actualizar instrucciones en README`
+### 4. Commit using Conventional Commits
+Write concise, descriptive commit messages in English:
+- `feat: add offline sync retry policy in SyncEngine`
+- `fix: correct touch target size for microphone in elder mode`
+- `docs: update Trustless Work escrow integration guide`
 
 ```bash
 git add .
-git commit -m "feat: implementar validación de WhatsApp OTP para issue #18"
+git commit -m "feat: implement offline QR sync handler for issue #22"
 ```
 
-### 5. Sube tu rama a GitHub
+### 5. Push to GitHub
 ```bash
-git push origin feature/issue-18-whatsapp-login
+git push origin feature/issue-22-offline-qr-sync
 ```
 
 ---
 
-## 🎁 5. Cómo abrir tu Pull Request (PR) y ganar crédito en Drips
+## 🎁 5. Submitting Pull Requests & Drips Recognition
 
-1. Entra a [https://github.com/Open-Hub-Tec/raiz/pulls](https://github.com/Open-Hub-Tec/raiz/pulls) y haz clic en **"New Pull Request"**.
-2. **MUY IMPORTANTE:** En la descripción del Pull Request, **DEBES incluir la palabra mágica** que vincula tu issue:
+1. Open [https://github.com/Open-Hub-Tec/yucu/pulls](https://github.com/Open-Hub-Tec/yucu/pulls) and click **"New Pull Request"**.
+2. **Important:** Link the relevant issue in your PR description:
    ```markdown
-   Closes #18
+   Closes #22
    ```
-   *(o `Resolves #22`, sustituyendo por el número de tu issue).*
-3. Al hacer esto:
-   - El bot de **TecNM Contributor & Drips Reviewer** comentará automáticamente tu PR felicitándote y registrando tu elegibilidad para financiamiento.
-   - El sistema de pruebas automáticas (CI) correrá todas las pruebas para verificar que no rompiste nada.
-4. El mantenedor (@josealfredo79) revisará tu código, te dará retroalimentación amable si hace falta algo, y lo integrará a `main`.
+   *(or `Resolves #18`, substituting your actual issue number).*
+3. Linking issues enables:
+   - Automated CI testing to ensure zero breaking regressions.
+   - Project maintainer review and eligibility attribution for Drips funding splits.
+4. Maintainers (`@josealfredo79`) will review your code, provide constructive feedback, and merge into `main`.
 
 ---
 
-## ✅ 6. Comprobación Final antes de enviar tu PR
+## ✅ 6. Pre-Submission Checklist
 
-Antes de subir tu código, corre este comando en tu terminal:
+Before submitting your PR, execute the full test and lint suite:
 ```bash
 npm run lint && npm run test
 ```
-Si ves el mensaje:
-> `AUDITORÍA FINALIZADA CON ÉXITO: PRUEBAS APROBADAS, 0 FALLOS`
+Ensure all tests pass cleanly with zero errors.
 
-¡Felicidades! Tu código está listo para ser revisado y aprobado.
+If you touched `contracts/`, also run:
+```bash
+cd contracts
+cargo fmt --all && cargo clippy --locked --all-targets -- -D warnings && cargo test --locked
+```
+
+**Simulated results:** if your screen shows a result that does not come from a real source (payments, escrow, certifications, rule-based AI, test login, fixed metrics), add `<DemoBadge />` from `src/components/DemoBadge.tsx` next to its title and update the "real vs. simulated" table in the README.
+
+**Privacy (mandatory for research and UX work):** never commit names of interviewees, student control numbers, audio, video, photos of people or signed PDFs. Publish by role and community (e.g. *"rebozo artisan, Amoltepec"*) and keep evidence in `.investigacion_privada/`. Read [`docs/research/PRIVACIDAD.md`](./docs/research/PRIVACIDAD.md). The CI rejects PRs that add media files to `docs/research/`, `docs/ux-testing/` or `public/videos/`.
+
+`main` is protected: every change goes through a PR with green CI and one approving review from a code owner (see [`.github/CODEOWNERS`](./.github/CODEOWNERS)).
 
 ---
 
-## 💬 7. ¿Tienes dudas o te trabaste?
+## 📚 7. Technical Documentation References
 
-- **En persona:** En el Laboratorio de Sistemas del TecNM Campus Tlaxiaco.
-- **En GitHub:** Abre una duda en los comentarios de tu issue o en la pestaña *Discussions*.
-- **En Discord:** En el canal de Stellar o el grupo de Open Hub TecNM.
+- [MVP Specification — draft (Tlaxiaco)](./docs/MVP_SPECIFICATION.md)
+- [System Architecture & Sequence Diagram](./docs/ARCHITECTURE.md)
+- [Protocol Specification (Stellar & Soroban)](./docs/PROTOCOL_SPECIFICATION.md)
+- [ADR-001: Trustless Work Escrow Adoption](./docs/adr/ADR-001-TRUSTLESS-WORK-ESCROW.md)
+- [ADR-002: Offline-First PWA & Zero-Seed Rural Identity Standards](./docs/adr/ADR-002-OFFLINE-FIRST-PWA-AND-RURAL-IDENTITY.md)
+- [Documentation Index](./docs/README.md)
 
-*¡El talento de la Mixteca está construyendo el futuro de la tecnología con identidad comunitaria!* 🚀
+---
+
+## 💬 8. Community & Support
+
+- **On Campus:** Computer Systems Laboratory at TecNM Campus Tlaxiaco.
+- **On GitHub:** Open an issue or start a thread in *GitHub Discussions*.
+- **On Discord:** Stellar Development Community & Open Hub TecNM channels.
+
+*Building community-driven decentralized technology from the Mixteca Highlands to the world!* 🚀

@@ -1,5 +1,5 @@
 [package]
-name = "raiz-fair-escrow"
+name = "yucu-fair-escrow"
 version = "1.0.0"
 edition = "2021"
 authors = ["Open Hub TecNM - Instituto Tecnológico de Tlaxiaco"]

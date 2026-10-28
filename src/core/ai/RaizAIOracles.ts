@@ -1,5 +1,5 @@
 /**
- * Raíz Protocol - AI Oracles & Autonomous Automation Engine
+ * Yucu Protocol - AI Oracles & Autonomous Automation Engine
  * 
  * 1. AIVoiceOracle: Indigenous Acoustic & Dialect-to-Contract (Tu'un Savi / Spanish)
  * 2. AIQualityOracle: Computer Vision & Sensory Quality Attestation (SCAA & Textile)

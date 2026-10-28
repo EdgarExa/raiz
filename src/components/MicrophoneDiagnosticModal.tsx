@@ -264,7 +264,7 @@ export const MicrophoneDiagnosticModal: React.FC<MicrophoneDiagnosticModalProps>
 
           <p className="text-[12px] text-[#424843]">
             {isTesting
-              ? '🎤 Habla ahora: di "Opción 4", "Café de Especialidad" o "Hola Raíz"'
+              ? '🎤 Habla ahora: di "Opción 4", "Café de Especialidad" o "Hola Yucu"'
               : 'Presiona el botón verde para hablar y medir la sensibilidad del micrófono.'}
           </p>
 

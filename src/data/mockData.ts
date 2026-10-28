@@ -150,13 +150,29 @@ export const INITIAL_VERIFIED_LOTS: DigitalPassportLot[] = [
         color: '#032517'
       },
       {
-        title: 'Validación Raíz & Dictamen',
+        title: 'Validación Yucu & Dictamen',
         dateAndLocation: '26 Oct 2024 · Dictamen digital firmado sin observaciones',
         color: '#a73918'
       }
     ],
     pricePerKg: 42.0,
-    hash: '0x8f3c...b791e204a9e52'
+    hash: '0x8f3c...b791e204a9e52',
+    informedConsent: {
+      granted: true,
+      visibilityLevel: 'nombre_completo',
+      customDisplayName: 'Don Mateo Cruz Sánchez',
+      communityName: 'San Mateo Peñasco, Tlaxiaco, Oax.',
+      voiceConsentRecorded: true,
+      voiceConsentLanguage: 'mix',
+      consentTimestamp: '2024-10-12T10:30:00Z',
+      isPubliclyVisible: true,
+      zeroPiiBlockchainProof: {
+        ledgerSequence: 52490110,
+        sha256Digest: '8f3ca055b8e192a9fb791e204a9e52cc089a811d67a1492d',
+        verified: true,
+        note: 'Zero-PII On-Chain: Stellar solo guarda el hash SHA-256. Ningún dato personal reside en la blockchain permanente.'
+      }
+    }
   },
   {
     id: 'lot-912',
@@ -165,7 +181,7 @@ export const INITIAL_VERIFIED_LOTS: DigitalPassportLot[] = [
     productType: 'Café de Especialidad',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDVqal830zp_JFXZ3K1_Rr7bbte3jwc_lJwXPf-TxcAcEg2raHlxCK89btRwH4uwzhF2fLfO_VmIZsA4gTepWeTnnrV6vLEcToMhwFBkbarbh5uwCol3bpetHUY8kzwnxJxVdtmqGOZThqZnec77V9oKnLql4l29d8XAJan9Acm66pPUlaO6eAOQymtE0KneK_qV0L0sOeux4_wReZWm6lmbXiAdjKdpv5FSyJqzx_42kMz_U4T3L2q_g',
     imageAlt: 'Muestras de café en grano verde pergamino de la Mixteca',
-    producerName: 'Don Efraín Bautista Santiago',
+    producerName: 'Don Efraín · Magdalena Peñasco',
     producerInitials: 'EB',
     location: 'Magdalena Peñasco, Tlaxiaco, Oax.',
     volumeKg: 680,
@@ -195,6 +211,22 @@ export const INITIAL_VERIFIED_LOTS: DigitalPassportLot[] = [
     altitude: '1,650 msnm',
     process: 'Lavado Tradicional',
     notes: 'Lote cosechado en ladera de alta montaña. Certificado bajo Norma NMX-F-083 y NOM-255-SCFI con sellado criptográfico inmutable en Stellar Horizon.',
+    informedConsent: {
+      granted: true,
+      visibilityLevel: 'nombre_comunidad',
+      customDisplayName: 'Don Efraín · Magdalena Peñasco',
+      communityName: 'Magdalena Peñasco, Tlaxiaco, Oax.',
+      voiceConsentRecorded: true,
+      voiceConsentLanguage: 'mix',
+      consentTimestamp: '2024-10-22T08:15:00Z',
+      isPubliclyVisible: true,
+      zeroPiiBlockchainProof: {
+        ledgerSequence: 52491802,
+        sha256Digest: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        verified: true,
+        note: 'Zero-PII On-Chain: El ledger Stellar solo conserva la huella SHA-256. El productor puede pausar su visibilidad en cualquier momento.'
+      }
+    },
     nomCompliance: {
       standard: 'NMX-F-083-COFOCAFE / NOM-255-SCFI-2018',
       humidity: '11.4%',
@@ -216,10 +248,10 @@ export const INITIAL_VERIFIED_LOTS: DigitalPassportLot[] = [
       immutableSealStatus: 'Sellado Inmutable'
     },
     royaltyClause: {
-      percentage: 8,
+      percentage: 10,
       beneficiary: 'Don Efraín Bautista Santiago',
-      smartContractPolicy: 'Soroban Perpetual Royalty Standard (8% reventas secundarias / 2% fondo comunal)',
-      accumulatedRoyaltiesMxn: 3420.0,
+      smartContractPolicy: 'Soroban Perpetual Royalty Standard (10% reventas secundarias / 2% fondo comunal)',
+      accumulatedRoyaltiesMxn: 4275.0,
       secondarySalesCount: 3
     }
   },
@@ -230,8 +262,8 @@ export const INITIAL_VERIFIED_LOTS: DigitalPassportLot[] = [
     productType: 'Apicultura Silvestre',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8ZBROS9VsAw7NHM5L1DmOrsjS5_bgY5WUAX2CWi4t5af2aINWReGNta7MhraFl1vMglwJfhe52szbMFK3zJCSVdtzGS8Wxk4FAPcGg0ryh6r5SO--xklxpgEP7fXFnRFHhG28vL6IwUl3qW6cFysfAyubAB0o5lspYGGWJSMCYFqxBvweNm6W2qlz6HlxvvKjRiSwLsfBYXxK7Cv3WSoPy77qwwVCiEOx_s0cTXnQKPYnYNHr48piLg',
     imageAlt: 'Miel pura de campanilla en frasco de vidrio',
-    producerName: 'Fausto Robles Guzmán',
-    producerInitials: 'FR',
+    producerName: 'Unión de Apicultores de Chalcatongo',
+    producerInitials: 'UA',
     location: 'Chalcatongo de Hidalgo, Oax.',
     volumeKg: 280,
     verifiedStatus: '100% Pura Silvestre',
@@ -255,7 +287,24 @@ export const INITIAL_VERIFIED_LOTS: DigitalPassportLot[] = [
       }
     ],
     pricePerKg: 190.0,
-    hash: '0x992b...d1e4438fa7211'
+    hash: '0x992b...d1e4438fa7211',
+    informedConsent: {
+      granted: true,
+      visibilityLevel: 'cooperativa',
+      customDisplayName: 'Unión de Apicultores de Chalcatongo',
+      cooperativeName: 'Unión de Apicultores de Chalcatongo',
+      communityName: 'Chalcatongo de Hidalgo, Oax.',
+      voiceConsentRecorded: true,
+      voiceConsentLanguage: 'es',
+      consentTimestamp: '2024-09-15T11:00:00Z',
+      isPubliclyVisible: true,
+      zeroPiiBlockchainProof: {
+        ledgerSequence: 52489920,
+        sha256Digest: '992bd1e4438fa7211ba8e4198cc201e5491039da5982110',
+        verified: true,
+        note: 'Zero-PII On-Chain: Resguardo colectivo sin exposición individual. La cooperativa administra su propia trazabilidad.'
+      }
+    }
   },
   {
     id: 'lot-988',
@@ -353,7 +402,7 @@ export const INITIAL_VERIFIED_LOTS: DigitalPassportLot[] = [
     process: 'Recolección Manual, Purga y Tueste al Comal',
     notes: 'Chapulines de milpa tostados a la leña en comal tradicional de barro. Excelente fuente de proteína limpia y orgullo culinario de Oaxaca.',
     nomCompliance: {
-      standard: 'Norma Sanitaria Tradicional Oaxaqueña / Sello Raíz',
+      standard: 'Norma Sanitaria Tradicional Oaxaqueña / Sello Yucu',
       humidity: '3.5%',
       humidityCompliant: true,
       defectPercentage: 0.2,
@@ -389,25 +438,25 @@ export const MOCK_PAYMENTS: PaymentRecord[] = [
   {
     id: 'pay-royalty-1',
     date: '05 Nov 2024',
-    concept: 'Regalía Perpetua (8%) · Reventa Café Tostado de Especialidad en CDMX',
+    concept: 'Regalía Perpetua (10%) · Reventa Café Tostado de Especialidad en CDMX',
     lotCode: 'MX-2024-740',
-    amount: 1840.0,
+    amount: 2300.0,
     status: 'Disponible',
     buyer: 'Café de Origen Roma Norte (Reventa Lote Fraccionado)',
     paymentType: 'Regalía Perpetua',
-    royaltyRate: '8% s/ $23,000 MXN',
+    royaltyRate: '10% s/ $23,000 MXN',
     resaleOrigin: 'Boutique Tostadora Roma Norte, CDMX'
   },
   {
     id: 'pay-royalty-2',
     date: '18 Nov 2024',
-    concept: 'Regalía Perpetua (8%) · Reventa Lote Café Tostado en Monterrey',
+    concept: 'Regalía Perpetua (10%) · Reventa Lote Café Tostado en Monterrey',
     lotCode: 'MX-2024-740',
-    amount: 1580.0,
+    amount: 1975.0,
     status: 'Disponible',
     buyer: 'Barra de Especialidad Sierra Madre',
     paymentType: 'Regalía Perpetua',
-    royaltyRate: '8% s/ $19,750 MXN',
+    royaltyRate: '10% s/ $19,750 MXN',
     resaleOrigin: 'Barra Sierra Madre, San Pedro Garza García'
   },
   {
@@ -417,7 +466,7 @@ export const MOCK_PAYMENTS: PaymentRecord[] = [
     lotCode: 'MX-2024-740',
     amount: 8500.0,
     status: 'Completado',
-    buyer: 'Tostaduría de Especialidad Raíz Mixteca',
+    buyer: 'Tostaduría de Especialidad Yucu Mixteca',
     paymentType: 'Anticipo'
   },
   {

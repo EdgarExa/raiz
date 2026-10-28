@@ -1,0 +1,1 @@
+Sigue las instrucciones de [AGENTS.md](../AGENTS.md) en la raíz del repositorio: reglas no custodiales (ADR-003), Trustless Work como escrow, no inventar resultados fuera de SimulatedChain, privacidad y comandos de verificación.

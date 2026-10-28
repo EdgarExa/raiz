@@ -1,7 +1,12 @@
 #![no_std]
+//! Registro universal de atestaciones (RWA) en Soroban.
+//!
+//! Reglas de seguridad (auditoría técnica, oct 2026):
+//! - Solo el administrador puede dar de alta esquemas (junto con la autoridad emisora).
+//! - La autenticidad de cada atestación la garantiza `issuer.require_auth()`.
+//!   El campo `signature` se guarda como referencia externa y NO se verifica en la cadena.
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, symbol_short, Address, BytesN, Env,
-    String,
+    contract, contracterror, contractimpl, contracttype, symbol_short, Address, BytesN, Env, String,
 };
 
 #[contracterror]
@@ -66,10 +71,15 @@ impl AttestationRegistryContract {
         }
         admin.require_auth();
         env.storage().instance().set(&DataKey::Admin, &admin);
-        env.storage().instance().set(&DataKey::AttestationCount, &0u64);
+        env.storage()
+            .instance()
+            .set(&DataKey::AttestationCount, &0u64);
+        env.storage()
+            .instance()
+            .extend_ttl(STORAGE_TTL_THRESHOLD, STORAGE_BUMP_AMOUNT);
     }
 
-    /// Register a new verifiable claim schema
+    /// Registra un esquema. Firman el administrador y la autoridad emisora.
     pub fn register_schema(
         env: Env,
         schema_uid: BytesN<32>,
@@ -79,6 +89,12 @@ impl AttestationRegistryContract {
         revocable: bool,
         issuer_authority: Address,
     ) -> Result<(), AttestationError> {
+        let admin: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::Admin)
+            .ok_or(AttestationError::Unauthorized)?;
+        admin.require_auth();
         issuer_authority.require_auth();
 
         let key = DataKey::Schema(schema_uid.clone());
@@ -162,7 +178,12 @@ impl AttestationRegistryContract {
             .get(&DataKey::AttestationCount)
             .unwrap_or(0);
         count += 1;
-        env.storage().instance().set(&DataKey::AttestationCount, &count);
+        env.storage()
+            .instance()
+            .set(&DataKey::AttestationCount, &count);
+        env.storage()
+            .instance()
+            .extend_ttl(STORAGE_TTL_THRESHOLD, STORAGE_BUMP_AMOUNT);
 
         env.events().publish(
             (symbol_short!("attest"), symbol_short!("issued")),
@@ -226,6 +247,9 @@ impl AttestationRegistryContract {
 
         att.revoked = true;
         env.storage().persistent().set(&key, &att);
+        env.storage()
+            .persistent()
+            .extend_ttl(&key, STORAGE_TTL_THRESHOLD, STORAGE_BUMP_AMOUNT);
 
         env.events().publish(
             (symbol_short!("attest"), symbol_short!("revoked")),
@@ -258,3 +282,6 @@ impl AttestationRegistryContract {
             .ok_or(AttestationError::SchemaNotFound)
     }
 }
+
+#[cfg(test)]
+mod test;

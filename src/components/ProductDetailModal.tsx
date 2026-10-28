@@ -4,40 +4,51 @@ import { ProductItem } from '../types';
 interface ProductDetailModalProps {
   product: ProductItem | null;
   onClose: () => void;
-  onAddToCart: (item: {
-    id: string;
-    title: string;
-    price: number;
-    artisanName: string;
-    location: string;
-    imageUrl: string;
-    quantity: number;
-    unit: string;
-  }) => void;
+  onAddToCart: (
+    item: {
+      id: string;
+      title: string;
+      price: number;
+      artisanName: string;
+      location: string;
+      imageUrl: string;
+      quantity: number;
+      unit: string;
+    },
+    openModal?: boolean
+  ) => void;
   onDirectContact: (artisanName: string, productTitle: string) => void;
+  onViewPassport?: (product: ProductItem) => void;
 }
 
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   product,
   onClose,
   onAddToCart,
-  onDirectContact
+  onDirectContact,
+  onViewPassport
 }) => {
   const [quantity, setQuantity] = useState(1);
 
   if (!product) return null;
 
-  const handleAdd = () => {
-    onAddToCart({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      artisanName: product.artisanName,
-      location: product.location,
-      imageUrl: product.imageUrl,
-      quantity,
-      unit: 'pieza'
-    });
+  const whatsappMsg = `¡Hola ${product.artisanName}! Vi su pieza "${product.title}" ($${product.price} MXN) en Yucu (${product.location}) y me gustaría adquirirla (${quantity} pieza${quantity > 1 ? 's' : ''}) y acordar el punto de entrega o envío directamente con usted.`;
+  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappMsg)}`;
+
+  const handleBuyNow = () => {
+    onAddToCart(
+      {
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        artisanName: product.artisanName,
+        location: product.location,
+        imageUrl: product.imageUrl,
+        quantity,
+        unit: 'pieza'
+      },
+      true
+    );
     onClose();
   };
 
@@ -143,6 +154,39 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             </div>
           </div>
 
+          {/* View Passport & Stellar Seal Button */}
+          {onViewPassport && (
+            <button
+              type="button"
+              onClick={() => {
+                onViewPassport(product);
+                onClose();
+              }}
+              className="w-full py-2.5 px-3.5 rounded-xl bg-[#032517] hover:bg-[#073824] text-white text-[12px] font-bold flex items-center justify-between transition-all cursor-pointer shadow-xs active:scale-98"
+            >
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-amber-300 text-[18px]">verified</span>
+                <span>Ver Pasaporte Digital y Sello Criptográfico Stellar</span>
+              </div>
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+          )}
+
+          {/* Deslinde Logístico Directo */}
+          <div className="p-3 bg-amber-50/80 rounded-2xl border border-amber-300/80 text-[12px] text-amber-950 flex items-start gap-2.5">
+            <span className="material-symbols-outlined text-[18px] text-amber-800 shrink-0 mt-0.5">
+              handshake
+            </span>
+            <div className="space-y-0.5 leading-snug">
+              <strong className="block font-bold text-amber-900">
+                Trato y Entrega 100% Directos:
+              </strong>
+              <span>
+                Yucu no cobra comisiones de intermediario ni opera paqueterías. La entrega (en persona en la Mixteca, punto acordado o envío) y el pago se acuerdan directamente con la artesana.
+              </span>
+            </div>
+          </div>
+
           {/* Quantity Selector */}
           <div className="flex items-center justify-between pt-2 border-t border-[#c1c8c2]/30">
             <span className="text-[13px] font-semibold text-[#032517]">
@@ -173,24 +217,39 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         </div>
 
         {/* Footer actions */}
-        <div className="p-4 bg-white border-t border-[#c1c8c2]/30 flex gap-2">
+        <div className="p-4 bg-white border-t border-[#c1c8c2]/30 flex flex-col gap-2">
+          {/* Botón Principal: Comprar y Pagar Ahora (1 Clic) */}
           <button
             type="button"
-            onClick={handleChat}
-            className="flex-1 h-12 rounded-full border-2 border-[#032517] text-[#032517] hover:bg-[#c7ebd4]/30 active:scale-98 transition-all font-bold text-[13px] flex items-center justify-center gap-1.5"
+            onClick={handleBuyNow}
+            className="w-full h-12 rounded-full bg-[#a73918] hover:bg-[#8c2d12] active:scale-98 transition-all text-white font-black text-[14px] flex items-center justify-center gap-2 shadow-sm cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[18px]">chat</span>
-            <span>Mensaje Directo</span>
+            <span className="material-symbols-outlined text-[20px]">payments</span>
+            <span>Comprar y Pagar (${product.price * quantity} MXN)</span>
           </button>
 
-          <button
-            type="button"
-            onClick={handleAdd}
-            className="flex-1 h-12 rounded-full bg-[#a73918] hover:bg-[#6c1900] text-white active:scale-98 transition-all font-bold text-[13px] flex items-center justify-center gap-1.5 shadow-sm"
-          >
-            <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-            <span>Añadir (${product.price * quantity} MXN)</span>
-          </button>
+          <div className="flex gap-2">
+            {/* Opción 2: WhatsApp Directo (30 segundos) */}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onClose}
+              className="flex-1 h-10 rounded-full bg-[#25D366] hover:bg-[#20ba59] active:scale-98 transition-all text-white font-bold text-[12.5px] flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[17px]">chat</span>
+              <span>Por WhatsApp</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={handleChat}
+              className="flex-1 h-10 rounded-full border border-[#032517] text-[#032517] hover:bg-[#f0eee8] active:scale-98 transition-all font-bold text-[12.5px] flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[17px]">support_agent</span>
+              <span>Chat Interno</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

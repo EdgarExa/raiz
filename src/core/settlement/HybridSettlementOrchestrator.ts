@@ -1,5 +1,5 @@
 /**
- * Raíz Core - Orquestador de Liquidaciones y Pagos Híbridos Multilaterales
+ * Yucu Core - Orquestador de Liquidaciones y Pagos Híbridos Multilaterales
  * 
  * Arquitectura Híbrida Trilateral:
  * 1. MÉXICO:

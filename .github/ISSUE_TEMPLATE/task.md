@@ -2,7 +2,7 @@
 name: 🌿 Tarea / Contribución TecNM
 about: Propuesta de tarea, mejora técnica o reporte de bug
 title: "[ÁREA]: Breve descripción de la tarea"
-labels: ["drips-eligible", "enhancement"]
+labels: ["enhancement"]
 assignees: ''
 ---
 

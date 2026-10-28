@@ -1,5 +1,7 @@
+import { PROTOCOL_FEES } from '../config/protocolFees';
 import React, { useState, useEffect } from 'react';
 import { MOCK_PAYMENTS } from '../data/mockData';
+import { DemoBadge } from './DemoBadge';
 import { SupportedCountry, COUNTRY_CONFIGS } from '../core/settlement/HybridSettlementOrchestrator';
 
 interface MyPaymentsModalProps {
@@ -64,18 +66,31 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
     }, 1800);
   };
 
-  const handleShareSpeiWhatsApp = () => {
-    const text = encodeURIComponent(
-      `🏛️ *COMPROBANTE OFICIAL DE TRANSFERENCIA SPEI A TARJETA BIENESTAR*\n\n` +
+  const [copiedReceipt, setCopiedReceipt] = useState(false);
+
+  const handleShareSpei = async () => {
+    const text = 
+      `🏛️ COMPROBANTE OFICIAL DE TRANSFERENCIA SPEI A TARJETA BIENESTAR\n\n` +
       `¡Hola ${cardHolder}! Su pago de café ha sido transferido exitosamente a su cuenta:\n` +
-      `💵 *Monto:* $${totalAvailable.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN\n` +
-      `💳 *Banco Receptor:* Banco del Bienestar (México)\n` +
-      `💳 *Tarjeta:* ${cardNumber.slice(0, 4)} **** **** ${cardNumber.slice(-4)}\n` +
-      `🔍 *Clave de Rastreo Banxico:* ${speiTracking}\n` +
-      `✅ *Estatus:* Liquidado / Exitoso\n\n` +
-      `Ya puede disponer de su dinero en la sucursal o cajero del Banco del Bienestar en Tlaxiaco.`
-    );
-    window.open(`https://wa.me/?text=${text}`, '_blank');
+      `💵 Monto: $${totalAvailable.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN\n` +
+      `💳 Banco Receptor: Banco del Bienestar (México)\n` +
+      `💳 Tarjeta: ${cardNumber.slice(0, 4)} **** **** ${cardNumber.slice(-4)}\n` +
+      `🔍 Clave de Rastreo Banxico: ${speiTracking}\n` +
+      `✅ Estatus: Liquidado / Exitoso\n\n` +
+      `Ya puede disponer de su dinero en la sucursal o cajero del Banco del Bienestar en Tlaxiaco.`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Comprobante SPEI Banco del Bienestar', text });
+        return;
+      } catch {
+        // Fallback to clipboard
+      }
+    }
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(text);
+      setCopiedReceipt(true);
+      setTimeout(() => setCopiedReceipt(false), 3000);
+    }
   };
 
   const handleCopyCode = async () => {
@@ -90,20 +105,31 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
     }
   };
 
-  const handleShareWhatsApp = () => {
-    const text = encodeURIComponent(
-      `🏧 *ORDEN DE PAGO EN CAJERO AUTOMÁTICO (RETIRO SIN TARJETA)*\n\n` +
+  const handleShareWithdrawal = async () => {
+    const text = 
+      `🏧 ORDEN DE PAGO EN CAJERO AUTOMÁTICO (RETIRO SIN TARJETA)\n\n` +
       `¡Hola Don Efraín! Su pago de café está listo para retirar en efectivo:\n` +
-      `💵 *Monto a retirar:* $${totalAvailable.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN\n` +
-      `🔢 *Clave de Retiro (12 dígitos):* ${atmCode}\n` +
-      `🔒 *Código de Seguridad (PIN):* ${atmPin}\n\n` +
-      `*Pasos en el cajero (BBVA / Bienestar / Banorte / Azteca en Tlaxiaco):*\n` +
+      `💵 Monto a retirar: $${totalAvailable.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN\n` +
+      `🔢 Clave de Retiro (12 dígitos): ${atmCode}\n` +
+      `🔒 Código de Seguridad (PIN): ${atmPin}\n\n` +
+      `Pasos en el cajero (BBVA / Bienestar / Banorte / Azteca en Tlaxiaco):\n` +
       `1. Toca la pantalla del cajero y selecciona "Retiro sin Tarjeta".\n` +
       `2. Escribe la Clave de 12 dígitos.\n` +
       `3. Escribe el PIN de 4 dígitos.\n` +
-      `¡El cajero te entregará tus billetes en mano al instante!`
-    );
-    window.open(`https://wa.me/?text=${text}`, '_blank');
+      `¡El cajero te entregará tus billetes en mano al instante!`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Orden de Retiro en Efectivo', text });
+        return;
+      } catch {
+        // Fallback to clipboard
+      }
+    }
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(text);
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2500);
+    }
   };
 
   const handleWithdraw = () => {
@@ -133,8 +159,11 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
               3
             </div>
             <div>
-              <h3 className="text-[18px] font-bold text-[#032517]">Mis Pagos y Recibos</h3>
-              <p className="text-[12px] text-[#424843]">Liquidaciones directas sin comisiones</p>
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-[18px] font-bold text-[#032517]">Mis Pagos y Recibos</h3>
+                <DemoBadge detail="Pagos y regalías de ejemplo: todavía no hay liquidaciones reales en SPEI ni en Stellar." />
+              </div>
+              <p className="text-[12px] text-[#424843]">Pagos de ejemplo para conocer cómo se verán tus liquidaciones</p>
             </div>
           </div>
           <button
@@ -369,13 +398,11 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        onClick={handleShareSpeiWhatsApp}
-                        className="flex-1 h-9 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-xl font-bold text-[11px] flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                        onClick={handleShareSpei}
+                        className="flex-1 h-9 bg-[#032517] hover:bg-[#1b3b2b] text-white rounded-xl font-bold text-[11px] flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-2xs cursor-pointer"
                       >
-                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                          <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.541 1.948.825 2.796.825 3.183 0 5.77-2.586 5.77-5.767 0-3.181-2.587-5.766-5.77-5.766zm6.818 5.766c0 3.759-3.059 6.818-6.818 6.818-.002 0-.003 0-.004 0-1.127 0-2.227-.306-3.197-.886l-4.148 1.087 1.107-4.043c-.636-1.026-.976-2.203-.976-3.411 0-3.759 3.059-6.818 6.818-6.818 3.76 0 6.818 3.059 6.818 6.818z"/>
-                        </svg>
-                        <span>Enviar Comprobante WhatsApp</span>
+                        <span className="material-symbols-outlined text-[16px]">share</span>
+                        <span>{copiedReceipt ? '¡Comprobante Copiado!' : 'Compartir Comprobante'}</span>
                       </button>
 
                       <button
@@ -472,17 +499,15 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
                   </ol>
                 </div>
 
-                {/* Quick Share to WhatsApp / SMS */}
+                {/* Quick Share / Copy Code */}
                 <div className="flex gap-2">
                   <button
                     type="button"
-                    onClick={handleShareWhatsApp}
-                    className="flex-1 h-9 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-xl font-bold text-[11px] flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                    onClick={handleShareWithdrawal}
+                    className="flex-1 h-9 bg-[#032517] hover:bg-[#1b3b2b] text-white rounded-xl font-bold text-[11px] flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-2xs cursor-pointer"
                   >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.541 1.948.825 2.796.825 3.183 0 5.77-2.586 5.77-5.767 0-3.181-2.587-5.766-5.77-5.766zm6.818 5.766c0 3.759-3.059 6.818-6.818 6.818-.002 0-.003 0-.004 0-1.127 0-2.227-.306-3.197-.886l-4.148 1.087 1.107-4.043c-.636-1.026-.976-2.203-.976-3.411 0-3.759 3.059-6.818 6.818-6.818 3.76 0 6.818 3.059 6.818 6.818z"/>
-                    </svg>
-                    <span>Enviar datos por WhatsApp</span>
+                    <span className="material-symbols-outlined text-[16px]">share</span>
+                    <span>{copiedCode ? '¡Código Copiado!' : 'Compartir Clave y PIN'}</span>
                   </button>
 
                   <button
@@ -668,7 +693,7 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
             <div>
               <p className="font-bold">Regalías Perpetuas por Reventa en Smart Contract:</p>
               <p className="text-purple-900">
-                Cada vez que una tostaduría o boutique revende tu café empacado o una galería vende tu textil, el contrato inteligente en Stellar te deposita automáticamente el <strong>8% del valor de reventa</strong>.
+                Cada vez que una tostaduría o boutique revende tu café empacado o una galería vende tu textil, el contrato inteligente en Stellar te deposita automáticamente el <strong>{PROTOCOL_FEES.artisanResaleRoyaltyPct}% del valor de reventa</strong>.
               </p>
             </div>
           </div>
@@ -690,7 +715,7 @@ export const MyPaymentsModal: React.FC<MyPaymentsModalProps> = ({
                     </span>
                     {payment.paymentType === 'Regalía Perpetua' && (
                       <span className="bg-purple-600 text-white text-[9px] font-extrabold px-1.5 py-0.2 rounded-full uppercase tracking-wider">
-                        💎 Regalía 8%
+                        💎 Regalía {PROTOCOL_FEES.artisanResaleRoyaltyPct}%
                       </span>
                     )}
                   </div>

@@ -12,6 +12,7 @@ interface MainMenuScreenProps {
   onOpenMicDiagnostic?: () => void;
   onOpenExplainerVideo?: () => void;
   onOpenProtocolModal?: () => void;
+  onOpenPresentation?: () => void;
   currentUser?: UserProfile;
   appLanguage?: AppLanguage;
   elderMode?: boolean;
@@ -27,12 +28,12 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
   onOpenMicDiagnostic,
   onOpenExplainerVideo,
   onOpenProtocolModal,
+  onOpenPresentation,
   currentUser,
   appLanguage = 'es',
   elderMode = false,
   isOnline = true
 }) => {
-  const [numericInput, setNumericInput] = useState('');
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [recordingSeconds, setRecordingSeconds] = useState<number>(0);
   const [audioVolume, setAudioVolume] = useState<number>(0);
@@ -63,19 +64,15 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
 
     if (!clean) return null;
 
-    // Check Option 5: Video Explicativo / Open Hub / MicoPay / Raíz
+    // Check Option 5 (Comprar / Vitrina de Artesanías / Tienda de la Mixteca)
     if (
-      /\b(5|cinco|quinta)\b/i.test(clean) ||
-      /(opcion|numero|num|no\.?)\s*(5|cinco)/i.test(clean) ||
-      clean.includes('video') ||
-      clean.includes('pelicula') ||
-      clean.includes('explicar') ||
-      clean.includes('explicacion') ||
-      clean.includes('open hub') ||
-      clean.includes('openhub') ||
-      clean.includes('micopay') ||
-      clean.includes('mico pay') ||
-      clean.includes('que es raiz')
+      clean.includes('comprar') ||
+      clean.includes('tienda') ||
+      clean.includes('vitrina') ||
+      clean.includes('comprador') ||
+      clean.includes('artesania') ||
+      clean.includes('catalogo') ||
+      clean.includes('chichi')
     ) {
       return 5;
     }
@@ -150,37 +147,20 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
   const executeMenuOption = (option: 1 | 2 | 3 | 4 | 5) => {
     if (option === 1) {
       setRecognizedOptionToast('🎯 Opción 1: Registrar cosecha o artesanía');
-      setTimeout(() => onNavigateScreen('catalogo_producto'), 500);
+      setTimeout(() => onNavigateScreen('catalogo_producto'), 400);
     } else if (option === 2) {
       setRecognizedOptionToast('🎯 Opción 2: Ver mis lotes');
-      setTimeout(() => onOpenLots(), 500);
+      setTimeout(() => onOpenLots(), 400);
     } else if (option === 3) {
       setRecognizedOptionToast('🎯 Opción 3: Ver mis pagos');
-      setTimeout(() => onOpenPayments(), 500);
+      setTimeout(() => onOpenPayments(), 400);
     } else if (option === 4) {
-      setRecognizedOptionToast('🎯 Opción 4: Ayuda técnica (Abriendo chat directo...)');
-      setTimeout(() => onOpenTechHelp(), 500);
+      setRecognizedOptionToast('🎯 Opción 4: Ayuda comunitaria');
+      setTimeout(() => onOpenTechHelp(), 400);
     } else if (option === 5) {
-      setRecognizedOptionToast('🎬 Opción 5: Abriendo Video Explicativo (Open Hub, MicoPay y Raíz)...');
-      setTimeout(() => {
-        if (onOpenExplainerVideo) {
-          onOpenExplainerVideo();
-        }
-      }, 500);
+      setRecognizedOptionToast('🛍️ Opción: Vitrina Comunitaria de Compras');
+      setTimeout(() => onNavigateScreen('vitrina_productos'), 400);
     }
-  };
-
-  const handleNumericSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const matched = matchMainMenuOption(numericInput);
-    if (matched) {
-      executeMenuOption(matched);
-      setMicStatusMessage(null);
-    } else if (numericInput.trim()) {
-      setMicStatusMessage(`No se reconoció "${numericInput}". Por favor elija 1, 2, 3, 4 o 5.`);
-      setTimeout(() => setMicStatusMessage(null), 4000);
-    }
-    setNumericInput('');
   };
 
   const toggleVoiceMenuRecording = async () => {
@@ -285,7 +265,9 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
             </span>
           </div>
         </button>
-        <span className="text-[14px] font-extrabold text-[#a73918]">Raíz</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[14px] font-extrabold text-[#a73918]">Yucu</span>
+        </div>
       </div>
 
       {/* BANNER TRANQUILIZADOR: MODO PARCELA OFFLINE (SOLO cuando NO hay internet) */}
@@ -447,62 +429,28 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
           </div>
         </button>
 
-        {/* OPCIÓN 5: Video Explicativo */}
-        {onOpenExplainerVideo && (
-          <button
-            type="button"
-            onClick={onOpenExplainerVideo}
-            className={`touch-ripple w-full bg-linear-to-r from-[#032517] via-[#123826] to-[#a73918] hover:brightness-110 active:scale-[0.98] transition-all duration-200 border-2 border-amber-400/50 rounded-2xl flex items-center justify-between text-left shadow-md cursor-pointer group ${
-              elderMode ? 'min-h-[78px] p-4.5' : 'min-h-[62px] p-3.5'
-            }`}
-          >
-            <div className="flex items-center gap-3.5">
-              <div className={`rounded-full bg-amber-400 text-neutral-950 flex items-center justify-center font-black shrink-0 shadow-xs group-hover:scale-105 transition-transform ${
-                elderMode ? 'w-14 h-14 text-[24px]' : 'w-12 h-12 text-[20px]'
-              }`}>
-                5
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className={`text-white font-extrabold ${elderMode ? 'text-[20px]' : 'text-[16px]'}`}>
-                    5. Video Explicativo
-                  </span>
-                  <span className="bg-amber-300 text-neutral-900 text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
-                    Interactiva
-                  </span>
-                </div>
-                <span className={`text-emerald-100 ${elderMode ? 'text-[15px] font-medium' : 'text-[12.5px]'}`}>
-                  Open Hub, MicoPay, Raíz y Drips TecNM
-                </span>
-              </div>
-            </div>
-            <div className={`rounded-full bg-white/20 flex items-center justify-center text-amber-300 shrink-0 group-hover:bg-amber-400 group-hover:text-neutral-950 transition-colors ${
-              elderMode ? 'w-12 h-12' : 'w-10 h-10'
-            }`}>
-              <span className={`material-symbols-outlined ${elderMode ? 'text-[28px]' : 'text-[24px]'}`}>play_circle</span>
-            </div>
-          </button>
-        )}
       </div>
 
       {/* TARJETA DE NAVEGACIÓN POR VOZ (Reconocimiento en vivo para campo) */}
-      <div className="bg-white p-3.5 rounded-2xl border-2 border-[#1b3b2b]/20 shadow-sm flex flex-col gap-2.5">
+      <div className="bg-white p-4 rounded-2xl border-2 border-[#1b3b2b]/20 shadow-xs flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#1b3b2b] text-[22px]">mic</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-full bg-[#e8f5ed] flex items-center justify-center text-[#1b3b2b]">
+              <span className="material-symbols-outlined text-[20px]">mic</span>
+            </div>
             <div>
-              <span className="text-[14px] font-bold text-[#032517] block">Navegación por Voz</span>
-              <span className="text-[12px] text-[#424843]">Diga "1", "2", "3", "4", "5" o "Video"</span>
+              <span className="text-[15px] font-extrabold text-[#032517] block">Navegación por Voz</span>
+              <span className="text-[12px] text-[#424843]">Presione el botón y diga "1", "2", "3" o "4"</span>
             </div>
           </div>
           <button
             type="button"
             onClick={toggleVoiceMenuRecording}
             aria-label={isRecording ? 'Detener escucha de voz' : 'Hablar opción del menú'}
-            className={`px-3 py-2 rounded-full font-bold text-[13px] flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 ${
+            className={`px-4 py-2.5 rounded-full font-extrabold text-[13px] flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95 ${
               isRecording
                 ? 'bg-red-600 text-white animate-pulse'
-                : 'bg-[#1b3b2b] text-white hover:bg-[#032517]'
+                : 'bg-[#032517] text-white hover:bg-[#1b3b2b]'
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">
@@ -514,21 +462,21 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
 
         {/* Panel en vivo mientras graba */}
         {isRecording && (
-          <div className="bg-[#1b3b2b] text-white p-3 rounded-xl border border-[#c7ebd4]/20 flex flex-col gap-2 animate-fadeIn">
+          <div className="bg-[#032517] text-white p-3.5 rounded-xl border border-emerald-400/30 flex flex-col gap-2.5 animate-fadeIn">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping shrink-0" />
                 <span className="text-[12px] font-mono font-bold text-red-300">
                   0:{recordingSeconds < 10 ? '0' : ''}{recordingSeconds}
                 </span>
-                <span className="text-[11px] text-[#c7ebd4] font-semibold">
-                  Escuchando en vivo...
+                <span className="text-[12px] text-emerald-200 font-semibold">
+                  Escuchando su voz...
                 </span>
               </div>
               <button
                 type="button"
                 onClick={cancelVoiceRecording}
-                className="text-[11px] px-2 py-0.5 bg-white/15 hover:bg-white/25 rounded-full text-white cursor-pointer"
+                className="text-[11px] px-2.5 py-0.5 bg-white/15 hover:bg-white/25 rounded-full text-white cursor-pointer"
               >
                 Cancelar
               </button>
@@ -547,15 +495,15 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
             </div>
 
             {/* Texto en vivo */}
-            <div className="text-[12px] text-white/90 italic bg-black/30 px-2.5 py-1.5 rounded-lg border border-white/10 truncate">
-              {liveTranscript ? `"${liveTranscript}"` : 'Habla ahora: di "Opción 4", "Ayuda técnica", "Mis pagos"...'}
+            <div className="text-[13px] text-white/95 italic bg-black/40 px-3 py-2 rounded-lg border border-white/10">
+              {liveTranscript ? `"${liveTranscript}"` : 'Hable ahora: diga "Opción 1", "Registrar cosecha", "Mis lotes"...'}
             </div>
           </div>
         )}
 
         {/* Toast de opción reconocida */}
         {recognizedOptionToast && (
-          <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 text-[12px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-2 animate-fadeIn shadow-2xs">
+          <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 text-[13px] font-bold px-3.5 py-2 rounded-xl flex items-center gap-2 animate-fadeIn shadow-2xs">
             <span className="material-symbols-outlined text-[18px] text-emerald-700">check_circle</span>
             <span>{recognizedOptionToast}</span>
           </div>
@@ -563,7 +511,7 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
 
         {/* Mensaje de estado de micrófono / error */}
         {micStatusMessage && (
-          <div className="bg-amber-50 border border-amber-300 text-amber-900 text-[12px] px-3 py-1.5 rounded-xl flex items-center justify-between">
+          <div className="bg-amber-50 border border-amber-300 text-amber-900 text-[12px] px-3.5 py-2 rounded-xl flex items-center justify-between">
             <span>{micStatusMessage}</span>
             <button
               type="button"
@@ -574,50 +522,7 @@ export const MainMenuScreen: React.FC<MainMenuScreenProps> = ({
             </button>
           </div>
         )}
-
-        {/* Botón de Comprobación y Diagnóstico de Micrófono */}
-        {onOpenMicDiagnostic && (
-          <div className="pt-1 border-t border-[#c1c8c2]/20 flex items-center justify-between">
-            <span className="text-[11px] text-[#727973]">¿Dudas si tu micro capta audio?</span>
-            <button
-              type="button"
-              onClick={onOpenMicDiagnostic}
-              className="text-[12px] font-bold text-[#1b3b2b] hover:text-[#032517] underline flex items-center gap-1 cursor-pointer py-1 px-2 rounded-lg hover:bg-[#f0eee8] transition-colors"
-            >
-              <span className="material-symbols-outlined text-[16px]">build</span>
-              <span>Probar y medir micrófono</span>
-            </button>
-          </div>
-        )}
       </div>
-
-      {/* TARJETA RÁPIDA DE ENTRADA POR TECLADO NUMÉRICO (Optimizado para teléfonos sencillos) */}
-      <form
-        onSubmit={handleNumericSubmit}
-        className="mt-1 bg-[#f0eee8] p-3.5 rounded-2xl flex items-center justify-between gap-2 border border-[#c1c8c2]/30 shadow-xs"
-      >
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[#727973] text-[22px]">dialpad</span>
-          <span className="text-[14px] text-[#424843] font-medium">O escriba 1, 2, 3, 4 o 5</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <input
-            className="w-16 h-10 text-center text-[18px] font-bold bg-white border border-[#727973] rounded-lg text-[#032517] focus:ring-2 focus:ring-[#a73918] focus:outline-none"
-            placeholder="1-5"
-            type="text"
-            value={numericInput}
-            onChange={(e) => setNumericInput(e.target.value)}
-          />
-          <button
-            aria-label="Enviar número u opción"
-            className="h-10 px-3 rounded-lg bg-[#032517] text-white flex items-center justify-center gap-1 active:scale-95 transition-all hover:bg-[#1b3b2b] text-[13px] font-bold cursor-pointer"
-            type="submit"
-          >
-            <span>Ir</span>
-            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-          </button>
-        </div>
-      </form>
     </main>
   );
 };

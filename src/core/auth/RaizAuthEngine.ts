@@ -1,9 +1,9 @@
 /**
- * Raíz Core - Motor de Identidad Soberana y Autenticación sin Fricción
+ * Yucu Core - Motor de Identidad Soberana y Autenticación sin Fricción
  * 
  * Filosofía de Diseño para Campo y Zonas Rurales:
  * - CERO FRASES SEMILLA: Ningún campesino o artesano debe lidiar con 12 palabras.
- * - CERO CONTRASEÑAS COMPLEJAS: Acceso por WhatsApp/SMS OTP, Carnet QR Comunitario o Huella Passkey.
+ * - CERO CONTRASEÑAS COMPLEJAS: Acceso por SMS OTP, Carnet QR Comunitario o Huella Passkey.
  * - BILLETERA STELLAR INVISIBLE (Account Abstraction): Cada identidad genera determinísticamente
  *   su cuenta Stellar para recibir pagos, regalías y firmar pasaportes.
  * - MULTI-ROL Y MULTI-PAÍS:
@@ -17,7 +17,7 @@ import { SupportedCountry } from '../settlement/HybridSettlementOrchestrator';
 export type UserRole = 'productor' | 'estudiante_tecnm' | 'comprador';
 
 export type AuthMethod = 
-  | 'phone_otp'          // SMS o WhatsApp con código de un solo uso
+  | 'phone_otp'          // SMS con código de un solo uso
   | 'qr_carnet'           // Escaneo de credencial física impresa comunitaria
   | 'passkey_biometric'   // Huella digital o FaceID en el dispositivo
   | 'tecnm_id'            // Credencial académica del Instituto Tecnológico de Tlaxiaco
@@ -127,14 +127,14 @@ export const PRESET_USERS: UserProfile[] = [
   }
 ];
 
-const LOCAL_STORAGE_AUTH_KEY = 'raiz_active_user_session_v1';
+const LOCAL_STORAGE_AUTH_KEY = 'yucu_active_user_session_v1';
 
 export class RaizAuthEngine {
   /**
    * Obtiene la sesión del usuario actualmente autenticado
    */
   public static getActiveUser(): UserProfile {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       try {
         const stored = localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
         if (stored) {
@@ -153,7 +153,7 @@ export class RaizAuthEngine {
    * Guarda la sesión activa en el almacenamiento local
    */
   public static setActiveUser(user: UserProfile): void {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       try {
         localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify(user));
       } catch (e) {
@@ -186,23 +186,23 @@ export class RaizAuthEngine {
   }
 
   /**
-   * Simula el envío de un código OTP por WhatsApp / SMS para campo
+   * Simula el envío de un código OTP por SMS para campo (ADR-002)
    */
   public static sendPhoneOtp(phone: string, country: SupportedCountry): {
     success: boolean;
     verificationCode: string;
-    deliveryChannel: 'WhatsApp' | 'SMS';
+    deliveryChannel: 'SMS';
     message: string;
   } {
     const code = '7421'; // Código seguro de demostración predecible
-    const channel = 'WhatsApp';
+    const channel = 'SMS';
     const countryNames = { MX: 'México', BO: 'Bolivia', BR: 'Brasil' };
 
     return {
       success: true,
       verificationCode: code,
       deliveryChannel: channel,
-      message: `Código de seguridad enviado por ${channel} al número ${phone} (${countryNames[country]}).`,
+      message: `Código de seguridad enviado por SMS al número ${phone} (${countryNames[country]}).`,
     };
   }
 

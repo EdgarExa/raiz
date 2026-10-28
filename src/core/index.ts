@@ -1,12 +1,17 @@
 /**
- * Raíz Core - Índice Público del Núcleo de Dominio
+ * Yucu Core - Índice Público del Núcleo de Dominio
  * Punto de entrada único para React, PWA, Apps Android o Servicios Externos.
  */
 
+export * from './hooks/useYucuProtocol';
+export * from './agents/YucuAgentSwarm';
+export * from './blockchain/StellarLiveClient';
+export * from './blockchain/StellarRavenBridge';
 export * from './crypto/CryptoEngine';
 export * from './sync/SyncEngine';
 export * from './policy/FairTradeEngine';
 export * from './blockchain/SorobanAdapter';
+export * from './blockchain/TrustlessWorkEscrowAdapter';
 export * from './settlement/HybridSettlementOrchestrator';
 export * from './auth/RaizAuthEngine';
 export * from './ai/RaizAIOracles';
@@ -36,8 +41,9 @@ export const RaizCore = {
    */
   init: () => {
     SyncEngine.initAutoSync();
-    console.log('🌱 Raíz Infrastructure Protocol & AI Oracles initialized.');
+    console.log('🌱 Yucu Infrastructure Protocol & AI Oracles initialized.');
   },
 };
 
+export const YucuCore = RaizCore;
 export default RaizCore;

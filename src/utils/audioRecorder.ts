@@ -1,4 +1,4 @@
-// Audio Recording and Speech-to-Text Utility for Raíz
+// Audio Recording and Speech-to-Text Utility for Yucu
 // Supports MediaRecorder, Web Speech API (webkitSpeechRecognition) and Gemini backend transcription
 
 export interface AudioRecordingResult {

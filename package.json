@@ -1,7 +1,31 @@
 {
-  "name": "react-example",
+  "name": "yucu-protocol",
+  "version": "1.2.0",
   "private": true,
-  "version": "0.0.0",
+  "description": "Decentralized RWA Attestation & AI Oracle Infrastructure on Stellar & Soroban for Fair Trade, EUDR Compliance, and Indigenous Agricultural Communities in Oaxaca.",
+  "homepage": "https://github.com/Open-Hub-Tec/yucu#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Open-Hub-Tec/yucu.git"
+  },
+  "author": "TecNM Campus Tlaxiaco & Open Hub Tec",
+  "license": "MIT",
+  "keywords": [
+    "stellar",
+    "soroban",
+    "rwa",
+    "attestations",
+    "ai-oracles",
+    "eas",
+    "eudr-compliance",
+    "fair-trade",
+    "agriculture",
+    "public-goods",
+    "tecnm",
+    "tlaxiaco",
+    "oaxaca",
+    "fintech"
+  ],
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
@@ -10,24 +34,30 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "tsx src/tests/qr.test.ts && tsx src/tests/dynamic_process.test.ts && tsx src/tests/complete_system_audit.test.ts && tsx src/tests/hybrid_architecture_and_auth.test.ts && tsx src/tests/ai_oracles_and_protocol.test.ts",
-    "verify": "npm run lint && npm run test && npm run build"
+    "test": "tsx src/tests/qr.test.ts && tsx src/tests/dynamic_process.test.ts && tsx src/tests/complete_system_audit.test.ts && tsx src/tests/hybrid_architecture_and_auth.test.ts && tsx src/tests/ai_oracles_and_protocol.test.ts && tsx src/tests/trustless_work_escrow.test.ts && tsx src/tests/stellar_live_client.test.ts && tsx src/tests/agent_swarm_and_innovations.test.ts && tsx src/tests/chain_ports.test.ts",
+    "verify": "npm run lint && npm run test && npm run build",
+    "scaffold": "tsx scripts/scaffold-product-module.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
+    "@stellar/stellar-sdk": "^17.3.0",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
+    "docx": "^9.8.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
     "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "pptxgenjs": "^4.0.1",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
-    "vite": "^6.2.3",
-    "express": "^4.21.2",
-    "dotenv": "^17.2.3",
-    "motion": "^12.23.24"
+    "vite": "^6.2.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.14",

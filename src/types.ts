@@ -1,4 +1,4 @@
-export type NavigationTab = 'chat' | 'menu' | 'productos';
+export type NavigationTab = 'landing' | 'chat' | 'menu' | 'productos';
 
 export type AppLanguage = 'es' | 'mix';
 
@@ -8,7 +8,8 @@ export type ScreenView =
   | 'catalogo_producto'
   | 'registrar_lote_cafe'
   | 'pasaporte_digital'
-  | 'vitrina_productos';
+  | 'vitrina_productos'
+  | 'landing_page';
 
 export interface ProductItem {
   id: string;
@@ -52,6 +53,27 @@ export interface DynamicSpec {
   [key: string]: any;
 }
 
+export type ArtisanVisibilityLevel = 'nombre_completo' | 'nombre_comunidad' | 'cooperativa';
+
+export interface InformedConsentRecord {
+  granted: boolean;
+  visibilityLevel: ArtisanVisibilityLevel;
+  customDisplayName?: string;
+  cooperativeName?: string;
+  communityName?: string;
+  voiceConsentRecorded?: boolean;
+  voiceConsentLanguage?: 'mix' | 'es';
+  consentTimestamp: string;
+  isPubliclyVisible: boolean; // Control soberano: puede pausarse con "Dejar de mostrarme"
+  revocationTimestamp?: string;
+  zeroPiiBlockchainProof?: {
+    ledgerSequence: number;
+    sha256Digest: string;
+    verified: boolean;
+    note: string;
+  };
+}
+
 export interface DigitalPassportLot {
   id: string;
   code: string;
@@ -77,6 +99,7 @@ export interface DigitalPassportLot {
   community?: string;
   processStages?: ProcessStage[];
   customSpecs?: DynamicSpec[] | Record<string, any>;
+  informedConsent?: InformedConsentRecord;
   [key: string]: any;
   // Normative Compliance Evidence (NMX-F-083 / NOM-255-SCFI)
   nomCompliance?: {
@@ -153,6 +176,27 @@ export interface BotCardData {
   data?: Record<string, any>;
 }
 
+export interface OrderReceipt {
+  id: string;
+  date: string;
+  items: Array<{
+    id: string;
+    title: string;
+    price: number;
+    quantity: number;
+    artisanName: string;
+    location: string;
+  }>;
+  total: number;
+  paymentMethod: 'SPEI Directo a Artesano' | 'Efectivo Contra Entrega' | 'Custodia Escrow Stellar' | string;
+  artisanName: string;
+  location: string;
+  status: 'Pago Confirmado' | 'En preparación en taller';
+  stellarTxLedger?: number;
+  stellarTxHash?: string;
+  trackingStep?: 1 | 2 | 3;
+}
+
 /**
  * Interface for Issue #1.1: Modo Parcela Offline
  * Used by students to persist harvest data locally in IndexedDB before syncing to Stellar
@@ -169,4 +213,25 @@ export interface PendingOfflineLot {
   voiceAudioBlob?: Blob;
   recordedAt: number;
   syncStatus: 'pending' | 'syncing' | 'synced';
+}
+
+/**
+ * Interface for Field Buyer Validation & Early-Adopter Phone Registry
+ * Used by TecNM students to save buyer contacts for future launch notification
+ */
+export interface BuyerLeadRecord {
+  id: string;
+  timestamp: string;
+  studentName?: string;
+  studentGroup?: string;
+  buyerName: string;
+  buyerPhone: string;
+  buyerCity: string;
+  buyerSegment: string;
+  interestedProducts: string;
+  willingnessToPayExtraMxn?: number;
+  susScore?: number;
+  consentForFutureContact: boolean;
+  notes?: string;
+  createdVia: 'field_interview' | 'showcase_optin';
 }

@@ -1,9 +1,9 @@
 # 🌾 Hito 1.1: Validación de Dolor Económico y Explotación en Campo
-**Repositorio:** `Open-Hub-Tec/raiz`  
+**Repositorio:** `Open-Hub-Tec/yucu`  
 **Institución:** Instituto Tecnológico de Tlaxiaco (TecNM) – Carrera de Ingeniería en Sistemas Computacionales  
 **Asignatura:** Fundamentos de Ingeniería de Software (SCC-1007) – Asesor: Ing. José Alfredo Román Cruz  
 **Hito Drips / Roadmap:** Issue #1 – Research Milestone 1.1 (Validado & Resuelto vía PR #31)  
-**Documento Oficial:** [`docs/research/HITO_1.1_INVESTIGACION_CAMPO.pdf`](./HITO_1.1_INVESTIGACION_CAMPO.pdf)
+**Documento Oficial:** `HITO_1.1_INVESTIGACION_CAMPO.pdf` *(archivo privado del equipo, ver [PRIVACIDAD.md](./PRIVACIDAD.md))*
 
 ---
 
@@ -12,6 +12,7 @@
 * **Equipo B - Yavi Tech (Tlaxiaco / Yautepec - Mezcal Artesanal):** Nelson Macario Martínez Hernández, Lewis Noe Hernández Mendoza, Luis Ángel García Santiago (5º Semestre Grupo BS).
 * **Equipo C (San Antonio Nduaxico - Jitomate Agrícola):** Validación de perecedibilidad y asimetría de precios en la Mixteca Alta.
 * **Equipo D (San Pablo Tijaltepec - Bordado Ceremonial):** Nallely López (Validación de plagio industrial e intermediarios abusivos).
+* **Equipo E (San Juan Mixtepec - Artesanías de Palma):** Jazlynn Barrios Velasco, Isaías Brayan López Dominguez, Rafael Ayala Coronel, Alex Antonio Victoria Vasquez (7º Semestre Grupo 7US).
 
 ---
 
@@ -21,7 +22,7 @@ Validar directamente en territorio el sufrimiento real, la explotación económi
 ---
 
 ## 📊 Caso 1: Huipil Tradicional Triqui – San José Xochixtlán, Tlaxiaco
-* **Persona Entrevistada:** Doña Reyna (56 años, artesana tejedora en telar de cintura, lengua materna Triqui, región Triqui Alta).
+* **Persona Entrevistada:** Tejedora triqui (56 años, artesana tejedora en telar de cintura, lengua materna Triqui, región Triqui Alta).
 * **Pieza Analizada:** Huipil tradicional triqui bordado a mano con iconografía ancestral (flores, fauna de montaña y símbolos comunitarios).
 
 ### Números Reales de la Explotación:
@@ -62,7 +63,7 @@ Validar directamente en territorio el sufrimiento real, la explotación económi
 ---
 
 ## 📊 Caso 3: Jitomate de Invernadero – San Antonio Nduaxico
-* **Productor:** Josué Gerardo Sanjuan Sanjuan (Mixteco / Tu'un Savi).
+* **Productor:** Productor de jitomate de San Antonio Nduaxico (Mixteco / Tu'un Savi).
 * **Vulnerabilidad Crítica:** Perecedibilidad de 5 días de anaquel. Al no contar con precio de referencia ni canal directo, el intermediario impone precios castigados a sabiendas de que si no vende de inmediato, la cosecha se pierde.
 * **Borrado de Origen (Plagio Agrícola):** El lote se mezcla en la central de abastos eliminando la procedencia "Mixteca / Riego Limpio / Invernadero Comunitario".
 
@@ -76,8 +77,27 @@ Validar directamente en territorio el sufrimiento real, la explotación económi
 
 ---
 
-## 🛠️ Justificación Técnica para el Protocolo Raíz
-Los cuatro estudios de campo validan inequívocamente las tres innovaciones centrales del protocolo:
+## 📊 Caso 5: Sector Artesanal de la Palma – San Juan Mixtepec
+* **Documento Extendido y Evidencias:** [`docs/research/validacion_artesanos_palma_mixtepec.md`](./validacion_artesanos_palma_mixtepec.md) | `EVIDENCIA_DOLOR_CAMPO_PALMA_MIXTEPEC.pdf` *(archivo privado del equipo, ver [PRIVACIDAD.md](./PRIVACIDAD.md))*
+* **Población Afectada:** Mujeres artesanas adultas mayores (50 a 85 años), hablantes de Tu'un Savi (Mixteco) y español en San Juan Mixtepec, Tlaxiaco y Santiago Juxtlahuaca.
+* **Actividad:** Preparación, planchado de cinta y tejido a mano de palma (*Brahea dulcis*) para sombreros, tenates, petates y canastas.
+
+### Números Reales de la Explotación:
+| Concepto | Valor / Registro en Campo |
+| :--- | :--- |
+| **Tiempo de Elaboración** | **3 a 5 días** de trabajo acumulado (15 a 30 horas reales de tejido) |
+| **Pago Recibido del Acopiador ("Coyote")** | **$15.00 a $30.00 MXN** por pieza (~$1.00 a $2.00 MXN/hora trabajada) |
+| **Precio de Reventa en Mercados Urbanos** | **$150.00 a $300.00 MXN** (+900% a +1000% sobre el costo de origen) |
+| **Precio Justo Solicitado por la Artesana** | **$120.00 a $180.00 MXN** por pieza |
+
+### Testimonios y Mecanismos de Abuso:
+> *"Uno se quema las manos sobando la palma y la vista se va acabando en la oscuridad de la corredor. Vienen con su camioneta y te dicen: 'Te la tomo a 20 pesos, si no, ahí se queda porque nadie te la compra'. Uno se la tiene que dar porque al menos es para el kilo de tortilla de hoy."*  
+> — **Artesana de San Juan Mixtepec (68 años).**
+
+---
+
+## 🛠️ Justificación Técnica para el Protocolo Yucu
+Los cinco estudios de campo validan inequívocamente las tres innovaciones centrales del protocolo:
 1. **Pasaporte Digital de Origen (Soroban RWA):** Garantiza que cada prenda, botella de mezcal o bulto de café tenga un certificado inmutable anclado en Stellar.
 2. **Etiqueta Física Hang-Tag QR (ISO/IEC 18004):** Permite a cualquier consumidor o turista escanear el lote físico y ver la identidad de la artesana/productor en menos de 3 segundos, eliminando el engaño del coyote.
 3. **Smart Contract FairEscrow & Regalías Perpetuas:** Asegura precios justos, liquida pagos sin esperas de semanas y distribuye el 8% de regalías residuales por reventas secundarias.

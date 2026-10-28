@@ -36,7 +36,7 @@ export const PWAInstallButton: React.FC = () => {
               Instalar en iPhone / iPad
             </h3>
             <p className="text-[13px] text-[#424843] mb-4 leading-relaxed">
-              Para usar Raíz Mixteca en la parcela sin internet:
+              Para usar Yucu Mixteca en la parcela sin internet:
             </p>
             <ol className="text-[12px] space-y-2 text-[#1c1c18] mb-4 list-decimal list-inside bg-white p-3 rounded-xl border border-[#c1c8c2]/40">
               <li>Toca el botón <strong>Compartir</strong> <span className="text-[14px]">⎋</span> abajo en Safari.</li>

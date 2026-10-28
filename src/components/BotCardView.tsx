@@ -124,7 +124,7 @@ export const BotCardView: React.FC<BotCardViewProps> = ({
 
           <div className="flex items-center justify-between pt-1">
             <span className="text-[10px] text-emerald-200/80">
-              Nodo: Raíz • Bloque #52,491,802
+              Nodo: Yucu • Bloque #52,491,802
             </span>
             <button
               type="button"
@@ -419,74 +419,57 @@ export const BotCardView: React.FC<BotCardViewProps> = ({
     );
   }
 
-  // CARD 7: AGENTE LOGÍSTICO Y COYOTE ALIADO
+  // CARD 7: DESLINDE LOGÍSTICO Y TRATO DIRECTO
   if (card.type === 'logistica_coyote') {
     return (
-      <div className="w-full bg-[#1b2a3b] text-white rounded-2xl p-4 shadow-md border border-cyan-500/30 flex flex-col gap-3 my-1">
+      <div className="w-full bg-[#1b2b22] text-white rounded-2xl p-4 shadow-md border border-emerald-500/30 flex flex-col gap-3 my-1">
         <div className="flex items-center justify-between border-b border-white/15 pb-2.5">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-[18px]">
-              🚚
+            <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[18px]">
+              🤝
             </span>
             <div>
-              <p className="text-[11px] font-extrabold tracking-wide uppercase text-cyan-400">
-                Logística Rural Inclusiva • Contrato Soroban
+              <p className="text-[11px] font-extrabold tracking-wide uppercase text-amber-300">
+                Deslinde Logístico • Trato Directo
               </p>
               <h4 className="text-[15px] font-bold">
-                {card.title || 'Transporte Comunitario y Cajero Móvil'}
+                {card.title || 'Entrega Directa sin Intermediarios'}
               </h4>
             </div>
           </div>
-          <span className="text-[11px] bg-cyan-950/80 text-cyan-300 px-2.5 py-0.5 rounded-full border border-cyan-500/40 font-bold">
-            Escrow Activo
+          <span className="text-[11px] bg-emerald-950/80 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/40 font-bold">
+            Cero Coyotes
           </span>
         </div>
 
-        <p className="text-[12px] text-cyan-100/90 leading-relaxed">
-          El transportista local ya no fija precios arbitrarios ni especula. El flete y la recolección se garantizan mediante contrato inteligente y actúa como <strong>cajero móvil</strong> en la parcela.
+        <p className="text-[12px] text-emerald-100/90 leading-relaxed">
+          <strong>Yucu no se mete con la logística ni con los fletes de entrega.</strong> La entrega física de la pieza o lote se acuerda de forma 100% directa y libre entre el comprador y el artesano (en el taller, parcela o punto acordado).
         </p>
 
         <div className="grid grid-cols-2 gap-2 text-[12px]">
           <div className="bg-white/10 rounded-xl p-2.5 border border-white/10">
-            <span className="text-[10px] text-cyan-300 block uppercase font-medium">Ruta de Carga</span>
-            <span className="text-[13px] font-bold text-white block mt-0.5">Yucuhiti ➔ Tlaxiaco</span>
-            <span className="text-[10px] text-cyan-200">15 costales (675 kg café)</span>
+            <span className="text-[10px] text-amber-300 block uppercase font-medium">Acuerdo de Entrega</span>
+            <span className="text-[13px] font-bold text-white block mt-0.5">Directo en Territorio</span>
+            <span className="text-[10px] text-emerald-200">En taller o punto acordado</span>
           </div>
           <div className="bg-white/10 rounded-xl p-2.5 border border-white/10">
-            <span className="text-[10px] text-cyan-300 block uppercase font-medium">Flete Asegurado</span>
-            <span className="text-[14px] font-extrabold text-emerald-400 block mt-0.5">$1,350 MXN</span>
-            <span className="text-[10px] text-emerald-200">Tarifa fija $2.00 / kg</span>
+            <span className="text-[10px] text-emerald-300 block uppercase font-medium">Rol de Yucu</span>
+            <span className="text-[13px] font-extrabold text-emerald-400 block mt-0.5">Trazabilidad & Escrow</span>
+            <span className="text-[10px] text-emerald-200">Sello Stellar inmutable</span>
           </div>
         </div>
 
-        {/* Cajero Comunitario Móvil */}
-        <div className="p-2.5 rounded-xl bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-[18px]">💵</span>
-            <div>
-              <p className="text-[11px] font-bold text-cyan-200">Cajero Comunitario en Parcela</p>
-              <p className="text-[10px] text-white/80">Efectivo disponible en camioneta: $8,500 MXN</p>
-            </div>
-          </div>
-          <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-500/40">
-            1% Comisión
-          </span>
+        <div className="p-2.5 rounded-xl bg-black/25 border border-white/10 text-[11px] text-emerald-200 leading-snug">
+          📦 <strong>Sin costo de paquetería de la plataforma:</strong> Yucu no cobra comisiones de envío ni opera flotas de vehículos. El pago retenido en Escrow se libera cuando el comprador confirma la recepción de la pieza auténtica.
         </div>
 
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => onSendChatMessage?.('Confirmar asignación de flete y recolección de 15 sacos con el transportista en Yucuhiti')}
-            className="flex-1 py-2 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-[12px] font-bold transition-all active:scale-95 cursor-pointer shadow"
+            onClick={() => onSendChatMessage?.('Hola, me pongo de acuerdo directamente contigo para la entrega o retiro de la pieza en tu taller.')}
+            className="flex-1 py-2 px-3 rounded-xl bg-[#a73918] hover:bg-[#8c2d12] text-white text-[12px] font-bold transition-all active:scale-95 cursor-pointer shadow"
           >
-            Aceptar Ruta de Carga
-          </button>
-          <button
-            type="button"
-            onClick={() => onSendChatMessage?.('Simular liquidación de efectivo en parcela con código QR MicoPay')}
-            className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-cyan-200 text-[12px] font-semibold border border-white/15 transition-all cursor-pointer"
-          >
-            Cobrar en Efectivo QR
+            Coordinar Entrega Directa
           </button>
         </div>
       </div>
@@ -553,6 +536,143 @@ export const BotCardView: React.FC<BotCardViewProps> = ({
         >
           Consultar Historial de Regalías On-Chain
         </button>
+      </div>
+    );
+  }
+
+  // CARD 9: RECIBO / COMPROBANTE OFICIAL DE COMPRA (ÚLTIMO EVENTO DEL FLUJO)
+  if (card.type === 'recibo_ticket') {
+    const folio = card.data?.id || 'REC-MIX-2024-8841';
+    const total = card.data?.total || 480;
+    const artisanName = card.data?.artisanName || 'Doña Juana Bautista';
+    const location = card.data?.location || 'San Juan Mixtepec, Oaxaca';
+    const paymentMethod = card.data?.paymentMethod || 'Transferencia Directa SPEI (0% Comisión)';
+    const summary = card.data?.summary || 'Piezas artesanales de la Mixteca';
+    const stellarLedger = card.data?.stellarTxLedger || 52499210;
+    const stellarHash = card.data?.stellarTxHash || '0x7e29a8f4c100e439281b9921ef45a8823b10';
+
+    return (
+      <div className="w-full bg-[#0d281e] text-white rounded-2xl p-4 shadow-lg border-2 border-emerald-500/50 flex flex-col gap-3.5 my-1.5 animate-fade-in">
+        {/* Encabezado del Comprobante */}
+        <div className="flex items-center justify-between border-b border-white/15 pb-2.5">
+          <div className="flex items-center gap-2.5">
+            <span className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[20px] shrink-0 border border-emerald-400/30">
+              🧾
+            </span>
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-wider text-emerald-400">
+                Comprobante Oficial · Yucu Protocol
+              </p>
+              <h4 className="text-[15px] font-bold text-white leading-tight">
+                Folio #{folio}
+              </h4>
+            </div>
+          </div>
+          <span className="text-[11px] font-extrabold bg-emerald-950 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/50 shadow-xs flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Pago Confirmado</span>
+          </span>
+        </div>
+
+        {/* Noticia de Cero Intermediarios */}
+        <div className="bg-emerald-950/70 p-3 rounded-xl border border-emerald-500/30 text-[12px] flex items-start gap-2.5">
+          <span className="material-symbols-outlined text-emerald-400 text-[18px] shrink-0 mt-0.5">
+            verified
+          </span>
+          <p className="text-emerald-100/95 leading-relaxed">
+            <strong>100% de pago directo al taller:</strong> Tu pago se entrega íntegro a la artesana <strong>{artisanName}</strong> ({location}). Sin comisión bancaria ni coyotes.
+          </p>
+        </div>
+
+        {/* Desglose del Pedido */}
+        <div className="bg-black/30 rounded-xl p-3 border border-white/10 flex flex-col gap-2 text-[12.5px]">
+          <div className="flex justify-between items-start gap-2">
+            <span className="text-white/70">Concepto / Piezas:</span>
+            <span className="font-bold text-white text-right max-w-[200px] leading-snug">
+              {summary}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-white/70">Método de Pago:</span>
+            <span className="font-semibold text-emerald-300 text-[12px]">
+              {paymentMethod}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <span className="text-white/70">Taller Artesanal:</span>
+            <span className="font-medium text-white text-right">
+              {artisanName} · {location}
+            </span>
+          </div>
+
+          <div className="border-t border-white/15 pt-2 flex justify-between items-baseline">
+            <span className="font-bold text-white text-[13px]">Total Pagado:</span>
+            <span className="text-[20px] font-black text-amber-300 tracking-tight">
+              ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+            </span>
+          </div>
+        </div>
+
+        {/* Estado del Flujo de Entrega (Último Evento) */}
+        <div className="bg-white/5 rounded-xl p-3 border border-white/10 space-y-2">
+          <p className="text-[11px] font-black uppercase tracking-wider text-emerald-300">
+            Seguimiento de Entrega Comunitaria
+          </p>
+          <div className="space-y-1.5 text-[12px]">
+            <div className="flex items-center gap-2 text-emerald-300">
+              <span className="material-symbols-outlined text-[16px]">check_circle</span>
+              <span className="font-medium">1. Pago directo confirmado</span>
+            </div>
+            <div className="flex items-center gap-2 text-emerald-300">
+              <span className="material-symbols-outlined text-[16px]">check_circle</span>
+              <span className="font-medium">2. Notificación enviada al taller</span>
+            </div>
+            <div className="flex items-center gap-2 text-amber-200">
+              <span className="material-symbols-outlined text-[16px]">schedule</span>
+              <span className="font-bold">3. Coordinando entrega física en taller o envío</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Notarización Inmutable Stellar */}
+        <div className="flex items-center justify-between text-[10.5px] text-emerald-200/80 bg-black/40 rounded-lg px-2.5 py-1.5 border border-white/5">
+          <span>Stellar Ledger #{stellarLedger}</span>
+          <span className="font-mono text-emerald-400">Hash: {stellarHash.slice(0, 10)}...{stellarHash.slice(-6)} ✓</span>
+        </div>
+
+        {/* Botones de acción del Comprobante */}
+        <div className="grid grid-cols-2 gap-2 pt-0.5">
+          <button
+            type="button"
+            onClick={() => {
+              const textToCopy = `🧾 COMPROBANTE OFICIAL DE COMPRA DIRECTA · RAÍZ PROTOCOLO\nFolio: #${folio}\nTotal: $${total} MXN (100% Directo a Artesana)\nArtesana: ${artisanName} (${location})\nPago: ${paymentMethod}\nStellar Ledger: #${stellarLedger}\nEstatus: Pago Confirmado · En preparación`;
+              navigator.clipboard?.writeText(textToCopy);
+              setCopiedHash(true);
+              setTimeout(() => setCopiedHash(false), 2000);
+            }}
+            className="py-2.5 px-3 rounded-xl bg-white/15 hover:bg-white/20 active:scale-95 text-white font-bold text-[12px] flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-white/10"
+          >
+            <span className="material-symbols-outlined text-[16px]">
+              {copiedHash ? 'check' : 'content_copy'}
+            </span>
+            <span>{copiedHash ? '¡Copiado!' : 'Guardar Recibo'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              onSendChatMessage?.(
+                `Hola ${artisanName}, tengo el comprobante de mi pedido #${folio} ($${total} MXN). ¿En qué punto podemos acordar la entrega o envío?`
+              );
+            }}
+            className="py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20ba59] active:scale-95 text-white font-bold text-[12px] flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
+          >
+            <span className="material-symbols-outlined text-[16px]">chat</span>
+            <span>Acordar Entrega</span>
+          </button>
+        </div>
       </div>
     );
   }

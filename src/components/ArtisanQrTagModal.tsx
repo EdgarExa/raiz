@@ -28,7 +28,7 @@ export const ArtisanQrTagModal: React.FC<ArtisanQrTagModalProps> = ({
 
   // Scannable deep-link URL (e.g. https://domain.com/?cert=MX-2024-912)
   const qrPayloadUrl = useMemo(() => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://raiz.tecnm.mx';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://yucu.tecnm.mx';
     return `${origin}/?cert=${encodeURIComponent(formattedCode)}`;
   }, [formattedCode]);
 
@@ -136,10 +136,10 @@ export const ArtisanQrTagModal: React.FC<ArtisanQrTagModalProps> = ({
               <div className="w-1.5 h-1.5 rounded-full bg-[#c1c8c2]" />
             </div>
 
-            {/* TecNM & Raíz Header */}
+            {/* TecNM & Yucu Header */}
             <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-[#032517] tracking-wider uppercase">
               <span className="text-[#a73918]">●</span>
-              <span>Raíz Mixteca · TecNM Tlaxiaco</span>
+              <span>Yucu Mixteca · TecNM Tlaxiaco</span>
               <span className="text-[#a73918]">●</span>
             </div>
 
@@ -169,26 +169,32 @@ export const ArtisanQrTagModal: React.FC<ArtisanQrTagModalProps> = ({
                 </span>
               </div>
               <div className="flex justify-between items-center text-[11.5px]">
-                <span className="text-[#5e6660] font-medium">Autor(a):</span>
+                <span className="text-[#5e6660] font-medium">
+                  {lot.informedConsent?.visibilityLevel === 'cooperativa' ? 'Colectivo / Coop:' : 'Autor(a):'}
+                </span>
                 <span className="font-bold text-[#032517] truncate max-w-[170px]">
-                  {lot.producerName}
+                  {lot.informedConsent && !lot.informedConsent.isPubliclyVisible
+                    ? 'Resguardo Privado (Sello Activo)'
+                    : lot.informedConsent?.customDisplayName || lot.producerName}
                 </span>
               </div>
               <div className="flex justify-between items-center text-[11.5px]">
                 <span className="text-[#5e6660] font-medium">Comunidad:</span>
-                <span className="font-semibold text-[#032517]">{lot.location}</span>
+                <span className="font-semibold text-[#032517]">
+                  {lot.informedConsent && !lot.informedConsent.isPubliclyVisible ? 'Mixteca Oaxaqueña' : lot.location}
+                </span>
               </div>
               <div className="flex justify-between items-center text-[11.5px]">
-                <span className="text-[#5e6660] font-medium">Sellado en:</span>
-                <span className="font-mono text-[10.5px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded">
-                  Soroban / Stellar
+                <span className="text-[#5e6660] font-medium">Sello Inmutable:</span>
+                <span className="font-mono text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded">
+                  Stellar SHA-256 (Zero-PII)
                 </span>
               </div>
             </div>
 
             {/* Buyer Instructions */}
-            <p className="text-[10.5px] text-[#424843] leading-tight italic px-1">
-              "Escanea con la cámara de tu celular para escuchar la voz del autor(a), conocer la técnica ancestral y certificar origen sin intermediarios."
+            <p className="text-[10px] text-[#424843] leading-tight italic px-1">
+              "El QR enlaza a la ficha web viva que el autor puede actualizar o retirar. La blockchain de Stellar valida autenticidad e integridad física sin exponer datos personales."
             </p>
           </div>
 
