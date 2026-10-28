@@ -123,7 +123,7 @@ Tres condiciones: la comisión va a la cuenta de una **entidad constituida** con
 2. **MicoPay:** ¿cuándo acepta USDC? ¿Haría un piloto en la Mixteca? ¿Agregaría una palabra clave para cobrar? ¿Cuándo llega a mainnet? (Está en desarrollo.)
 3. **Etherfuse:** ¿hay alternativa al RFC? ¿Límites por persona? **MoneyGram y Pago46:** ¿aceptan la cuenta propia de la artesana? ¿Cuánto cobran por retirar en México? ¿Tienen puntos cerca de Tlaxiaco? ¿Tienen entorno de pruebas?
 4. **Disputas:** quién resuelve (#103).
-5. **Sostenibilidad:** qué entidad cobra la comisión (TecNM, una asociación civil o una cooperativa de servicios), cuál es el porcentaje, la cuota mínima y por qué, y cuánto pagaría una marca por los servicios (se valida con marcas, igual que #68 con compradores).
+5. **Sostenibilidad:** qué entidad cobra la comisión (TecNM, una asociación civil o una cooperativa de servicios), cuál es el porcentaje, la cuota mínima y por qué, y cuánto pagaría una marca por los servicios (se valida con marcas en #131, igual que #68 con compradores).
 6. **Campo:** ¿las artesanas necesitan un adelanto al enviar? Decide la plantilla de hitos por defecto.
 7. **Legal:** confirmar con un abogado que este diseño no tiene custodia por parte de Yucu ni del grupo, que una dirección por persona en una cadena pública es aceptable con la reducción de datos, que la comisión de plataforma no convierte a la entidad en captadora de recursos, y quién puede recibir el Tequio de las reventas. Con un contador: si cobrar una comisión sobre ventas de personas físicas obliga a la entidad a retener impuestos y a reportar a las artesanas como plataforma digital, aunque la entidad no reciba el precio. Si la respuesta es sí, este diseño de comisión se revisa antes de mainnet.
 
