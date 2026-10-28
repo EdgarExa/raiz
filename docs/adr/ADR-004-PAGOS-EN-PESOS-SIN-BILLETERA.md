@@ -34,6 +34,8 @@
 | El QR de MicoPay se cobra horas después | ❌ | Dura **15 minutos** a propósito, por seguridad; la tienda se elige antes de bloquear. El retiro se crea **en la tienda**. |
 | Etherfuse paga por SPEI a cualquier artesana | ⚠️ | Exige **CURP, RFC**, selfie y una cuenta bancaria **a su nombre**, desde su propia cuenta Stellar. Solo para quien tenga RFC. |
 | MicoPay acepta USDC | ❌ hoy | Su escrow solo acepta XLM; USDC está pendiente en su plan. El cobro en efectivo de la fase 2 se construye con la versión simulada hasta entonces. |
+| Koywe paga en pesos desde la cuenta de la artesana | ❌ | Revisado el 27 de octubre de 2026 en su documentación: no soporta Stellar, y su modelo paga desde el saldo de una empresa, así que Yucu custodiaría el dinero. |
+| MoneyGram Ramps o Pago46 pagan en efectivo sin RFC | ⚠️ sin verificar | Los dos cambian USDC en Stellar por efectivo en México. MoneyGram pide identificación oficial en la agencia; Pago46 paga en cadenas de tiendas. Los dos piden dar de alta a la app como socia. No se confirmaron sus comisiones en México ni si tienen puntos cerca de Tlaxiaco. |
 | Un escrow de Trustless Work acepta uno o varios hitos | ✅ | De 1 a 50 hitos, cada uno con su monto y su receptora (`core/validators/escrow.rs`, rama `multi-release-main`). |
 | La comisión de Trustless Work (0.3 %) se puede cobrar en testnet | ⚠️ por confirmar | En su contrato de código abierto va a una dirección fija que no existía en testnet el 26 de octubre de 2026. Se pregunta en #96. |
 | Yucu puede resolver disputas | ❌ | Quien resuelve decide a dónde va el dinero: contradice ADR-003 D1. |
@@ -84,16 +86,20 @@ Si el comprador no aprueba, se puede abrir disputa **15 días** después de "env
 **D9. Salida a pesos desde su propia cuenta, detrás de `PayoutPort`.**
 * **Efectivo — MicoPay:** cuando la artesana ya está en la tienda, crea el retiro desde su cuenta con su PIN y recibe el QR (vale 15 minutos). No espera a nadie.
 * **SPEI — Etherfuse:** solo para quien tenga RFC y cuenta bancaria a su nombre, desde su propia cuenta.
-* Las dos van detrás de `PayoutPort`, con una versión simulada para construir sin esperar a los proveedores.
+* **Candidatos para el efectivo, por verificar:** MoneyGram Ramps y Pago46 (sección 2). Si alguno confirma que acepta la cuenta propia de la artesana, cobra poco y tiene puntos cerca, puede reemplazar o acompañar a MicoPay sin cambiar las pantallas.
+* Todos van detrás de `PayoutPort`, con una versión simulada para construir sin esperar a los proveedores.
+* **Comisión del retiro:** si el proveedor cobra por retirar, esa comisión no puede salir del precio de la artesana (D11). La app la suma a lo que paga el comprador o, si no se puede, se lo dice a la artesana en pesos antes de retirar. Se decide cuando se conozcan las comisiones reales.
 
 **D10. El grupo nunca recibe dinero de las ventas.** Sus roles son: acompañar el registro, marcar "enviado", y poner el **sello comunitario** en las regalías (`perpetual_royalties`). Se descarta cualquier diseño en que una cuenta del grupo o de una responsable reciba el dinero de las socias. **El escrow no descuenta Tequio.** El Tequio (2 %) solo existe en las **reventas** que pasan por `perpetual_royalties`, y va a una cuenta **de la comunidad que Yucu nunca controla** (en testnet, una cuenta de prueba).
 
 **D11. Sostenibilidad: la artesana nunca paga.** El proyecto necesita ingresos, y los cobra a quien obtiene valor:
-* **Comisión de plataforma en la compra protegida (fase 2), encima del precio.** La app ajusta el monto del escrow para que la artesana reciba **su precio completo**. La comisión se reparte en la misma transacción que libera el pago: nadie retiene el dinero, así que no es custodia.
-* **Servicios para compradores y marcas:** verificación de origen, sello embebible (#79), API de pasaportes y pasaporte digital de producto (#77). Funcionan también en la fase 1 y no tocan el dinero de las artesanas.
+* **Comisión de plataforma en la compra protegida (fase 2), encima del precio.** La app ajusta el monto del escrow para que la artesana reciba **su precio completo**. La comisión se reparte en la misma transacción que libera el pago: nadie retiene el dinero, así que no es custodia. Es **un porcentaje con una cuota mínima** (se cobra la mayor de las dos), porque un porcentaje solo sobre piezas de 100 a 500 pesos, que es lo que gastan los compradores encuestados (#81), no alcanza a cubrir el costo de operar. Si la API de Trustless Work solo acepta porcentajes, la app calcula el porcentaje que equivale a la cuota mínima en cada escrow.
+* **Servicios para compradores y marcas:** verificación de origen, sello embebible (#79), API de pasaportes, atestaciones (ADR-005) y pasaporte digital de producto (#77). Se cobran a empresas, **fuera de la cadena** (por paquete o por suscripción, con factura), para no recibir criptoactivos de las marcas. Funcionan también en la fase 1 y no tocan el dinero de las artesanas.
 * **Tequio comunitario** en las reventas (D10).
 
-Dos condiciones: la comisión va a la cuenta de una **entidad constituida** con RFC que emita facturas (CFDI), nunca a la cuenta personal de un mantenedor; y **el porcentaje no se inventa**: se define con una cifra justificada en `src/config/protocolFees.ts`. En testnet se usa un valor de prueba marcado como tal.
+Tres condiciones: la comisión va a la cuenta de una **entidad constituida** con RFC que emita facturas (CFDI), nunca a la cuenta personal de un mantenedor; **el porcentaje y la cuota mínima no se inventan**: se definen con cifras justificadas en `src/config/protocolFees.ts` (en testnet se usan valores de prueba marcados como tales); y **ninguna comisión se cobra en mainnet** antes de la opinión fiscal y legal de la sección 5 (preguntas en [`docs/sostenibilidad/`](../sostenibilidad/PREGUNTAS_CONTADOR_Y_ABOGADO.md)).
+
+*Fuera de esta decisión:* cobrar en las compras en pesos de México (fase 1) exigiría que el dinero pase por un proveedor de pagos regulado con pagos divididos. Eso cambia D2 y necesitaría su propio ADR, después de la opinión fiscal.
 
 ## 4. Qué cambia
 
@@ -115,11 +121,11 @@ Dos condiciones: la comisión va a la cuenta de una **entidad constituida** con 
 
 1. **Campo** (guía en `docs/ux-testing/`): ¿las artesanas recuerdan su PIN? ¿Quién guarda la tarjeta? ¿Cuántas tienen celular propio y RFC? ¿Qué tienda sería la primera?
 2. **MicoPay:** ¿cuándo acepta USDC? ¿Haría un piloto en la Mixteca? ¿Agregaría una palabra clave para cobrar? ¿Cuándo llega a mainnet? (Está en desarrollo.)
-3. **Etherfuse:** ¿hay alternativa al RFC? ¿Límites por persona?
+3. **Etherfuse:** ¿hay alternativa al RFC? ¿Límites por persona? **MoneyGram y Pago46:** ¿aceptan la cuenta propia de la artesana? ¿Cuánto cobran por retirar en México? ¿Tienen puntos cerca de Tlaxiaco? ¿Tienen entorno de pruebas?
 4. **Disputas:** quién resuelve (#103).
-5. **Sostenibilidad:** qué entidad cobra la comisión (TecNM, una asociación civil o una cooperativa de servicios), cuál es el porcentaje y por qué, y qué servicios se ofrecen a compradores y marcas.
+5. **Sostenibilidad:** qué entidad cobra la comisión (TecNM, una asociación civil o una cooperativa de servicios), cuál es el porcentaje, la cuota mínima y por qué, y cuánto pagaría una marca por los servicios (se valida con marcas, igual que #68 con compradores).
 6. **Campo:** ¿las artesanas necesitan un adelanto al enviar? Decide la plantilla de hitos por defecto.
-7. **Legal:** confirmar con un abogado que este diseño no tiene custodia por parte de Yucu ni del grupo, que una dirección por persona en una cadena pública es aceptable con la reducción de datos, que la comisión de plataforma no convierte a la entidad en captadora de recursos, y quién puede recibir el Tequio de las reventas.
+7. **Legal:** confirmar con un abogado que este diseño no tiene custodia por parte de Yucu ni del grupo, que una dirección por persona en una cadena pública es aceptable con la reducción de datos, que la comisión de plataforma no convierte a la entidad en captadora de recursos, y quién puede recibir el Tequio de las reventas. Con un contador: si cobrar una comisión sobre ventas de personas físicas obliga a la entidad a retener impuestos y a reportar a las artesanas como plataforma digital, aunque la entidad no reciba el precio. Si la respuesta es sí, este diseño de comisión se revisa antes de mainnet.
 
 ## 6. Consecuencias
 
